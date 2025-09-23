@@ -5,6 +5,6 @@
     <a href='logout_page.php'>Logout</a><br><br>
 
     <?php if($_SESSION['is_admin'] == 1): ?>
-        <a href='admin/dashboard.php'>Go to Admin Dashboard</a><br><br>
+        <a href='includes/views/admin_view.php'>Go to Admin Dashboard</a><br><br>
     <?php endif; ?>
 <?php endif; ?>

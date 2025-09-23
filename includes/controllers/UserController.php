@@ -14,8 +14,8 @@ class UserController {
     }
 
     // Register user
-    public function register($username, $password) {
-        return $this->user->register($username, $password);
+    public function register($username, $password, $email) {
+        return $this->user->register($username, $password, $email);
     }
 
     // Check if a user is logged in

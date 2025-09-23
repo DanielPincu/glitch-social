@@ -3,7 +3,7 @@
 
 class Database {
     private $host = 'localhost';
-    private $db_name = 'glitch';
+    private $db_name = 'Glitch_Social';
     private $username = 'root';
     private $password = '';
     private $charset = 'utf8';
