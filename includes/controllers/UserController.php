@@ -9,47 +9,47 @@ class UserController {
     }
 
     // Login user
-    public function login(string $username, string $password): bool {
+    public function login($username, $password) {
         return $this->user->login($username, $password);
     }
 
     // Register user
-    public function register(string $username, string $email, string $password): bool {
+    public function register($username, $email, $password) {
         return $this->user->register($username, $email, $password);
     }
 
     // Check if a user is logged in
-    public function isLoggedIn(): bool {
+    public function isLoggedIn() {
         return isset($_SESSION['user_id']);
     }
 
     // Check if user is admin
-    public function isAdmin(): bool {
+    public function isAdmin() {
         return isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
     }
 
     // Check if user is blocked
-    public function isBlocked(int $user_id): bool {
+    public function isBlocked($user_id) {
         return $this->user->isBlocked($user_id);
     }
 
     // Fetch all users
-    public function getAllUsers(): array {
+    public function getAllUsers() {
         return $this->user->getAllUsers();
     }
 
     // Block user
-    public function blockUser(int $user_id): bool {
+    public function blockUser($user_id) {
         return $this->user->setBlocked($user_id, 1);
     }
 
     // Unblock user
-    public function unblockUser(int $user_id): bool {
+    public function unblockUser($user_id) {
         return $this->user->setBlocked($user_id, 0);
     }
 
     // Toggle block status for user
-    public function toggleBlock(int $user_id): bool {
+    public function toggleBlock($user_id) {
         if ($this->isBlocked($user_id)) {
             return $this->unblockUser($user_id);
         } else {
@@ -58,7 +58,7 @@ class UserController {
     }
 
     // Set admin status for user (safe access for other controllers)
-    public function setAdminStatus(int $user_id, int $is_admin): bool {
+    public function setAdminStatus($user_id, $is_admin) {
         return $this->user->setAdmin($user_id, $is_admin);
     }
 }

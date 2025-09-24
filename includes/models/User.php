@@ -80,7 +80,7 @@ class User {
     // ----------------------
     // Set admin status for a user
     // ----------------------
-    public function setAdmin(int $user_id, int $is_admin): bool {
+    public function setAdmin($user_id, $is_admin) {
         $stmt = $this->db->prepare("UPDATE users SET is_admin = :is_admin WHERE id = :id");
         $stmt->bindValue(':is_admin', $is_admin);
         $stmt->bindValue(':id', $user_id);
