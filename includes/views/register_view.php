@@ -1,6 +1,4 @@
 <h1>Register</h1>
-
-<!-- Display message if exists -->
 <p><?= $message ?? '' ?></p>
 
 <form method="post">
@@ -10,4 +8,4 @@
     <button type="submit" name="register">Register</button>
 </form>
 
-<p><a href="login_page.php">Login</a></p>
+<p><a href="login_loader.php">Login</a></p>

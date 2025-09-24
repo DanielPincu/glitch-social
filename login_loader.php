@@ -4,7 +4,7 @@ require_once __DIR__ . '/includes/controllers/UserController.php';
 
 $controller = new UserController();
 $message = '';
-$title = "Login"; // for header.php
+$title = "Login";
 
 if (isset($_POST['login'])) {
     $username = $_POST['username'];
@@ -13,9 +13,8 @@ if (isset($_POST['login'])) {
     $result = $controller->login($username, $password);
 
     if ($result === true) {
-        // Redirect admin or regular user
-        header($_SESSION['is_admin'] == 1
-            ? "Location: includes/views/admin_view.php"
+        header($_SESSION['is_admin'] == 1 
+            ? "Location: admin_loader.php" 
             : "Location: index.php");
         exit;
     } elseif ($result === 'blocked') {
@@ -25,7 +24,7 @@ if (isset($_POST['login'])) {
     }
 }
 
-// Load the view (wrapped with header and footer)
+// Load header, view, footer
 require __DIR__ . '/includes/views/header.php';
 require __DIR__ . '/includes/views/login_view.php';
 require __DIR__ . '/includes/views/footer.php';

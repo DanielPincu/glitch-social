@@ -11,5 +11,5 @@ if ($userController->isLoggedIn()) {
 }
 
 // Redirect to login page
-header("Location: login_page.php");
+header("Location: login_loader.php");
 exit;
