@@ -16,4 +16,7 @@ if ($userController->isBlocked($_SESSION['user_id'])) {
 }
 
 // Load the view
+$title = "Home"; // for header.php
+require __DIR__ . '/includes/views/header.php';
 require __DIR__ . '/includes/views/home_view.php';
+require __DIR__ . '/includes/views/footer.php';

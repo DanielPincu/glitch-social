@@ -18,4 +18,7 @@ if (isset($_POST['register'])) {
 }
 
 // Load the view
+$title = "Register"; // for header.php
+require __DIR__ . '/includes/views/header.php'; 
 require __DIR__ . '/includes/views/register_view.php';
+require __DIR__ . '/includes/views/footer.php';
