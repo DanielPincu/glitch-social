@@ -13,7 +13,7 @@ if (isset($_POST['login'])) {
 
     if ($result === true) {
         // Redirect admin or regular user
-        header($_SESSION['is_admin'] == 1 ? "Location: admin/dashboard.php" : "Location: index.php");
+        header($_SESSION['is_admin'] == 1 ? "Location: includes/views/admin_view.php" : "Location: index.php");
         exit;
     } elseif ($result === 'blocked') {
         $message = "Your account is blocked. Contact admin.";
