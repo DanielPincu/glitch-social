@@ -1,33 +1,34 @@
 <?php
-session_start();
-
 require_once __DIR__ . '/includes/controllers/UserController.php';
 require_once __DIR__ . '/includes/controllers/PostController.php';
+require_once __DIR__ . '/includes/helpers/Session.php'; 
 
+$session = new Session();
 $userController = new UserController();
 $postController = new PostController();
 
 // Redirect if not logged in
-if (!$userController->isLoggedIn()) {
+if (!$session->isLoggedIn()) {
     header("Location: login_loader.php");
     exit;
 }
 
 // Check if user is blocked
+$user_id = $session->getUserId();
 $blocked_message = '';
-if ($userController->isBlocked($_SESSION['user_id'])) {
+if ($userController->isBlocked($user_id)) {
     $blocked_message = "You are blocked. You cannot access the feed.";
 }
 
 // Handle new post submission
-if (isset($_POST['post_submit'])) {
-    $content = $_POST['content'];
+if (isset($_POST['post_submit']) && !$blocked_message) {
+    $content = $_POST['content'] ?? '';
     $file = $_FILES['imageFile'] ?? null;
 
-    // Call PostController to create post with optional image
-    $postController->createPost($_SESSION['user_id'], $content, $file);
+    // Create post with optional image
+    $postController->createPost($user_id, $content, $file);
 
-    // Redirect to refresh page
+    // Refresh page
     header("Location: index.php");
     exit;
 }

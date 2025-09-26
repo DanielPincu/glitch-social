@@ -1,20 +1,27 @@
 <?php
-session_start();
 require_once __DIR__ . '/includes/controllers/PostController.php';
 require_once __DIR__ . '/includes/controllers/UserController.php';
+require_once __DIR__ . '/includes/helpers/Session.php';
 
+$session = new Session();
 $postController = new PostController();
 $userController = new UserController();
 
-$user_id = $_SESSION['user_id'] ?? null;
+$user_id = $session->getUserId();
 $blocked_message = null;
 
+// Redirect if not logged in
+if (!$session->isLoggedIn()) {
+    header("Location: login_loader.php");
+    exit;
+}
+
 // Redirect blocked users
-if ($user_id && $userController->isBlocked($user_id)) {
+if ($userController->isBlocked($user_id)) {
     $blocked_message = "You are blocked from posting or interacting.";
 }
 
-// Handle post submission
+// Handle new post submission
 if (isset($_POST['post_submit']) && !$blocked_message) {
     $content = $_POST['content'] ?? '';
     $imagePath = null;
@@ -32,7 +39,8 @@ if (isset($_POST['post_submit']) && !$blocked_message) {
             $uploadPath = $uploadDir . $newFile;
 
             if (move_uploaded_file($_FILES['imageFile']['tmp_name'], $uploadPath)) {
-                $imagePath = 'img/' . $newFile; // relative path for DB
+                // Save relative path to DB
+                $imagePath = 'img/' . $newFile;
             }
         }
     }
@@ -42,5 +50,5 @@ if (isset($_POST['post_submit']) && !$blocked_message) {
     exit;
 }
 
-// Fetch posts for the view
+// Fetch posts for view
 $posts = $postController->getPosts();

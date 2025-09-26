@@ -1,14 +1,16 @@
 <?php
 session_start();
+require_once __DIR__ . '/includes/helpers/Session.php';
 require_once __DIR__ . '/includes/controllers/AdminController.php';
 
+$session = new Session();
+$adminController = new AdminController();
+
 // Redirect non-admins
-if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
+if (!$session->isAdmin()) {
     header("Location: index.php");
     exit;
 }
-
-$adminController = new AdminController();
 
 // Handle form submissions
 if (isset($_POST['toggle_block'], $_POST['user_id'])) {
