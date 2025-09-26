@@ -1,5 +1,5 @@
 <h1>Login</h1>
-<p><?= $message ?? '' ?></p>
+<p><?php echo $message ?? ''; ?></p>
 
 <form method="post">
     <input type="text" name="username" placeholder="Username" required><br>
