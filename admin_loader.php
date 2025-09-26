@@ -13,7 +13,7 @@ $adminController = new AdminController();
 // Handle form submissions
 if (isset($_POST['toggle_block'], $_POST['user_id'])) {
     $adminController->toggleBlock($_POST['user_id']);
-    header("Location: admin_page.php");
+    header("Location: admin_loader.php");
     exit;
 }
 
