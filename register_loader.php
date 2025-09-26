@@ -1,8 +1,10 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/helpers/Session.php';
 require_once __DIR__ . '/includes/controllers/UserController.php';
 
+$session = new Session();
 $controller = new UserController();
+
 $message = '';
 $title = "Register";
 

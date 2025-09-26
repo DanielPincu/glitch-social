@@ -7,4 +7,4 @@
     <button type="submit" name="login">Login</button>
 </form>
 
-<p><a href="register_page.php">Register</a></p>
+<p><a href="register_loader.php">Register</a></p>

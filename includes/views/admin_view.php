@@ -1,4 +1,5 @@
 <h1>Admin Dashboard</h1>
+<?php echo "Session ID: " . session_id(); ?>
 <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?> | <a href="logout_loader.php">Logout</a></p>
 
 <?php foreach ($users as $user): ?>

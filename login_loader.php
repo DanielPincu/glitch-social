@@ -1,10 +1,22 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/helpers/Session.php';
 require_once __DIR__ . '/includes/controllers/UserController.php';
 
+
+$session = new Session();
 $controller = new UserController();
 $message = '';
 $title = "Login";
+
+// If already logged in, redirect accordingly
+if ($session->isLoggedIn()) {
+    if ($session->isAdmin()) {
+        header("Location: admin_loader.php");
+    } else {
+        header("Location: index.php");
+    }
+    exit;
+}
 
 if (isset($_POST['login'])) {
     $username = $_POST['username'];
@@ -13,9 +25,11 @@ if (isset($_POST['login'])) {
     $result = $controller->login($username, $password);
 
     if ($result === true) {
-        header($_SESSION['is_admin'] == 1 
-            ? "Location: admin_loader.php" 
-            : "Location: index.php");
+        if ($session->isAdmin()) {
+            header("Location: admin_loader.php");
+        } else {
+            header("Location: index.php");
+        }
         exit;
     } elseif ($result === 'blocked') {
         $message = "Your account is blocked. Contact admin.";
