@@ -19,13 +19,13 @@ if (isset($_POST['toggle_block'], $_POST['user_id'])) {
 
 if (isset($_POST['promote'], $_POST['user_id'])) {
     $adminController->promoteToAdmin($_POST['user_id']);
-    header("Location: admin_page.php");
+    header("Location: admin_loader.php");
     exit;
 }
 
 if (isset($_POST['demote'], $_POST['user_id'])) {
     $adminController->demoteFromAdmin($_POST['user_id']);
-    header("Location: admin_page.php");
+    header("Location: admin_loader.php");
     exit;
 }
 
