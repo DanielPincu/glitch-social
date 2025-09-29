@@ -90,18 +90,19 @@ CREATE TABLE messages (
   FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- NOTIFICATIONS TABLE
 CREATE TABLE notifications (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,   -- who receives the notification
   actor_id INT NOT NULL,  -- who triggered the action
-  type ENUM('like','comment','follow','mention','share') NOT NULL,
-  post_id INT DEFAULT NULL,  -- related post if any
+  type ENUM('like','comment','follow','mention','share','message') NOT NULL,
+  post_id INT DEFAULT NULL,     -- nullable, only for post-related notifications
+  message_id INT DEFAULT NULL,  -- nullable, only for message-related notifications
   is_read TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (actor_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE
 );
 
 -- POST VIEWS TABLE (Analytics)
