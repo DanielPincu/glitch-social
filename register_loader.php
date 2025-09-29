@@ -13,7 +13,7 @@ if (isset($_POST['register'])) {
     $password = $_POST['password'];
     $email    = $_POST['email'];
 
-    if ($controller->register($username, $password, $email)) {
+    if ($controller->register($username, $email, $password)) {
         $message = "Registration successful. You can now log in.";
     } else {
         $message = "Username or email already exists.";
