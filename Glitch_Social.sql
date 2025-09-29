@@ -1,0 +1,56 @@
+-- Drop and recreate database
+DROP DATABASE IF EXISTS Glitch_Social;
+CREATE DATABASE Glitch_Social
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_bin;
+USE Glitch_Social;
+
+-- Use InnoDB as default engine
+SET default_storage_engine=INNODB;
+
+-- USERS TABLE
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  image_path VARCHAR(255) DEFAULT NULL,  -- profile picture
+  is_admin TINYINT(1) NOT NULL DEFAULT 0,
+  is_blocked TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- POSTS TABLE
+CREATE TABLE posts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  content TEXT DEFAULT NULL,
+  image_path VARCHAR(255) DEFAULT NULL,         -- post image
+  shared_post_id INT DEFAULT NULL,              -- for sharing
+  pinned TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (shared_post_id) REFERENCES posts(id) ON DELETE SET NULL
+);
+
+-- COMMENTS TABLE
+CREATE TABLE comments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  post_id INT NOT NULL,
+  user_id INT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- LIKES TABLE
+CREATE TABLE likes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  post_id INT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY user_post (user_id, post_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+);
