@@ -25,6 +25,13 @@
                 <?php endif; ?>
 
                 <small>Posted on: <?php echo $post['created_at']; ?></small>
+                <br>
+                <?php if ($postController->hasLikedPost($post['id'], $user_id)): ?>
+                    <a href="feed_loader.php?action=unlike&post_id=<?= $post['id'] ?>">Unlike</a>
+                <?php else: ?>
+                    <a href="feed_loader.php?action=like&post_id=<?= $post['id'] ?>">Like</a>
+                <?php endif; ?>
+                <span><?= $postController->getPostLikes($post['id']); ?> likes</span>
             </div>
         <?php endforeach; ?>
     <?php else: ?>

@@ -39,14 +39,52 @@ class Post {
         ]);
     }
 
-    // Fetch all posts with user info
+    // Fetch all posts with user info and like count
     public function fetchAll() {
         $stmt = $this->db->query("
-            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, users.username
+            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, users.username,
+                (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
             ORDER BY posts.created_at DESC
         ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Like a post
+    public function like($post_id, $user_id) {
+        $stmt = $this->db->prepare("INSERT IGNORE INTO likes (post_id, user_id) VALUES (:post_id, :user_id)");
+        return $stmt->execute([
+            ':post_id' => $post_id,
+            ':user_id' => $user_id
+        ]);
+    }
+
+    // Unlike a post
+    public function unlike($post_id, $user_id) {
+        $stmt = $this->db->prepare("DELETE FROM likes WHERE post_id = :post_id AND user_id = :user_id");
+        return $stmt->execute([
+            ':post_id' => $post_id,
+            ':user_id' => $user_id
+        ]);
+    }
+
+    // Check if user has liked a post
+    public function hasLiked($post_id, $user_id) {
+        $stmt = $this->db->prepare("SELECT 1 FROM likes WHERE post_id = :post_id AND user_id = :user_id LIMIT 1");
+        $stmt->execute([
+            ':post_id' => $post_id,
+            ':user_id' => $user_id
+        ]);
+        return $stmt->fetchColumn() !== false;
+    }
+
+    // Get like count for a post
+    public function getLikeCount($post_id) {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM likes WHERE post_id = :post_id");
+        $stmt->execute([
+            ':post_id' => $post_id
+        ]);
+        return (int)$stmt->fetchColumn();
     }
 }

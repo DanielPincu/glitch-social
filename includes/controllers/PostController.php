@@ -17,4 +17,23 @@ class PostController {
     public function getPosts() {
         return $this->post->fetchAll();
     }
+    // Like a post
+    public function likePost($post_id, $user_id) {
+        return $this->post->like($post_id, $user_id);
+    }
+
+    // Unlike a post
+    public function unlikePost($post_id, $user_id) {
+        return $this->post->unlike($post_id, $user_id);
+    }
+
+    // Check if user has liked a post
+    public function hasLikedPost($post_id, $user_id) {
+        return $this->post->hasLiked($post_id, $user_id);
+    }
+
+    // Get the number of likes for a post
+    public function getPostLikes($post_id) {
+        return $this->post->getLikeCount($post_id);
+    }
 }

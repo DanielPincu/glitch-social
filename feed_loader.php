@@ -21,6 +21,18 @@ if ($userController->isBlocked($user_id)) {
     $blocked_message = "You are blocked from posting or interacting.";
 }
 
+// Handle likes/unlikes
+if (isset($_GET['post_id'])) {
+    $post_id = (int)$_GET['post_id'];
+    if (isset($_GET['action']) && $_GET['action'] === 'unlike') {
+        $postController->unlikePost($post_id, $user_id);
+    } else {
+        $postController->likePost($post_id, $user_id);
+    }
+    header("Location: index.php");
+    exit;
+}
+
 // Handle new post submission
 if (isset($_POST['post_submit']) && !$blocked_message) {
     $content = $_POST['content'] ?? '';
