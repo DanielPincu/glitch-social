@@ -88,61 +88,72 @@
           </form>
         </div>
 
+        <!-- Tab Switcher -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <button id="hotTabBtn" class="w-full px-6 py-2 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#1E90FF] to-[#5CACEE] text-blue-900 font-bold hover:drop-shadow-[0_0_10px_rgba(30,144,255,0.5)] transition select-none" type="button">🔥 Hot</button>
+          <button id="followingTabBtn" class="w-full px-6 py-2 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#1E90FF] to-[#5CACEE] text-blue-900 font-bold hover:drop-shadow-[0_0_10px_rgba(30,144,255,0.5)] transition select-none" type="button">👥 Following</button>
+        </div>
+
         <!-- Posts Feed -->
-        <?php if (!empty($posts)): ?>
-          <?php foreach ($posts as $post): ?>
+        <div id="hotFeed">
+          <?php if (!empty($posts)): ?>
+            <?php foreach ($posts as $post): ?>
+              <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
+                <div class="flex justify-between items-center mb-3">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-black border-2 border-white rounded-full flex items-center justify-center">
+                      <i data-feather="user" class="text-green-500"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-bold"><?php echo htmlspecialchars($post['username']); ?></h4>
+                      <p class="text-xs">
+                        <?php if (!empty($post['created_at'])): ?>
+                          <?php echo htmlspecialchars($post['created_at']); ?>
+                        <?php endif; ?>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                <?php if (!empty($post['image_path'])): ?>
+                  <div class="mb-3 border-2 border-white">
+                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-full max-h-96 object-contain">
+                  </div>
+                <?php endif; ?>
+                <!-- Post actions -->
+                <div class="flex justify-between text-sm border-t border-gray-400 pt-2">
+                  <div class="flex items-center gap-2">
+                    <button 
+                      class="like-btn flex items-center gap-1 hover:scale-110 <?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'text-pink-300' : ''; ?>" 
+                      data-post-id="<?php echo $post['id']; ?>" 
+                      data-liked="<?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'true' : 'false'; ?>"
+                      type="button"
+                    >
+                      <?php echo $postController->hasLikedPost($post['id'], $user_id) ? '❤️' : '🤍'; ?>
+                      <span><?php echo $postController->getLikeCount($post['id']); ?> likes</span>
+                    </button>
+                  </div>
+                  <!-- Placeholder for comments/share -->
+                  <div class="flex items-center gap-3">
+                    <span class="flex items-center gap-1 text-gray-200">
+                      <i data-feather="message-square" class="w-4 h-4"></i> Comment
+                    </span>
+                    <span class="flex items-center gap-1 text-gray-200">
+                      <i data-feather="share-2" class="w-4 h-4"></i> Share
+                    </span>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          <?php else: ?>
             <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
-              <div class="flex justify-between items-center mb-3">
-                <div class="flex items-center space-x-3">
-                  <div class="w-10 h-10 bg-black border-2 border-white rounded-full flex items-center justify-center">
-                    <i data-feather="user" class="text-green-500"></i>
-                  </div>
-                  <div>
-                    <h4 class="font-bold"><?php echo htmlspecialchars($post['username']); ?></h4>
-                    <p class="text-xs">
-                      <?php if (!empty($post['created_at'])): ?>
-                        <?php echo htmlspecialchars($post['created_at']); ?>
-                      <?php endif; ?>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
-              <?php if (!empty($post['image_path'])): ?>
-                <div class="mb-3 border-2 border-white">
-                  <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-full max-h-96 object-contain">
-                </div>
-              <?php endif; ?>
-              <!-- Post actions -->
-              <div class="flex justify-between text-sm border-t border-gray-400 pt-2">
-                <div class="flex items-center gap-2">
-                  <button 
-                    class="like-btn flex items-center gap-1 hover:scale-110 <?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'text-pink-300' : ''; ?>" 
-                    data-post-id="<?php echo $post['id']; ?>" 
-                    data-liked="<?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'true' : 'false'; ?>"
-                    type="button"
-                  >
-                    <?php echo $postController->hasLikedPost($post['id'], $user_id) ? '❤️' : '🤍'; ?>
-                    <span><?php echo $postController->getLikeCount($post['id']); ?> likes</span>
-                  </button>
-                </div>
-                <!-- Placeholder for comments/share -->
-                <div class="flex items-center gap-3">
-                  <span class="flex items-center gap-1 text-gray-200">
-                    <i data-feather="message-square" class="w-4 h-4"></i> Comment
-                  </span>
-                  <span class="flex items-center gap-1 text-gray-200">
-                    <i data-feather="share-2" class="w-4 h-4"></i> Share
-                  </span>
-                </div>
-              </div>
+              <p class="text-center text-gray-100">No posts yet.</p>
             </div>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
-            <p class="text-center text-gray-100">No posts yet.</p>
-          </div>
-        <?php endif; ?>
+          <?php endif; ?>
+        </div>
+
+        <div id="followingFeed" class="hidden h-full"></div>
+
       <?php endif; ?>
     </div>
 
@@ -248,4 +259,5 @@
   </div>
   <script src="scripts/like.js"></script>
   <script src="scripts/image-previewer.js"></script>
+  <script src="scripts/tab-switcher.js"></script>
 </main>
