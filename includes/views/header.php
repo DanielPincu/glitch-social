@@ -1,15 +1,89 @@
-<!-- includes/views/header.php -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $title ?? 'My App'; ?></title>
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Optional: your own styles -->
-    <link rel="stylesheet" href="/path/to/your/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MatrixConnect - Social Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <link rel="stylesheet" href="styles/styles.css">
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans">
+
+<body class="matrix-bg font-[Windows Regular] text-white z-10 relative">
+  <!-- Matrix Rain Background -->
+  <canvas id="matrix-rain"></canvas>
+<!-- Taskbar -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#0078d7] h-10 flex items-center px-4 z-50">
+    <button class="xp-button px-4 py-1 rounded-sm flex items-center gap-1">
+      <i data-feather="grid" class="w-4 h-4"></i>
+      <span>START</span>
+    </button>
+
+    <div class="flex ml-4 space-x-1">
+      <button class="bg-green-500 bg-opacity-80 hover:bg-opacity-100 px-3 py-1 rounded-sm">
+        <i data-feather="home" class="w-4 h-4"></i>
+      </button>
+      <button class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm">
+        <i data-feather="users" class="w-4 h-4"></i>
+      </button>
+      <button class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm">
+        <i data-feather="message-square" class="w-4 h-4"></i>
+      </button>
+      <button class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm">
+        <i data-feather="user" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <div class="ml-auto flex items-center space-x-2">
+      <div class="bg-green-500 px-2 py-1 text-xs">
+        ONLINE
+      </div>
+      <div class="text-xs">
+        <span id="current-time"></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- START MENU -->
+  <div id="start-menu"
+    class="hidden fixed bottom-10 left-0 w-64 bg-[#0078d7] border-t-2 border-l-2 border-white border-r-2 border-b-2 border-black shadow-2xl z-50">
+    <!-- Profile Info -->
+    <div class="bg-[#0064b4] p-3 flex items-center space-x-3 border-b border-black">
+      <div class="w-12 h-12 bg-black border-2 border-white flex items-center justify-center">
+        <i data-feather="user" class="text-green-500"></i>
+      </div>
+      <div>
+        <h4 class="font-bold">Neo</h4>
+        <p class="text-xs">@theone</p>
+      </div>
+    </div>
+
+    <!-- Menu Items -->
+    <div class="bg-[#c0c0c0] text-black text-sm">
+      <a href="index.php" class="block">
+        <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+          <i data-feather="home" class="w-4 h-4"></i> Home
+        </button>
+      </a>
+      <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+        <i data-feather="users" class="w-4 h-4"></i> Friends
+      </button>
+      <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+        <i data-feather="message-square" class="w-4 h-4"></i> Messages
+      </button>
+      <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+        <i data-feather="user" class="w-4 h-4"></i> Profile
+      </button>
+      <a href="admin_loader.php" class="block">
+        <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+          <i data-feather="settings" class="w-4 h-4"></i> Settings
+        </button>
+      </a>
+      <a href="logout.html"><button
+          class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+          <i data-feather="log-out" class="w-4 h-4"></i> Logout
+        </button></a>
+    </div>
+  </div>
+  

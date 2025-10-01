@@ -7,7 +7,7 @@
 <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?> | <a href="logout_loader.php">Logout</a></p>
 
 <?php foreach ($users as $user): ?>
-    <div class="mb-2 p-2 border rounded bg-white">
+    <div class="mb-2 p-2 border rounded bg-blue-900">
         <strong><?php echo htmlspecialchars($user['username']); ?></strong> -
         <?php echo $user['is_blocked'] ? 'Blocked' : 'Active'; ?> -
         <?php echo $user['is_admin'] ? 'Admin' : 'User'; ?>
@@ -36,7 +36,7 @@
 
 <h2>Manage Posts</h2>
 <?php foreach ($posts as $post): ?>
-    <div class="mb-2 p-2 border rounded bg-white">
+    <div class="mb-2 p-2 border rounded ">
         <strong><?php echo htmlspecialchars($post['username']); ?></strong>:
         <?php echo htmlspecialchars($post['content']); ?>
         <br>
