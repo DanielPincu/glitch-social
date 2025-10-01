@@ -2,10 +2,12 @@
 require_once __DIR__ . '/includes/helpers/Session.php';
 require_once __DIR__ . '/includes/controllers/PostController.php';
 require_once __DIR__ . '/includes/controllers/UserController.php';
+require_once __DIR__ . '/includes/controllers/AdminController.php';
 
 $session = new Session();
 $postController = new PostController();
 $userController = new UserController();
+$adminController = new AdminController();
 
 if (!$session->isLoggedIn()) {
     header("Location: login_loader.php");
@@ -15,16 +17,62 @@ if (!$session->isLoggedIn()) {
 $user_id = $session->getUserId();
 $username = $_SESSION['username'] ?? 'User';
 
-// Handle post delete (only their own posts)
-if (isset($_POST['delete_post'])) {
-    $post_id = (int)$_POST['post_id'];
-    $postController->deletePost($post_id, $user_id); 
-    header("Location: settings_loader.php");
-    exit;
+// Check if user is admin
+$isAdmin = $userController->isAdmin($user_id);
+
+// Admin actions: block/unblock, promote/demote, delete posts for any user
+if ($isAdmin) {
+    // Block/unblock user
+    if (isset($_POST['block_user'])) {
+        $target_user_id = (int)$_POST['user_id'];
+        $adminController->blockUser($target_user_id);
+        header("Location: settings_loader.php");
+        exit;
+    }
+    if (isset($_POST['unblock_user'])) {
+        $target_user_id = (int)$_POST['user_id'];
+        $adminController->unblockUser($target_user_id);
+        header("Location: settings_loader.php");
+        exit;
+    }
+    // Promote/demote user
+    if (isset($_POST['promote_user'])) {
+        $target_user_id = (int)$_POST['user_id'];
+        $adminController->promoteToAdmin($target_user_id);
+        header("Location: settings_loader.php");
+        exit;
+    }
+    if (isset($_POST['demote_user'])) {
+        $target_user_id = (int)$_POST['user_id'];
+        $adminController->demoteFromAdmin($target_user_id);
+        header("Location: settings_loader.php");
+        exit;
+    }
+    // Delete any post
+    if (isset($_POST['delete_post'])) {
+        $post_id = (int)$_POST['post_id'];
+        $adminController->deletePost($post_id);
+        header("Location: settings_loader.php");
+        exit;
+    }
+    // Fetch all users and all posts
+    $allUsers = $userController->getAllUsers();
+    $allPosts = $postController->getAllPosts();
+} else {
+    // Normal user: can only delete own posts
+    if (isset($_POST['delete_post'])) {
+        $post_id = (int)$_POST['post_id'];
+        $postController->deletePost($post_id, $user_id); 
+        header("Location: settings_loader.php");
+        exit;
+    }
+    $allUsers = null;
+    $allPosts = null;
 }
 
 // Fetch only this user’s posts
 $posts = $postController->getPostsByUser($user_id);
+$currentUserId = $user_id;
 
 // Page title
 $title = "Settings";

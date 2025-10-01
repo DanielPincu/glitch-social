@@ -11,7 +11,7 @@ $title = "Login";
 // If already logged in, redirect accordingly
 if ($session->isLoggedIn()) {
     if ($session->isAdmin()) {
-        header("Location: admin_loader.php");
+        header("Location: settings_loader.php");
     } else {
         header("Location: index.php");
     }
@@ -26,7 +26,7 @@ if (isset($_POST['login'])) {
 
     if ($result === true) {
         if ($session->isAdmin()) {
-            header("Location: admin_loader.php");
+            header("Location: settings_loader.php");
         } else {
             header("Location: index.php");
         }

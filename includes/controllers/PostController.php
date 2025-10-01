@@ -51,4 +51,8 @@ class PostController {
     public function deletePostByUser($post_id, $user_id) {
         return $this->post->deleteByUser($post_id, $user_id);
     }
+    // Get all posts (alias for admin use)
+    public function getAllPosts() {
+        return $this->getPosts();
+    }
 }
