@@ -51,21 +51,12 @@ class User {
     // Block or unblock a user
     // ----------------------
     public function setBlocked($user_id, $blocked) {
-        if ($blocked == 1) {
-            // Block user AND remove admin privileges in a single query
-            $stmt = $this->db->prepare("UPDATE users SET is_blocked = :blocked, is_admin = 0 WHERE id = :id");
-            return $stmt->execute([
-                ':blocked' => $blocked,
-                ':id'      => $user_id
-            ]);
-        } else {
-            // Unblocking: do not touch is_admin
-            $stmt = $this->db->prepare("UPDATE users SET is_blocked = :blocked WHERE id = :id");
-            return $stmt->execute([
-                ':blocked' => $blocked,
-                ':id'      => $user_id
-            ]);
-        }
+        $sql = $blocked == 1
+            ? "UPDATE users SET is_blocked = 1, is_admin = 0 WHERE id = :id"
+            : "UPDATE users SET is_blocked = 0 WHERE id = :id";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':id' => $user_id]);
     }
 
     // ----------------------
