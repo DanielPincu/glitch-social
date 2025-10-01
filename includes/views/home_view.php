@@ -6,7 +6,7 @@
     <!-- Left Sidebar -->
     <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-4 flex flex-col">
       <!-- System Status -->
-      <div class="xp-window bg-[#008080] p-4">
+      <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
         <h3 class="font-bold mb-3">SYSTEM STATUS</h3>
         <div class="space-y-1 text-xs font-mono matrix-text">
           <p>CPU Usage: 37%</p>
@@ -16,7 +16,7 @@
         </div>
       </div>
       <!-- Weather Forecast -->
-      <div class="xp-window bg-[#008080] p-4">
+      <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
         <h3 class="font-bold mb-3">WEATHER STATUS</h3>
         <div class="space-y-1 text-xs font-mono matrix-text">
           <p>Location: Zion Underground</p>
@@ -27,13 +27,13 @@
         </div>
       </div>
       <!-- Daily Quote -->
-      <div class="xp-window bg-[#008080] p-4 h-96">
+      <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 h-96">
         <h3 class="font-bold mb-3 matrix-text">DAILY QUOTE</h3>
         <blockquote class="italic text-sm matrix-text">“There is no spoon.”</blockquote>
         <p class="text-xs text-right mt-2 matrix-text">- The Matrix</p>
       </div>
       <!-- Glitches / Errors -->
-      <div class="xp-window bg-[#008080] matrix-text p-4">
+      <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] matrix-text p-4">
         <h3 class="font-bold mb-3 matrix-text">GLITCHES / ERRORS</h3>
         <div class="space-y-1 text-xs font-mono  matrix-text">
           <p>[ERROR] Memory leak detected</p>
@@ -57,35 +57,33 @@
     <!-- Main Feed -->
     <div class="md:col-span-2 space-y-4">
       <?php if (!empty($blocked_message)): ?>
-        <div class="xp-window bg-[#008080] p-4 mb-4">
+        <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 mb-4">
           <p class="text-red-400 font-bold text-center"><?php echo htmlspecialchars($blocked_message); ?></p>
         </div>
       <?php else: ?>
         <!-- Create Post -->
-        <div class="xp-window bg-[#008080] p-4">
+        <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg shadow-lg p-6 border border-[#b0b0b0] relative">
+          <div class="flex items-center mb-4 space-x-2">
+            <i data-feather="edit-2" class="text-green-400 drop-shadow-[0_0_3px_rgba(0,255,0,0.7)]"></i>
+            <h3 class="text-lg font-semibold text-green-400 drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">Create Post</h3>
+          </div>
           <form method="post" enctype="multipart/form-data">
-            <div class="flex items-center space-x-3 mb-3">
-              <div class="w-10 h-10 bg-black border-2 border-white rounded-full flex items-center justify-center">
-                <i data-feather="edit-2" class="text-green-500"></i>
-              </div>
-              <textarea name="content" placeholder="What's on your mind?" required class="bg-[#c0c0c0] text-black px-3 py-2 w-full border border-gray-400 rounded resize-y"></textarea>
-            </div>
-            <div class="flex justify-between items-center">
-              <div class="flex space-x-2">
-                <label class="flex items-center text-xs hover:underline cursor-pointer">
-                  <i data-feather="image" class="w-4 h-4 mr-1"></i>
-                  <span>Image</span>
-                  <input type="file" name="imageFile" id="imageFile" onchange="previewImage(event)" class="hidden">
-                </label>
-              </div>
-              <button type="submit" name="post_submit" class="xp-button px-4 py-1">
+            <textarea name="content" placeholder="What's on your mind?" required
+              class="w-full bg-[#e8e8e8] text-black px-5 py-4 rounded border border-[#b0b0b0] resize-y focus:outline-none focus:ring-2 focus:ring-green-500 focus:shadow-[0_0_8px_rgba(0,255,0,0.7)] transition-shadow"></textarea>
+            <div class="flex justify-between items-center mt-4">
+              <label for="imageFile" class="cursor-pointer inline-flex items-center px-3 py-1 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#3A6EA5] to-[#5CACEE] text-blue-900 text-xs font-semibold shadow-inner hover:brightness-110 active:brightness-90 transition select-none">
+                <i data-feather="image" class="w-4 h-4 mr-1 drop-shadow-[0_0_3px_rgba(0,255,0,0.7)]"></i> Image
+                <input type="file" name="imageFile" id="imageFile" onchange="previewImage(event)" class="hidden">
+              </label>
+              <button type="submit" name="post_submit"
+                class="px-6 py-2 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#1E90FF] to-[#5CACEE] text-blue-900 font-bold hover:drop-shadow-[0_0_10px_rgba(30,144,255,0.5)] transition select-none">
                 Post
               </button>
             </div>
             <!-- Preview Section -->
-            <div id="imagePreview" class="mt-3 hidden">
-              <p class="text-xs text-green-400 mb-1">Image attached: <span id="fileName"></span></p>
-              <img id="previewImg" src="" alt="Preview" class="max-h-40 border border-gray-300">
+            <div id="imagePreview" class="mt-3 hidden border border-gray-300 rounded-lg overflow-hidden max-h-40">
+              <p class="text-xs text-green-400 mb-1 px-2 pt-1">Image attached: <span id="fileName"></span></p>
+              <img id="previewImg" src="" alt="Preview" class="w-full object-contain max-h-36 drop-shadow-[0_0_6px_rgba(0,255,0,0.5)] rounded" style="box-shadow: 0 0 8px 2px rgba(0,255,0,0.4);">
             </div>
           </form>
         </div>
@@ -93,7 +91,7 @@
         <!-- Posts Feed -->
         <?php if (!empty($posts)): ?>
           <?php foreach ($posts as $post): ?>
-            <div class="xp-window bg-[#008080] p-4">
+            <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
               <div class="flex justify-between items-center mb-3">
                 <div class="flex items-center space-x-3">
                   <div class="w-10 h-10 bg-black border-2 border-white rounded-full flex items-center justify-center">
@@ -141,7 +139,7 @@
             </div>
           <?php endforeach; ?>
         <?php else: ?>
-          <div class="xp-window bg-[#008080] p-4">
+          <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
             <p class="text-center text-gray-100">No posts yet.</p>
           </div>
         <?php endif; ?>
@@ -152,7 +150,7 @@
     <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-4 flex flex-col">
       <div class="flex flex-col h-full justify-between">
         <!--  Following  -->
-        <div class="xp-window bg-[#008080] p-4 h-full">
+        <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 h-full">
           <h3 class="font-bold mb-3">FOLLOWING</h3>
           <div class="space-y-2">
             <div class="flex items-center space-x-2">
@@ -230,7 +228,7 @@
           </div>
         </div>
         <!-- System Alerts -->
-        <div class="xp-window bg-[#008080] p-4 ">
+        <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 ">
           <h3 class="font-bold mb-3">SYSTEM ALERTS</h3>
           <div class="space-y-2">
             <div class="bg-black bg-opacity-20 p-2">
