@@ -1,4 +1,8 @@
 <h1>Admin Dashboard</h1>
+<a href="index.php">
+    <button type="button">Return to Home</button>
+</a>
+<br><br>
 <?php echo "Session ID: " . session_id(); ?>
 <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?> | <a href="logout_loader.php">Logout</a></p>
 

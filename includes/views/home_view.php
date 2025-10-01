@@ -1,5 +1,10 @@
 <h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
 <a href="logout_loader.php">Logout</a><br><br>
+<?php if ($session->isAdmin()): ?>
+    <a href="admin_loader.php">
+        <button type="button">Admin Dashboard</button>
+    </a><br><br>
+<?php endif; ?>
 
 <?php if (!empty($blocked_message)): ?>
     <p style="color:red;"><?php echo htmlspecialchars($blocked_message); ?></p>
