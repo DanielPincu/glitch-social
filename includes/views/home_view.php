@@ -75,12 +75,17 @@
                 <label class="flex items-center text-xs hover:underline cursor-pointer">
                   <i data-feather="image" class="w-4 h-4 mr-1"></i>
                   <span>Image</span>
-                  <input type="file" name="imageFile" class="hidden">
+                  <input type="file" name="imageFile" id="imageFile" onchange="previewImage(event)" class="hidden">
                 </label>
               </div>
               <button type="submit" name="post_submit" class="xp-button px-4 py-1">
                 Post
               </button>
+            </div>
+            <!-- Preview Section -->
+            <div id="imagePreview" class="mt-3 hidden">
+              <p class="text-xs text-green-400 mb-1">Image attached: <span id="fileName"></span></p>
+              <img id="previewImg" src="" alt="Preview" class="max-h-40 border border-gray-300">
             </div>
           </form>
         </div>
@@ -244,4 +249,5 @@
     </div>
 
   </div>
+  <script src="scripts/image-previewer.js"></script>
 </main>

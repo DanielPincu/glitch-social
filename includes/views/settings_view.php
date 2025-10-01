@@ -10,6 +10,11 @@
         <?php foreach ($posts as $post): ?>
           <div class="bg-black bg-opacity-60 border border-gray-500 rounded-lg p-4">
             <p class="text-green-400 mb-2"><?php echo htmlspecialchars($post['content']); ?></p>
+            <?php if (!empty($post['image_path'])): ?>
+              <div class="mb-2">
+                <img id="previewImg-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
+              </div>
+            <?php endif; ?>
             <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
             
             <form method="post" class="mt-3">
@@ -32,3 +37,5 @@
     </a>
   </div>
 </div>
+
+<script src="js/image-previewer.js"></script>
