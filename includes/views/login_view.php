@@ -1,10 +1,14 @@
-<h1>Login</h1>
-<p><?php echo $message ?? ''; ?></p>
-
-<form method="post">
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit" name="login">Login</button>
-</form>
-
-<p><a href="register_loader.php">Register</a></p>
+<div class="min-h-screen flex items-center justify-center p-6">
+    <div class="bg-[#008080] rounded-lg shadow-lg w-full max-w-md p-8 border border-gray-400">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 select-none">Login</h1>
+        <?php if(isset($message) && $message !== ''): ?>
+            <p class="mb-4 text-red-600 font-semibold"><?php echo $message; ?></p>
+        <?php endif; ?>
+        <form method="post" class="space-y-4">
+            <input type="text" name="username" placeholder="Username" required class="w-full px-4 py-2 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
+            <input type="password" name="password" placeholder="Password" required class="w-full px-4 py-2 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
+            <button type="submit" name="login" class="w-full bg-gradient-to-b from-blue-500 to-blue-700 text-white font-semibold px-5 py-2 rounded border border-blue-800 shadow-md hover:from-blue-600 hover:to-blue-800 active:translate-y-0.5 active:shadow-none transition duration-150">Login</button>
+        </form>
+        <p class="text-center text-white mt-4 text-sm">Don't have an account? <a href="register_loader.php" class="text-white text-xl hover:underline">Register</a></p>
+    </div>
+</div>
