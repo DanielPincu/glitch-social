@@ -33,7 +33,7 @@ class PostController {
     }
 
     // Get the number of likes for a post
-    public function getPostLikes($post_id) {
+    public function getLikeCount($post_id) {
         return $this->post->getLikeCount($post_id);
     }
 

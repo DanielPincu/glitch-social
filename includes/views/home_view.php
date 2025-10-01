@@ -118,16 +118,15 @@
               <!-- Post actions -->
               <div class="flex justify-between text-sm border-t border-gray-400 pt-2">
                 <div class="flex items-center gap-2">
-                  <?php if ($postController->hasLikedPost($post['id'], $user_id)): ?>
-                    <a href="index.php?action=unlike&amp;post_id=<?php echo $post['id']; ?>" class="flex items-center gap-1 hover:underline text-pink-300">
-                      <i data-feather="heart" class="w-4 h-4 fill-current"></i> Unlike
-                    </a>
-                  <?php else: ?>
-                    <a href="index.php?action=like&amp;post_id=<?php echo $post['id']; ?>" class="flex items-center gap-1 hover:underline">
-                      <i data-feather="heart" class="w-4 h-4"></i> Like
-                    </a>
-                  <?php endif; ?>
-                  <span class="ml-1"><?php echo $postController->getPostLikes($post['id']); ?> likes</span>
+                  <button 
+                    class="like-btn flex items-center gap-1 hover:scale-110 <?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'text-pink-300' : ''; ?>" 
+                    data-post-id="<?php echo $post['id']; ?>" 
+                    data-liked="<?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'true' : 'false'; ?>"
+                    type="button"
+                  >
+                    <?php echo $postController->hasLikedPost($post['id'], $user_id) ? '❤️' : '🤍'; ?>
+                    <span><?php echo $postController->getLikeCount($post['id']); ?> likes</span>
+                  </button>
                 </div>
                 <!-- Placeholder for comments/share -->
                 <div class="flex items-center gap-3">
@@ -249,5 +248,6 @@
     </div>
 
   </div>
+  <script src="scripts/like.js"></script>
   <script src="scripts/image-previewer.js"></script>
 </main>

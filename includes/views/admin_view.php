@@ -73,6 +73,11 @@
               <strong class="text-gray-900"><?php echo htmlspecialchars($post['username']); ?></strong>:
               <span class="text-gray-800"><?php echo htmlspecialchars($post['content']); ?></span>
             </div>
+            <?php if (!empty($post['image_path'])): ?>
+              <div class="mb-2">
+                <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-h-48 rounded border">
+              </div>
+            <?php endif; ?>
             <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
               <small>Posted on: <?php echo $post['created_at']; ?></small>
               <form method="post" action="admin_loader.php" style="display:inline;">
@@ -90,3 +95,4 @@
     </section>
   </div>
 </div>
+<script src="scripts/image-previewer.js"></script>

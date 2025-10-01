@@ -7,6 +7,37 @@ $session = new Session();
 $userController = new UserController();
 $postController = new PostController();
 
+// Handle AJAX like/unlikeell functionality
+if (isset($_POST['ajax']) && $_POST['ajax'] === 'like') {
+    if (!$session->isLoggedIn()) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Not logged in']);
+        exit;
+    }
+    $user_id = $session->getUserId();
+    if ($userController->isBlocked($user_id)) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'User is blocked']);
+        exit;
+    }
+    header('Content-Type: application/json');
+    $post_id = (int)($_POST['post_id'] ?? 0);
+    $action = $_POST['action'] ?? null;
+
+    if ($post_id && $action) {
+        if ($action === 'like') {
+            $postController->likePost($post_id, $user_id);
+        } elseif ($action === 'unlike') {
+            $postController->unlikePost($post_id, $user_id);
+        }
+        $likeCount = $postController->getLikeCount($post_id);
+        echo json_encode(['success' => true, 'likes' => $likeCount]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Invalid request']);
+    }
+    exit;
+}
+
 // Redirect if not logged in
 if (!$session->isLoggedIn()) {
     header("Location: login_loader.php");
@@ -18,18 +49,6 @@ $user_id = $session->getUserId();
 $blocked_message = '';
 if ($userController->isBlocked($user_id)) {
     $blocked_message = "You are blocked. You cannot access the feed.";
-}
-
-// Handle like/unlike actions before new post submission
-if (isset($_GET['post_id']) && isset($_GET['action']) && !$blocked_message) {
-    $post_id = (int)$_GET['post_id'];
-    if ($_GET['action'] === 'unlike') {
-        $postController->unlikePost($post_id, $user_id);
-    } elseif ($_GET['action'] === 'like') {
-        $postController->likePost($post_id, $user_id);
-    }
-    header("Location: index.php");
-    exit;
 }
 
 // Handle new post submission (with image upload validation)
