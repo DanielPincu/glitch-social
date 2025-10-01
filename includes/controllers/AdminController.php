@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/UserController.php';
+require_once __DIR__ . '/../models/Post.php';
 
 class AdminController extends UserController {
 
@@ -28,5 +29,16 @@ class AdminController extends UserController {
     // Demote user from admin
     public function demoteFromAdmin($user_id) {
         return $this->setAdminStatus($user_id, 0);
+    }
+    // Fetch all posts
+    public function listPosts() {
+        $post = new Post();
+        return $post->fetchAll();
+    }
+
+    // Delete a post by ID
+    public function deletePost($post_id) {
+        $post = new Post();
+        return $post->delete($post_id);
     }
 }

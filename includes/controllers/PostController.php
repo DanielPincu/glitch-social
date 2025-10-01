@@ -36,4 +36,9 @@ class PostController {
     public function getPostLikes($post_id) {
         return $this->post->getLikeCount($post_id);
     }
+
+    // Delete a post
+    public function deletePost($post_id) {
+        return $this->post->delete($post_id);
+    }
 }

@@ -87,4 +87,23 @@ class Post {
         ]);
         return (int)$stmt->fetchColumn();
     }
+    // Delete a post by ID (also unlink image if exists)
+    public function delete($post_id) {
+        // Fetch the post record
+        $stmt = $this->db->prepare("SELECT image_path FROM posts WHERE id = :id");
+        $stmt->execute([':id' => $post_id]);
+        $post = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // If an image exists, unlink it
+        if ($post && !empty($post['image_path'])) {
+            $filePath = __DIR__ . '/../../' . $post['image_path'];
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        // Now delete the post itself
+        $stmt = $this->db->prepare("DELETE FROM posts WHERE id = :id");
+        return $stmt->execute([':id' => $post_id]);
+    }
 }

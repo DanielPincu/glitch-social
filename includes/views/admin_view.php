@@ -29,3 +29,17 @@
         <?php endif; ?>
     </div>
 <?php endforeach; ?>
+
+<h2>Manage Posts</h2>
+<?php foreach ($posts as $post): ?>
+    <div class="mb-2 p-2 border rounded bg-white">
+        <strong><?php echo htmlspecialchars($post['username']); ?></strong>:
+        <?php echo htmlspecialchars($post['content']); ?>
+        <br>
+        <small>Posted on: <?php echo $post['created_at']; ?></small>
+        <form method="post" action="admin_loader.php" style="display:inline;">
+            <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+            <button type="submit" name="delete_post" onclick="return confirm('Delete this post?')">Delete</button>
+        </form>
+    </div>
+<?php endforeach; ?>

@@ -31,8 +31,15 @@ if (isset($_POST['demote'], $_POST['user_id'])) {
     exit;
 }
 
+if (isset($_POST['delete_post'], $_POST['post_id'])) {
+    $adminController->deletePost($_POST['post_id']);
+    header("Location: admin_loader.php");
+    exit;
+}
+
 // Fetch all users for the view
 $users = $adminController->listUsers();
+$posts = $adminController->listPosts();
 
 // Page title
 $title = "Admin Dashboard";
