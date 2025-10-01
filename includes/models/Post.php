@@ -13,8 +13,8 @@ class Post {
     public function create($user_id, $content, $file = null) {
         $imagePath = null;
 
-        // Handle image upload
-        if ($file && $file['error'] === UPLOAD_ERR_OK) {
+        // Handle image upload or direct image path
+        if (is_array($file) && isset($file['error']) && $file['error'] === UPLOAD_ERR_OK) {
             $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (in_array($file['type'], $allowedTypes) && $file['size'] <= 2 * 1024 * 1024) { // 2MB max
                 $uploadDir = __DIR__ . '/../../img/';
@@ -29,6 +29,8 @@ class Post {
                     $imagePath = 'img/' . $filename; // relative path for DB
                 }
             }
+        } elseif (is_string($file)) {
+            $imagePath = $file;
         }
 
         $stmt = $this->db->prepare("INSERT INTO posts (user_id, content, image_path) VALUES (:user_id, :content, :image_path)");

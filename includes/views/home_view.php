@@ -32,9 +32,9 @@
                 <small>Posted on: <?php echo $post['created_at']; ?></small>
                 <br>
                 <?php if ($postController->hasLikedPost($post['id'], $user_id)): ?>
-                    <a href="feed_loader.php?action=unlike&post_id=<?php echo $post['id']; ?>">Unlike</a>
+                    <a href="index.php?action=unlike&post_id=<?php echo $post['id']; ?>">Unlike</a>
                 <?php else: ?>
-                    <a href="feed_loader.php?action=like&post_id=<?php echo $post['id']; ?>">Like</a>
+                    <a href="index.php?action=like&post_id=<?php echo $post['id']; ?>">Like</a>
                 <?php endif; ?>
                 <span><?php echo $postController->getPostLikes($post['id']); ?> likes</span>
             </div>
