@@ -230,13 +230,13 @@
           <h3 class="font-bold mb-3">SYSTEM ALERTS</h3>
           <div class="space-y-2">
             <div class="bg-black bg-opacity-20 p-2">
-              <p class="text-xs matrix-text">New update available: v2.3.1</p>
+              <p class="text-xs matrix-text">Welcome to the Matrix </p>
             </div>
             <div class="bg-black bg-opacity-20 p-2">
-              <p class="text-xs matrix-text">Security patch applied</p>
+              <p class="text-xs matrix-text">Connected as  <?php echo htmlspecialchars($_SESSION['username']); ?> </p>
             </div>
             <div class="bg-black bg-opacity-20 p-2">
-              <p class="text-xs matrix-text">3 new messages</p>
+              <p class="text-xs matrix-text"><?php echo "Session ID: " . session_id(); ?></p>
             </div>
           </div>
         </div>
