@@ -41,4 +41,14 @@ class PostController {
     public function deletePost($post_id) {
         return $this->post->delete($post_id);
     }
+
+    // Get all posts by a specific user
+    public function getPostsByUser($user_id) {
+        return $this->post->getPostsByUser($user_id);
+    }
+
+    // Delete a post by a specific user
+    public function deletePostByUser($post_id, $user_id) {
+        return $this->post->deleteByUser($post_id, $user_id);
+    }
 }

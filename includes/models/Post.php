@@ -108,4 +108,42 @@ class Post {
         $stmt = $this->db->prepare("DELETE FROM posts WHERE id = :id");
         return $stmt->execute([':id' => $post_id]);
     }
+
+    // Get posts by specific user
+    public function getPostsByUser($user_id) {
+        $stmt = $this->db->prepare("
+            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, users.username,
+                (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+            FROM posts
+            JOIN users ON posts.user_id = users.id
+            WHERE posts.user_id = :user_id
+            ORDER BY posts.created_at DESC
+        ");
+        $stmt->execute([':user_id' => $user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Delete a post by ID, but only if it belongs to this user
+    public function deleteByUser($post_id, $user_id) {
+        // Fetch the post record and ensure ownership
+        $stmt = $this->db->prepare("SELECT image_path FROM posts WHERE id = :id AND user_id = :user_id");
+        $stmt->execute([':id' => $post_id, ':user_id' => $user_id]);
+        $post = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$post) {
+            return false; // not found or not owned
+        }
+
+        // If an image exists, unlink it
+        if (!empty($post['image_path'])) {
+            $filePath = __DIR__ . '/../../' . $post['image_path'];
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        // Delete post
+        $stmt = $this->db->prepare("DELETE FROM posts WHERE id = :id AND user_id = :user_id");
+        return $stmt->execute([':id' => $post_id, ':user_id' => $user_id]);
+    }
 }

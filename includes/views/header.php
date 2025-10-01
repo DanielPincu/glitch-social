@@ -75,11 +75,19 @@
       <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
         <i data-feather="user" class="w-4 h-4"></i> Profile
       </button>
-      <a href="admin_loader.php" class="block">
-        <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
-          <i data-feather="settings" class="w-4 h-4"></i> Settings
-        </button>
-      </a>
+      <?php if (!empty($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+        <a href="admin_loader.php" class="block">
+          <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+            <i data-feather="settings" class="w-4 h-4"></i> Settings
+          </button>
+        </a>
+      <?php else: ?>
+        <a href="settings_loader.php" class="block">
+          <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+            <i data-feather="settings" class="w-4 h-4"></i> Settings
+          </button>
+        </a>
+      <?php endif; ?>
       <a href="logout_loader.php"><button
           class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
           <i data-feather="log-out" class="w-4 h-4"></i> Logout
