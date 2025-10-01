@@ -20,8 +20,23 @@ $username = $_SESSION['username'] ?? 'User';
 // Check if user is admin
 $isAdmin = $userController->isAdmin($user_id);
 
+// Handle delete_post for non-admin users
+if (isset($_POST['delete_post']) && !$isAdmin) {
+    $post_id = (int)$_POST['post_id'];
+    $postController->deletePostByUser($post_id, $user_id);
+    header("Location: settings_loader.php");
+    exit;
+}
+
 // Admin actions: block/unblock, promote/demote, delete posts for any user
 if ($isAdmin) {
+    // Admin delete post
+    if (isset($_POST['admin_delete_post'])) {
+        $post_id = (int)$_POST['post_id'];
+        $postController->deletePost($post_id);
+        header("Location: settings_loader.php");
+        exit;
+    }
     // Block/unblock user
     if (isset($_POST['block_user'])) {
         $target_user_id = (int)$_POST['user_id'];
@@ -48,24 +63,10 @@ if ($isAdmin) {
         header("Location: settings_loader.php");
         exit;
     }
-    // Delete any post
-    if (isset($_POST['delete_post'])) {
-        $post_id = (int)$_POST['post_id'];
-        $adminController->deletePost($post_id);
-        header("Location: settings_loader.php");
-        exit;
-    }
     // Fetch all users and all posts
     $allUsers = $userController->getAllUsers();
     $allPosts = $postController->getAllPosts();
 } else {
-    // Normal user: can only delete own posts
-    if (isset($_POST['delete_post'])) {
-        $post_id = (int)$_POST['post_id'];
-        $postController->deletePost($post_id, $user_id); 
-        header("Location: settings_loader.php");
-        exit;
-    }
     $allUsers = null;
     $allPosts = null;
 }
