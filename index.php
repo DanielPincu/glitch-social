@@ -3,11 +3,12 @@ require_once __DIR__ . '/includes/controllers/UserController.php';
 require_once __DIR__ . '/includes/controllers/PostController.php';
 require_once __DIR__ . '/includes/helpers/Session.php'; 
 
+// Central Routing System
 $session = new Session();
 $userController = new UserController();
 $postController = new PostController();
 
-// Handle AJAX like/unlikeell functionality
+// Handle AJAX like/unlike functionality
 if (isset($_POST['ajax']) && $_POST['ajax'] === 'like') {
     if (!$session->isLoggedIn()) {
         header('Content-Type: application/json');
@@ -38,56 +39,142 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'like') {
     exit;
 }
 
-// Redirect if not logged in
-if (!$session->isLoggedIn()) {
-    header("Location: login_loader.php");
-    exit;
-}
+$page = $_GET['page'] ?? 'home';
+$title = '';
 
-// Check if user is blocked
-$user_id = $session->getUserId();
-$blocked_message = '';
-if ($userController->isBlocked($user_id)) {
-    $blocked_message = "You are blocked. You cannot access the feed.";
-}
-
-// Handle new post submission (with image upload validation)
-if (isset($_POST['post_submit']) && !$blocked_message) {
-    $content = $_POST['content'] ?? '';
-    $file = $_FILES['imageFile'] ?? null;
-    $imagePath = null;
-    if ($file && $file['error'] === UPLOAD_ERR_OK && $file['size'] > 0) {
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        $maxSize = 5 * 1024 * 1024; // 5MB
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
-        if (in_array($mimeType, $allowedTypes) && $file['size'] <= $maxSize) {
-            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $targetDir = __DIR__ . '/uploads/';
-            if (!is_dir($targetDir)) {
-                mkdir($targetDir, 0777, true);
-            }
-            $basename = uniqid('img_', true) . '.' . $ext;
-            $targetPath = $targetDir . $basename;
-            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                $imagePath = 'uploads/' . $basename;
+switch ($page) {
+    case 'login':
+        // If already logged in, redirect to home
+        if ($session->isLoggedIn()) {
+            header("Location: index.php");
+            exit;
+        }
+        $login_error = '';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $username = $_POST['username'] ?? '';
+            $password = $_POST['password'] ?? '';
+            if ($userController->login($username, $password)) {
+                header("Location: index.php");
+                exit;
+            } else {
+                $login_error = "Invalid username or password";
             }
         }
-    }
-    // Create post with optional image path
-    $postController->createPost($user_id, $content, $imagePath);
-    header("Location: index.php");
-    exit;
+        $title = "Login";
+        require __DIR__ . '/includes/views/header.php';
+        require __DIR__ . '/includes/views/login_view.php';
+        require __DIR__ . '/includes/views/footer.php';
+        break;
+
+    case 'register':
+        $register_error = '';
+        $register_success = false;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $username = $_POST['username'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
+            $confirm_password = $_POST['confirm_password'] ?? '';
+            if ($password !== $confirm_password) {
+                $register_error = "Passwords do not match";
+            } else {
+                $result = $userController->register($username, $email, $password);
+                if ($result) {
+                    $register_success = true;
+                } else {
+                    $register_error = "Registration failed. Username might already be taken.";
+                }
+            }
+        }
+        $title = "Register";
+        require __DIR__ . '/includes/views/header.php';
+        require __DIR__ . '/includes/views/register_view.php';
+        require __DIR__ . '/includes/views/footer.php';
+        break;
+
+    case 'logout':
+        $session->destroy();
+        header("Location: index.php?page=login");
+        exit;
+
+    case 'settings':
+        if (!$session->isLoggedIn()) {
+            header("Location: index.php?page=login");
+            exit;
+        }
+        $user_id = $session->getUserId();
+        $is_admin = $userController->isAdmin($user_id);
+        $user_posts = $postController->getPostsByUser($user_id);
+        $admin_users = [];
+        $admin_action_msg = '';
+        if ($is_admin) {
+            $admin_users = $userController->getAllUsers();
+            // Handle admin actions (block/unblock)
+            if (isset($_POST['block_user_id'])) {
+                $block_id = (int)$_POST['block_user_id'];
+                if ($block_id !== $user_id) {
+                    $userController->blockUser($block_id);
+                    $admin_action_msg = "User blocked.";
+                }
+            } elseif (isset($_POST['unblock_user_id'])) {
+                $unblock_id = (int)$_POST['unblock_user_id'];
+                if ($unblock_id !== $user_id) {
+                    $userController->unblockUser($unblock_id);
+                    $admin_action_msg = "User unblocked.";
+                }
+            }
+            // Refresh user list after action
+            $admin_users = $userController->getAllUsers();
+        }
+        $title = "Settings";
+        require __DIR__ . '/includes/views/header.php';
+        require __DIR__ . '/includes/views/settings_view.php';
+        require __DIR__ . '/includes/views/footer.php';
+        break;
+
+    case 'home':
+    default:
+        if (!$session->isLoggedIn()) {
+            header("Location: index.php?page=login");
+            exit;
+        }
+        $user_id = $session->getUserId();
+        $blocked_message = '';
+        if ($userController->isBlocked($user_id)) {
+            $blocked_message = "You are blocked. You cannot access the feed.";
+        }
+        // Handle new post submission (with image upload validation)
+        if (isset($_POST['post_submit']) && !$blocked_message) {
+            $content = $_POST['content'] ?? '';
+            $file = $_FILES['imageFile'] ?? null;
+            $imagePath = null;
+            if ($file && $file['error'] === UPLOAD_ERR_OK && $file['size'] > 0) {
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                $maxSize = 5 * 1024 * 1024; // 5MB
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mimeType = finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+                if (in_array($mimeType, $allowedTypes) && $file['size'] <= $maxSize) {
+                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                    $targetDir = __DIR__ . '/uploads/';
+                    if (!is_dir($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $basename = uniqid('img_', true) . '.' . $ext;
+                    $targetPath = $targetDir . $basename;
+                    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                        $imagePath = 'uploads/' . $basename;
+                    }
+                }
+            }
+            // Create post with optional image path
+            $postController->createPost($user_id, $content, $imagePath);
+            header("Location: index.php");
+            exit;
+        }
+        $posts = $postController->getPosts();
+        $title = "Home";
+        require __DIR__ . '/includes/views/header.php';
+        require __DIR__ . '/includes/views/home_view.php';
+        require __DIR__ . '/includes/views/footer.php';
+        break;
 }
-
-// Fetch posts for view
-$posts = $postController->getPosts();
-
-// Page title for header
-$title = "Home";
-
-// Load views
-require __DIR__ . '/includes/views/header.php';
-require __DIR__ . '/includes/views/home_view.php';
-require __DIR__ . '/includes/views/footer.php';

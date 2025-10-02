@@ -61,7 +61,7 @@
 
     <!-- Menu Items -->
     <div class="bg-[#c0c0c0] text-black text-sm">
-      <a href="index.php" class="block">
+      <a href="index.php?page=home" class="block">
         <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
           <i data-feather="home" class="w-4 h-4"></i> Home
         </button>
@@ -76,19 +76,19 @@
         <i data-feather="user" class="w-4 h-4"></i> Profile
       </button>
       <?php if (!empty($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
-        <a href="settings_loader.php" class="block">
+        <a href="index.php?page=settings" class="block">
           <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
             <i data-feather="settings" class="w-4 h-4"></i> Settings
           </button>
         </a>
       <?php else: ?>
-        <a href="settings_loader.php" class="block">
+        <a href="index.php?page=settings" class="block">
           <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
             <i data-feather="settings" class="w-4 h-4"></i> Settings
           </button>
         </a>
       <?php endif; ?>
-      <a href="logout_loader.php"><button
+      <a href="index.php?page=logout"><button
           class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
           <i data-feather="log-out" class="w-4 h-4"></i> Logout
         </button></a>
