@@ -13,7 +13,7 @@
 <body class="matrix-bg font-[Windows Regular] text-white z-10 relative">
   <!-- Matrix Rain Background -->
   <canvas id="matrix-rain"></canvas>
-<!-- Taskbar -->
+  <!-- Taskbar -->
   <nav class="fixed bottom-0 left-0 right-0 bg-[#0078d7] h-10 flex items-center px-4 z-50">
     <button class="xp-button px-4 py-1 rounded-sm flex items-center gap-1">
       <i data-feather="grid" class="w-4 h-4"></i>
@@ -22,16 +22,16 @@
 
     <div class="flex ml-4 space-x-1">
       <?php $page = $_GET['page'] ?? ''; ?>
-      <a href="index.php?page=home" class="<?= ($page==='home' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+      <a href="index.php?page=home" class="<?= ($page === 'home' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="home" class="w-4 h-4"></i>
       </a>
-      <a href="index.php?page=settings" class="<?= ($page==='settings' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+      <a href="index.php?page=settings" class="<?= ($page === 'settings' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="settings" class="w-4 h-4"></i>
       </a>
-      <a href="index.php?page=messages" class="<?= ($page==='messages' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+      <a href="index.php?page=messages" class="<?= ($page === 'messages' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="message-square" class="w-4 h-4"></i>
       </a>
-      <a href="index.php?page=profile" class="<?= ($page==='profile' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+      <a href="index.php?page=profile" class="<?= ($page === 'profile' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="user" class="w-4 h-4"></i>
       </a>
     </div>
@@ -89,9 +89,9 @@
           </button>
         </a>
       <?php endif; ?>
-      <a href="index.php?page=logout"><button
-          class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
-          <i data-feather="log-out" class="w-4 h-4"></i> Logout
-        </button></a>
+      <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2"
+        onclick="openLogoutModal()">
+        <i data-feather="log-out" class="w-4 h-4"></i> Logout
+      </button>
     </div>
   </div>
