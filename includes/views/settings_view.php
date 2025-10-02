@@ -69,36 +69,58 @@
                     </td>
                     <td class="px-2 py-2 border-b border-yellow-700">
                       <div class="flex flex-wrap gap-1">
-                        <?php if (!$user['is_admin']): ?>
+                        <?php if ($user['is_blocked']): ?>
+                          <!-- Blocked users: only show Unblock button -->
                           <form method="post" class="inline">
                             <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                            <button type="submit" name="<?php echo $user['is_blocked'] ? 'unblock_user' : 'block_user'; ?>"
-                              class="px-2 w-20 py-1 rounded border <?php echo $user['is_blocked'] ? 'bg-green-600 border-green-800 hover:bg-green-700' : 'bg-red-600 border-red-800 hover:bg-red-700'; ?> text-white font-semibold"
-                              onclick="return confirm('<?php echo $user['is_blocked'] ? 'Unblock' : 'Block'; ?> this user?')">
-                              <?php echo $user['is_blocked'] ? 'Unblock' : 'Block'; ?>
+                            <button type="submit" name="unblock_user"
+                              class="px-2 w-20 py-1 rounded border bg-green-600 border-green-800 hover:bg-green-700 text-white font-semibold"
+                              onclick="return confirm('Unblock this user?')">
+                              Unblock
                             </button>
                           </form>
-                        <?php endif; ?>
-                        <form method="post" class="inline">
-                          <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                        <?php else: ?>
+                          <!-- Active users -->
                           <?php if ($user['is_admin']): ?>
                             <?php if ($user['id'] != $currentUserId): ?>
-                              <button type="submit" name="demote_user"
-                                class="px-2 w-20 py-1 rounded border bg-blue-700 border-blue-900 hover:bg-blue-800 text-white font-semibold"
-                                onclick="return confirm('Demote this admin to user?')">
-                                Demote
-                              </button>
+                              <form method="post" class="inline">
+                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                                <button type="submit" name="demote_user"
+                                  class="px-2 w-20 py-1 rounded border bg-blue-700 border-blue-900 hover:bg-blue-800 text-white font-semibold"
+                                  onclick="return confirm('Demote this admin to user?')">
+                                  Demote
+                                </button>
+                              </form>
+                              <form method="post" class="inline">
+                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                                <button type="submit" name="block_user"
+                                  class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold"
+                                  onclick="return confirm('Block this user? This will remove admin privileges.')">
+                                  Block
+                                </button>
+                              </form>
                             <?php else: ?>
                               <span class="text-xs text-gray-400 ml-2">You</span>
                             <?php endif; ?>
                           <?php else: ?>
-                            <button type="submit" name="promote_user"
-                              class="px-2 w-20 py-1 rounded border bg-yellow-700 border-yellow-900 hover:bg-yellow-800 text-white font-semibold"
-                              onclick="return confirm('Promote this user to admin?')">
-                              Promote
-                            </button>
+                            <form method="post" class="inline">
+                              <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                              <button type="submit" name="promote_user"
+                                class="px-2 w-20 py-1 rounded border bg-yellow-700 border-yellow-900 hover:bg-yellow-800 text-white font-semibold"
+                                onclick="return confirm('Promote this user to admin?')">
+                                Promote
+                              </button>
+                            </form>
+                            <form method="post" class="inline">
+                              <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                              <button type="submit" name="block_user"
+                                class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold"
+                                onclick="return confirm('Block this user?')">
+                                Block
+                              </button>
+                            </form>
                           <?php endif; ?>
-                        </form>
+                        <?php endif; ?>
                       </div>
                     </td>
                   </tr>

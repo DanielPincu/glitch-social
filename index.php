@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/controllers/UserController.php';
 require_once __DIR__ . '/includes/controllers/PostController.php';
+require_once __DIR__ . '/includes/controllers/AdminController.php';
 require_once __DIR__ . '/includes/helpers/Session.php'; 
 
 // Central Routing System
@@ -102,9 +103,45 @@ switch ($page) {
             exit;
         }
 
-        $user_id   = $session->getUserId();
+        $user_id = $session->getUserId();
         $currentUserId = $user_id;
-        $isAdmin  = $session->isAdmin();
+        $isAdmin = $session->isAdmin();
+
+        if ($isAdmin) {
+            $adminController = new AdminController();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Delete own post
+            if (isset($_POST['delete_post'], $_POST['post_id'])) {
+                $postController->deletePostByUser((int)$_POST['post_id'], $user_id);
+                header("Location: index.php?page=settings");
+                exit;
+            }
+
+            // Admin actions
+            if ($isAdmin) {
+                if (isset($_POST['block_user'], $_POST['user_id'])) {
+                    // Demote user before blocking
+                    $adminController->demoteFromAdmin((int)$_POST['user_id']);
+                    $adminController->blockUser((int)$_POST['user_id']);
+                }
+                if (isset($_POST['unblock_user'], $_POST['user_id'])) {
+                    $adminController->unblockUser((int)$_POST['user_id']);
+                }
+                if (isset($_POST['promote_user'], $_POST['user_id'])) {
+                    $adminController->promoteToAdmin((int)$_POST['user_id']);
+                }
+                if (isset($_POST['demote_user'], $_POST['user_id'])) {
+                    $adminController->demoteFromAdmin((int)$_POST['user_id']);
+                }
+                if (isset($_POST['admin_delete_post'], $_POST['post_id'])) {
+                    $adminController->deletePost((int)$_POST['post_id']);
+                }
+                header("Location: index.php?page=settings");
+                exit;
+            }
+        }
 
         // My own posts
         $posts = $postController->getPostsByUser($user_id);
