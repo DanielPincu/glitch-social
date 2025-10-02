@@ -28,7 +28,7 @@ function draw() {
     const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
     ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
 
-    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.9995) {
+    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.995) {
       rainDrops[i] = 0;
     }
     rainDrops[i]++;

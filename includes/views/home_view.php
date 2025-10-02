@@ -44,10 +44,8 @@
       </div>
       <!-- Terminal Console -->
       <div class="xp-window bg-[#000] p-4">
-        <h3 class="font-bold mb-0 text-green-500">TERMINAL</h3>
         <div class="space-y-1 text-xs font-mono matrix-text">
           <p class="console-line">&gt; boot sequence initiated</p>
-          <p>&gt; loading kernel modules...</p>
           <p>&gt; decrypting Zion keys...</p>
           <p>&gt; access granted</p>
         </div>
@@ -68,7 +66,7 @@
             <h3 class="text-lg font-semibold text-green-400 drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">Create Post</h3>
           </div>
           <form method="post" enctype="multipart/form-data">
-            <textarea name="content" placeholder="What's on your mind?" required
+            <textarea name="content" placeholder="What's the truth, Neo?" required
               class="w-full bg-[#e8e8e8] text-black px-5 py-4 rounded border border-[#b0b0b0] resize-y focus:outline-none focus:ring-2 focus:ring-green-500 focus:shadow-[0_0_8px_rgba(0,255,0,0.7)] transition-shadow"></textarea>
             <div class="flex justify-between items-center mt-4">
               <label for="imageFile" class="cursor-pointer inline-flex items-center px-3 py-1 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#3A6EA5] to-[#5CACEE] text-blue-900 text-xs font-semibold shadow-inner hover:brightness-110 active:brightness-90 transition select-none">
