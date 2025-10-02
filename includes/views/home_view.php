@@ -4,7 +4,7 @@
     
 
     <!-- Left Sidebar -->
-    <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-4 flex flex-col">
+    <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-1 flex flex-col">
       <!-- System Status -->
       <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
         <h3 class="font-bold mb-3">SYSTEM STATUS</h3>
@@ -17,7 +17,7 @@
       </div>
       <!-- Weather Forecast -->
       <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
-        <h3 class="font-bold mb-3">WEATHER STATUS</h3>
+        <h3 class="font-bold mb-0">WEATHER STATUS</h3>
         <div class="space-y-1 text-xs font-mono matrix-text">
           <p>Location: Zion Underground</p>
           <p>Condition: Acid Rain ☂</p>
@@ -28,7 +28,7 @@
       </div>
       <!-- Daily Quote -->
       <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 h-96">
-        <h3 class="font-bold mb-3 matrix-text">DAILY QUOTE</h3>
+        <h3 class="font-bold mb-0 matrix-text">DAILY QUOTE</h3>
         <blockquote class="italic text-sm matrix-text">“There is no spoon.”</blockquote>
         <p class="text-xs text-right mt-2 matrix-text">- The Matrix</p>
       </div>
@@ -44,7 +44,7 @@
       </div>
       <!-- Terminal Console -->
       <div class="xp-window bg-[#000] p-4">
-        <h3 class="font-bold mb-3 text-green-500">TERMINAL</h3>
+        <h3 class="font-bold mb-0 text-green-500">TERMINAL</h3>
         <div class="space-y-1 text-xs font-mono matrix-text">
           <p class="console-line">&gt; boot sequence initiated</p>
           <p>&gt; loading kernel modules...</p>
