@@ -101,30 +101,22 @@ switch ($page) {
             header("Location: index.php?page=login");
             exit;
         }
-        $user_id = $session->getUserId();
-        $is_admin = $userController->isAdmin($user_id);
-        $user_posts = $postController->getPostsByUser($user_id);
-        $admin_users = [];
-        $admin_action_msg = '';
-        if ($is_admin) {
-            $admin_users = $userController->getAllUsers();
-            // Handle admin actions (block/unblock)
-            if (isset($_POST['block_user_id'])) {
-                $block_id = (int)$_POST['block_user_id'];
-                if ($block_id !== $user_id) {
-                    $userController->blockUser($block_id);
-                    $admin_action_msg = "User blocked.";
-                }
-            } elseif (isset($_POST['unblock_user_id'])) {
-                $unblock_id = (int)$_POST['unblock_user_id'];
-                if ($unblock_id !== $user_id) {
-                    $userController->unblockUser($unblock_id);
-                    $admin_action_msg = "User unblocked.";
-                }
-            }
-            // Refresh user list after action
-            $admin_users = $userController->getAllUsers();
+
+        $user_id   = $session->getUserId();
+        $currentUserId = $user_id;
+        $isAdmin  = $session->isAdmin();
+
+        // My own posts
+        $posts = $postController->getPostsByUser($user_id);
+
+        // Admin-only
+        $allUsers = [];
+        $allPosts = [];
+        if ($isAdmin) {
+            $allUsers = $userController->getAllUsers();
+            $allPosts = $postController->getPosts(); // fetch all posts for admin
         }
+
         $title = "Settings";
         require __DIR__ . '/includes/views/header.php';
         require __DIR__ . '/includes/views/settings_view.php';
