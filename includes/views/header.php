@@ -13,6 +13,7 @@
 <body class="matrix-bg font-[Windows Regular] text-white z-10 relative">
   <!-- Matrix Rain Background -->
   <canvas id="matrix-rain"></canvas>
+  <?php if (!empty($_SESSION['user_id'])) { ?>
   <!-- Taskbar -->
   <nav class="fixed bottom-0 left-0 right-0 bg-[#0078d7] h-10 flex items-center px-4 z-50">
     <button class="xp-button px-4 py-1 rounded-sm flex items-center gap-1">
@@ -95,3 +96,4 @@
       </button>
     </div>
   </div>
+  <?php } ?>

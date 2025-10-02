@@ -246,7 +246,10 @@
               <p class="text-xs matrix-text">Welcome to the Matrix </p>
             </div>
             <div class="bg-black bg-opacity-20 p-2">
-              <p class="text-xs matrix-text">Connected as  <?php echo htmlspecialchars($_SESSION['username']); ?> </p>
+              <p class="text-xs matrix-text">
+                Connected as <?php echo htmlspecialchars($_SESSION['username']); ?> 
+                (Role: <?php echo !empty($_SESSION['is_admin']) && $_SESSION['is_admin'] ? 'Admin' : 'User'; ?>)
+              </p>
             </div>
             <div class="bg-black bg-opacity-20 p-2">
               <p class="text-xs matrix-text"><?php echo "Session ID: " . session_id(); ?></p>
