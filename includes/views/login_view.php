@@ -9,6 +9,6 @@
             <input type="password" name="password" placeholder="Password" required class="w-full px-4 py-2 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
             <button type="submit" name="login" class="w-full bg-gradient-to-b from-blue-500 to-blue-700 text-white font-semibold px-5 py-2 rounded border border-blue-800 shadow-md hover:from-blue-600 hover:to-blue-800 active:translate-y-0.5 active:shadow-none transition duration-150">Login</button>
         </form>
-        <p class="text-center text-white mt-4 text-sm">Don't have an account? <a href="register_loader.php" class="text-white text-xl hover:underline">Register</a></p>
+        <p class="text-center text-white mt-4 text-sm">Don't have an account? <a href="index.php?page=register" class="text-white text-xl hover:underline">Register</a></p>
     </div>
 </div>

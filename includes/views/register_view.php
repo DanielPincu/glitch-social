@@ -34,7 +34,7 @@
     </form>
     <div class="text-center text-white mt-4 text-sm">
       Already have an account?
-      <a href="login_loader.php" class="text-white text-xl hover:underline">Login</a>
+      <a href="index.php?page=login" class="text-white text-xl hover:underline">Login</a>
     </div>
   </div>
 </div>
