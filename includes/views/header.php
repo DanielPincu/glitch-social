@@ -21,18 +21,19 @@
     </button>
 
     <div class="flex ml-4 space-x-1">
-      <button class="bg-green-500 bg-opacity-80 hover:bg-opacity-100 px-3 py-1 rounded-sm">
+      <?php $page = $_GET['page'] ?? ''; ?>
+      <a href="index.php?page=home" class="<?= ($page==='home' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="home" class="w-4 h-4"></i>
-      </button>
-      <button class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm">
-        <i data-feather="users" class="w-4 h-4"></i>
-      </button>
-      <button class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm">
+      </a>
+      <a href="index.php?page=settings" class="<?= ($page==='settings' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+        <i data-feather="settings" class="w-4 h-4"></i>
+      </a>
+      <a href="index.php?page=messages" class="<?= ($page==='messages' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="message-square" class="w-4 h-4"></i>
-      </button>
-      <button class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm">
+      </a>
+      <a href="index.php?page=profile" class="<?= ($page==='profile' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="user" class="w-4 h-4"></i>
-      </button>
+      </a>
     </div>
 
     <div class="ml-auto flex items-center space-x-2">
