@@ -1,7 +1,15 @@
-<div class="min-h-screen flex items-center justify-center p-6">
+<div class="min-h-screen flex items-center justify-center p-6 z-10 relative">
   <div class="bg-[#008080] rounded-lg shadow-lg w-full max-w-md p-8 border border-gray-400">
     <h1 class="text-4xl font-bold mb-6 select-none">Register</h1>
-    <div class="text-sm mb-4"><?php echo $message ?? ''; ?></div>
+    <div class="text-sm mb-4 text-red-500">
+      <?php echo htmlspecialchars($register_error ?? ($message ?? ''), ENT_QUOTES); ?>
+    </div>
+
+    <?php if (!empty($register_success)): ?>
+      <div class="text-green-500 text-sm mb-4">
+        Registration successful! <a href="index.php?page=login" class="underline">Login now</a>.
+      </div>
+    <?php endif; ?>
     <form method="post">
       <input
         type="text"
@@ -21,6 +29,13 @@
         type="password"
         name="password"
         placeholder="Password"
+        required
+        class="text-black w-full px-3 py-2 mb-4 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+      <input
+        type="password"
+        name="confirm_password"
+        placeholder="Confirm Password"
         required
         class="text-black w-full px-3 py-2 mb-4 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >

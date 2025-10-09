@@ -1,4 +1,4 @@
-<div class="min-h-screen flex items-center justify-center p-6 w-full h-full">
+<div class="min-h-screen flex items-center justify-center p-6 w-full h-full z-10 relative">
   <div class="bg-[#008080] rounded-lg shadow-lg w-full p-8 border border-gray-400 space-y-12">
 
     <?php if (!empty($isAdmin) && $isAdmin): ?>
