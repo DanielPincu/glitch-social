@@ -173,4 +173,22 @@ class Post {
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
     }
+
+    // Get posts from users that the current user follows
+    public function getPostsFromFollowing($user_id) {
+        $stmt = $this->db->prepare("
+            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
+                   users.username, profiles.avatar_url,
+                   (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+            FROM posts
+            JOIN users ON posts.user_id = users.id
+            LEFT JOIN profiles ON profiles.user_id = users.id
+            WHERE posts.user_id IN (
+                SELECT user_id FROM followers WHERE follower_id = :user_id
+            )
+            ORDER BY posts.created_at DESC
+        ");
+        $stmt->execute([':user_id' => $user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

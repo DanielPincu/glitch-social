@@ -29,9 +29,9 @@
       <a href="index.php?page=settings" class="<?= ($page === 'settings' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="settings" class="w-4 h-4"></i>
       </a>
-      <a href="index.php?page=messages" class="<?= ($page === 'messages' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+      <!-- <a href="index.php?page=messages" class="<?= ($page === 'messages' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="message-square" class="w-4 h-4"></i>
-      </a>
+      </a> -->
       <a href="index.php?page=profile" class="<?= ($page === 'profile' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="user" class="w-4 h-4"></i>
       </a>
@@ -51,13 +51,37 @@
   <div id="start-menu"
     class="hidden fixed bottom-10 left-0 w-64 bg-[#0078d7] border-t-2 border-l-2 border-white border-r-2 border-b-2 border-black shadow-2xl z-50">
     <!-- Profile Info -->
+    <?php
+      // Use existing Session/Profile objects if available
+      if (!isset($session)) {
+        require_once __DIR__ . '/../helpers/Session.php';
+        $session = new Session();
+      }
+
+      if (!isset($profile)) {
+        require_once __DIR__ . '/../models/Profile.php';
+        $profile = new Profile();
+      }
+
+      // Get current user info only if logged in
+      $user = null;
+      if ($session->isLoggedIn()) {
+        $user_id = $session->getUserId();
+        $user = $profile->getByUserId($user_id);
+      }
+    ?>
+
     <div class="bg-[#0064b4] p-3 flex items-center space-x-3 border-b border-black">
-      <div class="w-12 h-12 bg-black border-2 border-white flex items-center justify-center">
-        <i data-feather="user" class="text-green-500"></i>
+      <div class="w-12 h-12 bg-black border-2 border-white flex items-center justify-center overflow-hidden">
+        <?php if (!empty($user['avatar_url'])): ?>
+          <img src="<?php echo htmlspecialchars($user['avatar_url']); ?>" alt="Avatar" class="w-full h-full object-cover">
+        <?php else: ?>
+          <i data-feather="user" class="text-green-500"></i>
+        <?php endif; ?>
       </div>
       <div>
-        <h4 class="font-bold">Neo</h4>
-        <p class="text-xs">@theone</p>
+        <h4 class="font-bold"><?php echo htmlspecialchars($user['username']); ?></h4>
+        <p class="text-xs">@<?php echo htmlspecialchars($user['username']); ?></p>
       </div>
     </div>
 
@@ -68,15 +92,17 @@
           <i data-feather="home" class="w-4 h-4"></i> Home
         </button>
       </a>
-      <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+      <!-- <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
         <i data-feather="users" class="w-4 h-4"></i> Friends
-      </button>
-      <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+      </button> -->
+      <!-- <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
         <i data-feather="message-square" class="w-4 h-4"></i> Messages
-      </button>
-      <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
-        <i data-feather="user" class="w-4 h-4"></i> Profile
-      </button>
+      </button> -->
+      <a href="index.php?page=profile" class="block">
+        <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+          <i data-feather="user" class="w-4 h-4"></i> Profile
+        </button>
+      </a>
       <?php if (!empty($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
         <a href="index.php?page=settings" class="block">
           <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">

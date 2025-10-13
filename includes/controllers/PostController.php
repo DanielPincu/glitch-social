@@ -59,4 +59,8 @@ class PostController {
     public function updatePostContent($post_id, $new_content, $user_id, $new_image_path = null, $remove_image = false) {
         return $this->post->updateContent($post_id, $new_content, $user_id, $new_image_path, $remove_image);
     }
+    // Get posts from users the current user follows
+    public function getPostsFromFollowing($user_id) {
+        return $this->post->getPostsFromFollowing($user_id);
+    }
 }

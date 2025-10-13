@@ -44,6 +44,14 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'like') {
 $page = $_GET['page'] ?? 'home';
 $title = '';
 
+// Handle follow/unfollow actions
+if (isset($_POST['follow_action'], $_POST['followed_id']) && $session->isLoggedIn()) {
+    $controller = new ProfileController();
+    $controller->toggleFollow($session->getUserId(), (int)$_POST['followed_id']);
+    header("Location: index.php?page=profile&id=" . (int)$_POST['followed_id']);
+    exit;
+}
+
 switch ($page) {
     case 'login':
         // If already logged in, redirect to home
@@ -273,6 +281,9 @@ switch ($page) {
             header("Location: index.php");
             exit;
         }
+        $followingPosts = $postController->getPostsFromFollowing($user_id);
+        $profileController = new ProfileController();
+        $followingList = $profileController->getFollowingList($user_id);
         $posts = $postController->getPosts();
         $title = "Home";
         require __DIR__ . '/includes/views/header.php';

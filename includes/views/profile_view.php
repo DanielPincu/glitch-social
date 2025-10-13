@@ -1,4 +1,4 @@
-<div class="max-w-4xl mx-auto px-4 py-8 relative z-10 text-black h-[1000px]">
+<div class="max-w-4xl mx-auto px-4 py-8 relative z-10 text-black h-[1200px]">
     <section class="text-center mb-10">
         <?php if (!empty($profileData['avatar_url'])): ?>
             <img src="<?php echo htmlspecialchars($profileData['avatar_url']); ?>"
@@ -25,13 +25,46 @@
         <?php endif; ?>
     </section>
 
+    <?php if (!$canEditProfile): ?>
+        <div class="mt-4">
+            <form method="POST" action="index.php?page=profile&id=<?php echo $profileData['id']; ?>">
+                <input type="hidden" name="followed_id" value="<?php echo $profileData['id']; ?>">
+                <?php
+                    $isFollowing = $controller->isFollowing($session->getUserId(), $profileData['id']);
+                    $followCounts = $controller->getFollowCounts($profileData['id']);
+                ?>
+                <button type="submit" name="follow_action"
+                    class="px-4 py-2 font-semibold rounded transition
+                    <?php echo $isFollowing ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'; ?> text-white">
+                    <?php echo $isFollowing ? 'Unfollow' : 'Follow'; ?>
+                </button>
+            </form>
+            <div class="mt-2 text-gray-700">
+                <span class="font-semibold"><?php echo $followCounts['followers']; ?></span> Followers ·
+                <span class="font-semibold"><?php echo $followCounts['following']; ?></span> Following
+            </div>
+        </div>
+    <?php else: ?>
+        <?php
+            $followCounts = $controller->getFollowCounts($profileData['id']);
+        ?>
+        <div class="mt-2 text-gray-700 text-center">
+            <span class="font-semibold"><?php echo $followCounts['followers']; ?></span> Followers ·
+            <span class="font-semibold"><?php echo $followCounts['following']; ?></span> Following
+        </div>
+    <?php endif; ?>
+
     <?php if ($canEditProfile): ?>
-        <div class="text-right mb-6">
+        <div class="flex justify-end items-center mb-6 space-x-3">
             <button 
                 id="toggleEdit"
                 class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
                 Edit Profile
             </button>
+            <a href="index.php?page=settings" 
+               class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+               Manage Posts
+            </a>
         </div>
 
         <section id="editSection" class="hidden bg-white rounded-lg shadow-md p-6 mb-10">
@@ -69,4 +102,44 @@
     <?php endif; ?>
 
     
+    <!-- User Posts Section -->
+    <section class="mt-10">
+        <h3 class="text-xl font-semibold text-gray-800 mb-6 text-center">Posts by <?php echo htmlspecialchars($profileData['username']); ?></h3>
+
+        <?php if (!empty($posts)): ?>
+            <div class="space-y-6">
+                <?php foreach ($posts as $post): ?>
+                    <div class="bg-white rounded-lg shadow-md p-5">
+                        <div class="flex items-center mb-3">
+                            <div class="w-10 h-10 rounded-full overflow-hidden mr-3 border-2 border-green-400">
+                                <?php if (!empty($post['avatar_url'])): ?>
+                                    <img src="<?php echo htmlspecialchars($post['avatar_url']); ?>" alt="Avatar" class="object-cover w-full h-full">
+                                <?php else: ?>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user text-green-400 w-5 h-5 m-auto">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                <?php endif; ?>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">@<?php echo htmlspecialchars($post['username']); ?></p>
+                                <p class="text-gray-500 text-sm"><?php echo htmlspecialchars($post['created_at']); ?></p>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-700 mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+
+                        <?php if (!empty($post['image_path'])): ?>
+                            <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="rounded-lg max-h-80 w-full object-cover mb-3">
+                        <?php endif; ?>
+
+                        
+
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <p class="text-center text-gray-500 italic">This user hasn't posted anything yet.</p>
+        <?php endif; ?>
+    </section>
 </div>

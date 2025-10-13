@@ -41,4 +41,71 @@ class Profile {
             ':avatar_url' => $avatar_url
         ]);
     }
+    // Follow another user
+    public function followUser($follower_id, $user_id) {
+        $stmt = $this->db->prepare("
+            INSERT IGNORE INTO followers (user_id, follower_id)
+            VALUES (:user_id, :follower_id)
+        ");
+        return $stmt->execute([
+            ':user_id' => $user_id,      // the user being followed
+            ':follower_id' => $follower_id // the user who follows
+        ]);
+    }
+
+    // Unfollow a user
+    public function unfollowUser($follower_id, $user_id) {
+        $stmt = $this->db->prepare("
+            DELETE FROM followers
+            WHERE user_id = :user_id AND follower_id = :follower_id
+        ");
+        return $stmt->execute([
+            ':user_id' => $user_id,
+            ':follower_id' => $follower_id
+        ]);
+    }
+
+    // Check if a user is following another user
+    public function isFollowing($follower_id, $user_id) {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) FROM followers
+            WHERE user_id = :user_id AND follower_id = :follower_id
+        ");
+        $stmt->execute([
+            ':user_id' => $user_id,
+            ':follower_id' => $follower_id
+        ]);
+        return $stmt->fetchColumn() > 0;
+    }
+
+    // Count how many followers a user has
+    public function countFollowers($user_id) {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) FROM followers WHERE user_id = :user_id
+        ");
+        $stmt->execute([':user_id' => $user_id]);
+        return $stmt->fetchColumn();
+    }
+
+    // Count how many users a person follows
+    public function countFollowing($follower_id) {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) FROM followers WHERE follower_id = :follower_id
+        ");
+        $stmt->execute([':follower_id' => $follower_id]);
+        return $stmt->fetchColumn();
+    }
+
+    public function getFollowingList($user_id) {
+    $stmt = $this->db->prepare("
+        SELECT users.id, users.username, profiles.avatar_url
+        FROM followers
+        JOIN users ON followers.user_id = users.id
+        LEFT JOIN profiles ON profiles.user_id = users.id
+        WHERE followers.follower_id = :user_id
+    ");
+    $stmt->execute([':user_id' => $user_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }

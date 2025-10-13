@@ -163,7 +163,74 @@
           <?php endif; ?>
         </div>
 
-        <div id="followingFeed" class="hidden h-full"></div>
+        <div id="followingFeed" class="hidden h-full">
+          <?php if (!empty($followingPosts)): ?>
+            <?php foreach ($followingPosts as $post): ?>
+              <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
+                <div class="flex justify-between items-center mb-3">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-20 h-20 border-2 border-white rounded-full overflow-hidden flex items-center justify-center bg-black">
+                      <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>">
+                        <?php if (!empty($post['avatar_url'])): ?>
+                          <img 
+                            src="<?php echo htmlspecialchars($post['avatar_url']); ?>" 
+                            alt="<?php echo htmlspecialchars($post['username']); ?>'s avatar" 
+                            class="w-full h-full object-cover">
+                        <?php else: ?>
+                          <i data-feather="user" class="text-green-400 w-5 h-5"></i>
+                        <?php endif; ?>
+                      </a>
+                    </div>
+                    <div>
+                      <h4 class="font-bold">
+                        <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>" class="text-green-200 hover:underline">
+                          <?php echo htmlspecialchars($post['username']); ?>
+                        </a>
+                      </h4>
+                      <p class="text-xs">
+                        <?php if (!empty($post['created_at'])): ?>
+                          <?php echo htmlspecialchars($post['created_at']); ?>
+                        <?php endif; ?>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                <?php if (!empty($post['image_path'])): ?>
+                  <div class="mb-3 border-2 border-white">
+                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-full max-h-96 object-contain">
+                  </div>
+                <?php endif; ?>
+                <!-- Post actions -->
+                <div class="flex justify-between text-sm border-t border-gray-400 pt-2">
+                  <div class="flex items-center gap-2">
+                    <button 
+                      class="like-btn flex items-center gap-1 hover:scale-110 <?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'text-pink-300' : ''; ?>" 
+                      data-post-id="<?php echo $post['id']; ?>" 
+                      data-liked="<?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'true' : 'false'; ?>"
+                      type="button"
+                    >
+                      <?php echo $postController->hasLikedPost($post['id'], $user_id) ? '❤️' : '🤍'; ?>
+                      <span><?php echo $postController->getLikeCount($post['id']); ?> likes</span>
+                    </button>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="flex items-center gap-1 text-gray-200">
+                      <i data-feather="message-square" class="w-4 h-4"></i> Comment
+                    </span>
+                    <span class="flex items-center gap-1 text-gray-200">
+                      <i data-feather="share-2" class="w-4 h-4"></i> Share
+                    </span>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
+              <p class="text-center text-gray-100">No posts from followed users yet.</p>
+            </div>
+          <?php endif; ?>
+        </div>
 
       <?php endif; ?>
     </div>
@@ -175,78 +242,37 @@
         <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 h-full">
           <h3 class="font-bold mb-3">FOLLOWING</h3>
           <div class="space-y-2">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-black border-2 border-green-500 rounded-full flex items-center justify-center">
-                <i data-feather="user" class="text-green-500 text-xs"></i>
-              </div>
-              <div>
-                <p class="text-sm font-bold">Cypher</p>
-                <p class="text-xs">@backstabber</p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-black border-2 border-green-500 rounded-full flex items-center justify-center">
-                <i data-feather="user" class="text-green-500 text-xs"></i>
-              </div>
-              <div>
-                <p class="text-sm font-bold">Oracle</p>
-                <p class="text-xs">@cookie_giver</p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-black border-2 border-green-500 rounded-full flex items-center justify-center">
-                <i data-feather="user" class="text-green-500 text-xs"></i>
-              </div>
-              <div>
-                <p class="text-sm font-bold">Agent Smith</p>
-                <p class="text-xs">@mrbinary</p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-black border-2 border-green-500 rounded-full flex items-center justify-center">
-                <i data-feather="user" class="text-green-500 text-xs"></i>
-              </div>
-              <div>
-                <p class="text-sm font-bold">Neo</p>
-                <p class="text-xs">@theone</p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-black border-2 border-green-500 rounded-full flex items-center justify-center">
-                <i data-feather="user" class="text-green-500 text-xs"></i>
-              </div>
-              <div>
-                <p class="text-sm font-bold">Trinity</p>
-                <p class="text-xs">@trinity</p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-black border-2 border-green-500 rounded-full flex items-center justify-center">
-                <i data-feather="user" class="text-green-500 text-xs"></i>
-              </div>
-              <div>
-                <p class="text-sm font-bold">Morpheus</p>
-                <p class="text-xs">@prophet</p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-black border-2 border-green-500 rounded-full flex items-center justify-center">
-                <i data-feather="user" class="text-green-500 text-xs"></i>
-              </div>
-              <div>
-                <p class="text-sm font-bold">Niobe</p>
-                <p class="text-xs">@pilotqueen</p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 bg-black border-2 border-green-500 rounded-full flex items-center justify-center">
-                <i data-feather="user" class="text-green-500 text-xs"></i>
-              </div>
-              <div>
-                <p class="text-sm font-bold">The Architect</p>
-                <p class="text-xs">@system_master</p>
-              </div>
-            </div>
+            <?php
+              if (!empty($followingList)) {
+                foreach ($followingList as $followedUser) {
+                  $avatar = !empty($followedUser['avatar_url'])
+                    ? htmlspecialchars($followedUser['avatar_url'])
+                    : null;
+                  ?>
+                  <div class="flex items-center space-x-2">
+                    <a href="index.php?page=profile&id=<?php echo $followedUser['id']; ?>">
+                      <div class="w-8 h-8 bg-black border-2 border-green-500 rounded-full flex items-center justify-center overflow-hidden">
+                        <?php if ($avatar): ?>
+                          <img src="<?php echo $avatar; ?>" alt="<?php echo htmlspecialchars($followedUser['username']); ?>'s avatar" class="object-cover w-full h-full">
+                        <?php else: ?>
+                          <i data-feather="user" class="text-green-500 text-xs"></i>
+                        <?php endif; ?>
+                      </div>
+                    </a>
+                    <div>
+                      <p class="text-sm font-bold text-green-200 hover:underline">
+                        <a href="index.php?page=profile&id=<?php echo $followedUser['id']; ?>">
+                          <?php echo htmlspecialchars($followedUser['username']); ?>
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                  <?php
+                }
+              } else {
+                echo '<p class="text-sm text-gray-200">You are not following anyone yet.</p>';
+              }
+            ?>
           </div>
         </div>
         <!-- System Alerts -->

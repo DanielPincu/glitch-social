@@ -39,4 +39,30 @@ class ProfileController {
 
         return $this->profileModel->save($user_id, $bio, $location, $website, $avatarPath);
     }
+    // Follow or unfollow another user (toggle behavior)
+    public function toggleFollow($follower_id, $user_id) {
+        if ($this->profileModel->isFollowing($follower_id, $user_id)) {
+            $this->profileModel->unfollowUser($follower_id, $user_id);
+            return false; // now unfollowed
+        } else {
+            $this->profileModel->followUser($follower_id, $user_id);
+            return true; // now followed
+        }
+    }
+
+    // Check if a user is following another
+    public function isFollowing($follower_id, $user_id) {
+        return $this->profileModel->isFollowing($follower_id, $user_id);
+    }
+
+    // Get follower and following counts for a user
+    public function getFollowCounts($user_id) {
+        $followers = $this->profileModel->countFollowers($user_id);
+        $following = $this->profileModel->countFollowing($user_id);
+        return ['followers' => $followers, 'following' => $following];
+    }
+
+    public function getFollowingList($user_id) {
+    return $this->profileModel->getFollowingList($user_id);
+    }
 }
