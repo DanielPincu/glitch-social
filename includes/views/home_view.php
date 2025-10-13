@@ -134,15 +134,14 @@
                 <!-- Post actions -->
                 <div class="flex justify-between text-sm border-t border-gray-400 pt-2">
                   <div class="flex items-center gap-2">
-                    <button
-                      hx-post="index.php"
-                      hx-target="this"
-                      hx-swap="outerHTML"
-                      hx-vals='{"ajax": "like", "post_id": "<?php echo $post['id']; ?>", "action": "<?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'unlike' : 'like'; ?>"}'
-                      class="like-btn flex items-center gap-1 hover:scale-110 <?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'text-pink-300' : ''; ?>"
+                    <button 
+                      class="like-btn flex items-center gap-1 hover:scale-110 <?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'text-pink-300' : ''; ?>" 
+                      data-post-id="<?php echo $post['id']; ?>" 
+                      data-liked="<?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'true' : 'false'; ?>"
+                      type="button"
                     >
                       <?php echo $postController->hasLikedPost($post['id'], $user_id) ? '❤️' : '🤍'; ?>
-                      <span><?php echo $postController->getLikeCount($post['id']); ?> Like<?php echo $postController->getLikeCount($post['id']) != 1 ? 's' : ''; ?></span>
+                      <span><?php echo $postController->getLikeCount($post['id']); ?> likes</span>
                     </button>
                   </div>
                   <!-- Placeholder for comments/share -->
@@ -161,14 +160,9 @@
                   </div>
                 </div>
                 <!-- Comments Section -->
-                <div id="comments-<?php echo $post['id']; ?>" class="mt-4 border-t border-gray-400 pt-2">
+                <div class="mt-4 border-t border-gray-400 pt-2">
                   <div class="comment-form hidden" id="comment-form-<?php echo $post['id']; ?>">
-                    <form 
-                      hx-post="index.php"
-                      hx-target="#comments-<?php echo $post['id']; ?>"
-                      hx-swap="outerHTML"
-                      class="flex items-center space-x-2 mb-2"
-                    >
+                    <form method="POST" class="flex items-center space-x-2 mb-2">
                       <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                       <input type="text" name="comment_content" placeholder="Add a comment..." 
                              class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">
@@ -202,31 +196,24 @@
                                   >
                                     Edit
                                   </button>
-                                  <button 
-                                    hx-post="index.php"
-                                    hx-confirm="Are you sure you want to delete this comment?"
-                                    hx-vals='{"delete_comment": 1, "comment_id": "<?php echo $comment['id']; ?>", "post_id": "<?php echo $post['id']; ?>"}'
-                                    hx-target="#comments-<?php echo $post['id']; ?>"
-                                    hx-swap="outerHTML"
-                                    class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition text-xs"
-                                  >
-                                    Delete
-                                  </button>
+                                  <form method="POST" class="inline">
+                                    <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
+                                    <button 
+                                      type="submit" 
+                                      name="delete_comment" 
+                                      class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition"
+                                    >
+                                      Delete
+                                    </button>
+                                  </form>
                                 </div>
                               <?php endif; ?>
                             </div>
 
                             <p id="comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
 
-                            <form 
-                              hx-post="index.php"
-                              hx-target="#comments-<?php echo $post['id']; ?>"
-                              hx-swap="outerHTML"
-                              id="edit-form-<?php echo $comment['id']; ?>"
-                              class="hidden mt-1 flex space-x-2"
-                            >
+                            <form method="POST" id="edit-form-<?php echo $comment['id']; ?>" class="hidden mt-1 flex space-x-2">
                               <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
-                              <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                               <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($comment['content']); ?>" 
                                      class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
                               <button type="submit" name="update_comment" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs transition">
@@ -287,15 +274,14 @@
                 <!-- Post actions -->
                 <div class="flex justify-between text-sm border-t border-gray-400 pt-2">
                   <div class="flex items-center gap-2">
-                    <button
-                      hx-post="index.php"
-                      hx-target="this"
-                      hx-swap="outerHTML"
-                      hx-vals='{"ajax": "like", "post_id": "<?php echo $post['id']; ?>", "action": "<?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'unlike' : 'like'; ?>"}'
-                      class="like-btn flex items-center gap-1 hover:scale-110 <?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'text-pink-300' : ''; ?>"
+                    <button 
+                      class="like-btn flex items-center gap-1 hover:scale-110 <?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'text-pink-300' : ''; ?>" 
+                      data-post-id="<?php echo $post['id']; ?>" 
+                      data-liked="<?php echo $postController->hasLikedPost($post['id'], $user_id) ? 'true' : 'false'; ?>"
+                      type="button"
                     >
                       <?php echo $postController->hasLikedPost($post['id'], $user_id) ? '❤️' : '🤍'; ?>
-                      <span><?php echo $postController->getLikeCount($post['id']); ?> Like<?php echo $postController->getLikeCount($post['id']) != 1 ? 's' : ''; ?></span>
+                      <span><?php echo $postController->getLikeCount($post['id']); ?> likes</span>
                     </button>
                   </div>
                   <div class="flex items-center gap-3">
@@ -313,14 +299,9 @@
                   </div>
                 </div>
                 <!-- Comments Section -->
-                <div id="comments-<?php echo $post['id']; ?>" class="mt-4 border-t border-gray-400 pt-2">
+                <div class="mt-4 border-t border-gray-400 pt-2">
                   <div class="comment-form hidden" id="comment-form-<?php echo $post['id']; ?>">
-                    <form 
-                      hx-post="index.php"
-                      hx-target="#comments-<?php echo $post['id']; ?>"
-                      hx-swap="outerHTML"
-                      class="flex items-center space-x-2 mb-2"
-                    >
+                    <form method="POST" class="flex items-center space-x-2 mb-2">
                       <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                       <input type="text" name="comment_content" placeholder="Add a comment..." 
                              class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">
@@ -348,29 +329,18 @@
                               <?php if ($comment['username'] === $_SESSION['username']): ?>
                                 <div class="flex gap-2 text-xs text-gray-400">
                                   <button type="button" onclick="toggleEditComment(<?php echo $comment['id']; ?>)" class="hover:text-blue-300">Edit</button>
-                                  <button 
-                                    hx-post="index.php"
-                                    hx-confirm="Are you sure you want to delete this comment?"
-                                    hx-vals='{"delete_comment": 1, "comment_id": "<?php echo $comment['id']; ?>", "post_id": "<?php echo $post['id']; ?>"}'
-                                    hx-target="#comments-<?php echo $post['id']; ?>"
-                                    hx-swap="outerHTML"
-                                    class="hover:text-red-400"
-                                  >Delete</button>
+                                  <form method="POST" class="inline">
+                                    <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
+                                    <button type="submit" name="delete_comment" class="hover:text-red-400">Delete</button>
+                                  </form>
                                 </div>
                               <?php endif; ?>
                             </div>
 
                             <p id="comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
 
-                            <form 
-                              hx-post="index.php"
-                              hx-target="#comments-<?php echo $post['id']; ?>"
-                              hx-swap="outerHTML"
-                              id="edit-form-<?php echo $comment['id']; ?>"
-                              class="hidden mt-1 flex space-x-2"
-                            >
+                            <form method="POST" id="edit-form-<?php echo $comment['id']; ?>" class="hidden mt-1 flex space-x-2">
                               <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
-                              <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                               <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($comment['content']); ?>" 
                                      class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
                               <button type="submit" name="update_comment" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs">
@@ -458,6 +428,8 @@
 </main>
 <script src="scripts/tab-switcher.js"></script>
 <script src="scripts/image-previewer.js"></script>
+<script src="scripts/like.js"></script>
+<script src="scripts/comment.js"></script>
 <script>
   function toggleCommentForm(postId) {
     const form = document.getElementById(`comment-form-${postId}`);

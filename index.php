@@ -10,19 +10,20 @@ $session = new Session();
 $userController = new UserController();
 $postController = new PostController();
 
-// Handle AJAX like/unlike functionality (HTMX compatible)
+// Handle AJAX like/unlike functionality
 if (isset($_POST['ajax']) && $_POST['ajax'] === 'like') {
     if (!$session->isLoggedIn()) {
-        echo '<button class="text-red-400">Login required</button>';
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Not logged in']);
         exit;
     }
-
     $user_id = $session->getUserId();
     if ($userController->isBlocked($user_id)) {
-        echo '<button class="text-yellow-400">Blocked user</button>';
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'User is blocked']);
         exit;
     }
-
+    header('Content-Type: application/json');
     $post_id = (int)($_POST['post_id'] ?? 0);
     $action = $_POST['action'] ?? null;
 
@@ -32,24 +33,10 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'like') {
         } elseif ($action === 'unlike') {
             $postController->unlikePost($post_id, $user_id);
         }
-
-        $liked = $postController->hasLikedPost($post_id, $user_id);
         $likeCount = $postController->getLikeCount($post_id);
-
-        ?>
-        <button
-          hx-post="index.php"
-          hx-target="this"
-          hx-swap="outerHTML"
-          hx-vals='{"ajax": "like", "post_id": "<?php echo $post_id; ?>", "action": "<?php echo $liked ? 'unlike' : 'like'; ?>"}'
-          class="like-btn flex items-center gap-1 hover:scale-110 <?php echo $liked ? 'text-pink-300' : ''; ?>"
-        >
-          <?php echo $liked ? '❤️' : '🤍'; ?>
-          <span><?php echo $likeCount; ?> Like<?php echo $likeCount != 1 ? 's' : ''; ?></span>
-        </button>
-        <?php
+        echo json_encode(['success' => true, 'likes' => $likeCount]);
     } else {
-        echo '<button class="text-gray-400">Error</button>';
+        echo json_encode(['success' => false, 'message' => 'Invalid request']);
     }
     exit;
 }
@@ -164,127 +151,6 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'delete_comment') {
 }
 
 $page = $_GET['page'] ?? 'home';
-
-// --- Helper: render comments partial for HTMX swaps ---
-function renderCommentsPartial($post_id, $postController) {
-    ob_start();
-    ?>
-    <div id="comments-<?php echo (int)$post_id; ?>" class="mt-4 border-t border-gray-400 pt-2">
-        <!-- Add comment form -->
-        <div class="comment-form mb-2">
-            <form 
-                hx-post="index.php"
-                hx-target="#comments-<?php echo $post_id; ?>"
-                hx-swap="outerHTML"
-                class="flex items-center space-x-2 mb-2"
-            >
-                <input type="hidden" name="post_id" value="<?php echo $post_id; ?>">
-                <input type="text" name="comment_content" placeholder="Add a comment..."
-                       class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">
-                <button type="submit" name="add_comment"
-                        class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
-                    Post
-                </button>
-            </form>
-        </div>
-
-        <?php
-        $comments = $postController->getComments($post_id);
-        if (!empty($comments)):
-            foreach ($comments as $comment): ?>
-                <div class="flex items-start space-x-2 mb-1">
-                    <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500">
-                        <?php if (!empty($comment['avatar_url'])): ?>
-                            <img src="<?php echo htmlspecialchars($comment['avatar_url']); ?>" class="w-full h-full object-cover">
-                        <?php else: ?>
-                            <i data-feather="user" class="text-green-400 w-4 h-4"></i>
-                        <?php endif; ?>
-                    </div>
-                    <div class="text-sm flex flex-col w-full">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold text-green-200"><?php echo htmlspecialchars($comment['username']); ?></span>
-                            <?php if (!empty($_SESSION['username']) && $comment['username'] === $_SESSION['username']): ?>
-                                <div class="flex gap-2 text-xs">
-                                    <button type="button" onclick="toggleEditComment(<?php echo $comment['id']; ?>)" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition">Edit</button>
-                                    <button 
-                                        hx-post="index.php"
-                                        hx-confirm="Are you sure you want to delete this comment?"
-                                        hx-vals='{"delete_comment": 1, "comment_id": "<?php echo $comment['id']; ?>", "post_id": "<?php echo $post_id; ?>"}'
-                                        hx-target="#comments-<?php echo $post_id; ?>"
-                                        hx-swap="outerHTML"
-                                        class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition text-xs">
-                                        Delete
-                                    </button>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        <p id="comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
-
-                        <form 
-                            hx-post="index.php"
-                            hx-target="#comments-<?php echo $post_id; ?>"
-                            hx-swap="outerHTML"
-                            id="edit-form-<?php echo $comment['id']; ?>"
-                            class="hidden mt-1 flex space-x-2">
-                            <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
-                            <input type="hidden" name="post_id" value="<?php echo $post_id; ?>">
-                            <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($comment['content']); ?>" 
-                                   class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
-                            <button type="submit" name="update_comment" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs transition">
-                                Save
-                            </button>
-                        </form>
-                    </div>
-                </div>
-        <?php endforeach; endif; ?>
-    </div>
-    <?php
-    return ob_get_clean();
-}
-
-// --- HTMX handlers for comments partial ---
-if (!empty($_SERVER['HTTP_HX_REQUEST'])) {
-    header('Content-Type: text/html');
-
-    if (!$session->isLoggedIn()) {
-        echo '<div class="p-2 text-red-400">Not logged in.</div>';
-        exit;
-    }
-
-    // Add comment
-    if (isset($_POST['add_comment'], $_POST['post_id'], $_POST['comment_content'])) {
-        $post_id = (int)$_POST['post_id'];
-        $content = trim($_POST['comment_content']);
-        if ($post_id && $content !== '') {
-            $postController->addComment($post_id, $session->getUserId(), $content);
-        }
-        echo renderCommentsPartial($post_id, $postController);
-        exit;
-    }
-
-    // Update comment
-    if (isset($_POST['update_comment'], $_POST['comment_id'], $_POST['post_id'], $_POST['new_comment_content'])) {
-        $comment_id = (int)$_POST['comment_id'];
-        $post_id = (int)$_POST['post_id'];
-        $new_content = trim($_POST['new_comment_content']);
-        if ($comment_id && $new_content !== '') {
-            $postController->updateComment($comment_id, $session->getUserId(), $new_content);
-        }
-        echo renderCommentsPartial($post_id, $postController);
-        exit;
-    }
-
-    // Delete comment
-    if (isset($_POST['delete_comment'], $_POST['comment_id'], $_POST['post_id'])) {
-        $comment_id = (int)$_POST['comment_id'];
-        $post_id = (int)$_POST['post_id'];
-        if ($comment_id) {
-            $postController->deleteComment($comment_id, $session->getUserId());
-        }
-        echo renderCommentsPartial($post_id, $postController);
-        exit;
-    }
-}
 $title = '';
 
 // Handle follow/unfollow actions
