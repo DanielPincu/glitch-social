@@ -55,4 +55,8 @@ class PostController {
     public function getAllPosts() {
         return $this->getPosts();
     }
+    // Update a post’s content and optionally its image
+    public function updatePostContent($post_id, $new_content, $user_id, $new_image_path = null, $remove_image = false) {
+        return $this->post->updateContent($post_id, $new_content, $user_id, $new_image_path, $remove_image);
+    }
 }

@@ -148,6 +148,42 @@ switch ($page) {
             $adminController = new AdminController();
         }
 
+        // Update post content and image
+        if (isset($_POST['update_post'], $_POST['post_id'])) {
+            $post_id = (int)$_POST['post_id'];
+            $new_content = trim($_POST['new_content'] ?? '');
+            $remove_image = isset($_POST['remove_image']);
+            $file = $_FILES['new_image'] ?? null;
+            $new_image_path = null;
+
+            // Handle new image upload
+            if ($file && $file['error'] === UPLOAD_ERR_OK && $file['size'] > 0) {
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                $maxSize = 5 * 1024 * 1024; // 5MB
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mimeType = finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+                if (in_array($mimeType, $allowedTypes) && $file['size'] <= $maxSize) {
+                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                    $targetDir = __DIR__ . '/uploads/';
+                    if (!is_dir($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+                    $basename = uniqid('img_', true) . '.' . $ext;
+                    $targetPath = $targetDir . $basename;
+                    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                        $new_image_path = 'uploads/' . $basename;
+                    }
+                }
+            }
+
+            if (!empty($new_content) || $new_image_path || $remove_image) {
+                $postController->updatePostContent($post_id, $new_content, $user_id, $new_image_path, $remove_image);
+            }
+
+            header("Location: index.php?page=settings");
+            exit;
+        }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Delete own post
             if (isset($_POST['delete_post'], $_POST['post_id'])) {

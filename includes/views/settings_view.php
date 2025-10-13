@@ -23,12 +23,49 @@
                 <?php endif; ?>
                 <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
                 
-                <form method="post" class="mt-3">
+                <div class="flex gap-2 mt-3">
+                  <form method="post" class="inline">
+                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                    <button type="button"
+                      onclick="document.getElementById('edit-form-<?php echo $post['id']; ?>').classList.toggle('hidden')"
+                      class="px-3 py-1 rounded border bg-yellow-500 border-yellow-700 text-white font-semibold hover:bg-yellow-600">
+                      Edit
+                    </button>
+                  </form>
+
+                  <form method="post" class="inline">
+                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                    <button type="submit" name="delete_post"
+                      onclick="return confirm('Delete this post?')"
+                      class="px-3 py-1 rounded border bg-red-600 border-red-800 text-white font-semibold hover:bg-red-700">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+
+                <!-- Hidden edit form -->
+                <form id="edit-form-<?php echo $post['id']; ?>" method="post" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                  <button type="submit" name="delete_post"
-                    onclick="return confirm('Delete this post?')"
-                    class="px-3 py-1 rounded border bg-red-600 border-red-800 text-white font-semibold hover:bg-red-700">
-                    Delete
+                  <textarea name="new_content" rows="3" class="w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2"><?php echo htmlspecialchars($post['content']); ?></textarea>
+
+                  <?php if (!empty($post['image_path'])): ?>
+                    <div class="mt-2">
+                      <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="rounded w-32 h-32 object-cover mb-2">
+                      <label class="inline-flex items-center space-x-2">
+                        <input type="checkbox" name="remove_image" value="1" class="text-red-600">
+                        <span class="text-sm text-gray-400">Remove image</span>
+                      </label>
+                    </div>
+                  <?php endif; ?>
+
+                  <div>
+                    <label class="text-sm text-gray-400 block mb-1">Replace image:</label>
+                    <input type="file" name="new_image" accept="image/*" class="text-gray-200 text-sm">
+                  </div>
+
+                  <button type="submit" name="update_post"
+                    class="px-3 py-1 rounded border bg-green-600 border-green-800 text-white font-semibold hover:bg-green-700">
+                    Save Changes
                   </button>
                 </form>
               </div>
@@ -188,12 +225,49 @@
                 <?php endif; ?>
                 <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
                 
-                <form method="post" class="mt-3">
+                <div class="flex gap-2 mt-3">
+                  <form method="post" class="inline">
+                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                    <button type="button"
+                      onclick="document.getElementById('edit-form-<?php echo $post['id']; ?>').classList.toggle('hidden')"
+                      class="px-3 py-1 rounded border bg-yellow-500 border-yellow-700 text-white font-semibold hover:bg-yellow-600">
+                      Edit
+                    </button>
+                  </form>
+
+                  <form method="post" class="inline">
+                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                    <button type="submit" name="delete_post"
+                      onclick="return confirm('Delete this post?')"
+                      class="px-3 py-1 rounded border bg-red-600 border-red-800 text-white font-semibold hover:bg-red-700">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+
+                <!-- Hidden edit form -->
+                <form id="edit-form-<?php echo $post['id']; ?>" method="post" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                  <button type="submit" name="delete_post"
-                    onclick="return confirm('Delete this post?')"
-                    class="px-3 py-1 rounded border bg-red-600 border-red-800 text-white font-semibold hover:bg-red-700">
-                    Delete
+                  <textarea name="new_content" rows="3" class="w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2"><?php echo htmlspecialchars($post['content']); ?></textarea>
+
+                  <?php if (!empty($post['image_path'])): ?>
+                    <div class="mt-2">
+                      <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="rounded w-32 h-32 object-cover mb-2">
+                      <label class="inline-flex items-center space-x-2">
+                        <input type="checkbox" name="remove_image" value="1" class="text-red-600">
+                        <span class="text-sm text-gray-400">Remove image</span>
+                      </label>
+                    </div>
+                  <?php endif; ?>
+
+                  <div>
+                    <label class="text-sm text-gray-400 block mb-1">Replace image:</label>
+                    <input type="file" name="new_image" accept="image/*" class="text-gray-200 text-sm">
+                  </div>
+
+                  <button type="submit" name="update_post"
+                    class="px-3 py-1 rounded border bg-green-600 border-green-800 text-white font-semibold hover:bg-green-700">
+                    Save Changes
                   </button>
                 </form>
               </div>

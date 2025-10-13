@@ -150,4 +150,27 @@ class Post {
         $stmt = $this->db->prepare("DELETE FROM posts WHERE id = :id AND user_id = :user_id");
         return $stmt->execute([':id' => $post_id, ':user_id' => $user_id]);
     }
+
+    // Update a post’s content and optionally its image (only if it belongs to the user)
+    public function updateContent($post_id, $new_content, $user_id, $new_image_path = null, $remove_image = false) {
+        $sql = "UPDATE posts SET content = :content";
+        $params = [
+            ':content' => $new_content,
+            ':post_id' => $post_id,
+            ':user_id' => $user_id
+        ];
+
+        // Handle image update or removal
+        if ($remove_image) {
+            $sql .= ", image_path = NULL";
+        } elseif (!empty($new_image_path)) {
+            $sql .= ", image_path = :image_path";
+            $params[':image_path'] = $new_image_path;
+        }
+
+        $sql .= " WHERE id = :post_id AND user_id = :user_id";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
+    }
 }
