@@ -1,0 +1,72 @@
+<div class="max-w-4xl mx-auto px-4 py-8 relative z-10 text-black h-[1000px]">
+    <section class="text-center mb-10">
+        <?php if (!empty($profileData['avatar_url'])): ?>
+            <img src="<?php echo htmlspecialchars($profileData['avatar_url']); ?>"
+                 alt="Profile Avatar"
+                 class="w-64 h-64 mx-auto rounded-full border-4 border-gray-300 object-cover shadow-md">
+        <?php else: ?>
+            <div class="w-64 h-64 mx-auto flex items-center justify-center rounded-full border-4 border-gray-300 bg-gray-100 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user text-green-400 w-20 h-20">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+        <?php endif; ?>
+        <h2 class="mt-4 text-2xl font-bold text-gray-800">@<?php echo htmlspecialchars($profileData['username']) ?></h2>
+        <p class="text-gray-600 italic mt-2"><?php echo htmlspecialchars($profileData['bio'] ?? 'No bio yet.') ?></p>
+        <p class="text-gray-700 mt-1"><strong>📍</strong> <?php echo htmlspecialchars($profileData['location'] ?? 'Unknown') ?></p>
+        <?php if (!empty($profileData['website'])): ?>
+            <p class="text-blue-600 mt-1">
+                <strong>🔗</strong>
+                <a href="<?php echo htmlspecialchars($profileData['website']) ?>" target="_blank" class="hover:underline">
+                    <?php echo htmlspecialchars($profileData['website']) ?>
+                </a>
+            </p>
+        <?php endif; ?>
+    </section>
+
+    <?php if ($canEditProfile): ?>
+        <div class="text-right mb-6">
+            <button 
+                id="toggleEdit"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                Edit Profile
+            </button>
+        </div>
+
+        <section id="editSection" class="hidden bg-white rounded-lg shadow-md p-6 mb-10">
+            <h3 class="text-lg font-semibold mb-4">Edit Your Profile</h3>
+            <form action="index.php?page=profile&id=<?php echo $profileData['id'] ?>" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Bio</label>
+                    <textarea name="bio" rows="3" class="w-full border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200"><?php echo htmlspecialchars($profileData['bio'] ?? '') ?></textarea>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Location</label>
+                    <input type="text" name="location" value="<?php echo htmlspecialchars($profileData['location'] ?? '') ?>" class="w-full border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Website</label>
+                    <input type="text" name="website" value="<?php echo htmlspecialchars($profileData['website'] ?? '') ?>" class="w-full border-gray-300 rounded-lg p-2 focus:ring focus:ring-blue-200">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Avatar</label>
+                    <input type="file" name="avatar" class="block w-full text-gray-700">
+                </div>
+                <button type="submit" name="update" class="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition">
+                    Save Changes
+                </button>
+            </form>
+        </section>
+
+        <script>
+            document.getElementById('toggleEdit').addEventListener('click', function() {
+                const section = document.getElementById('editSection');
+                section.classList.toggle('hidden');
+                this.textContent = section.classList.contains('hidden') ? 'Edit Profile' : 'Cancel';
+            });
+        </script>
+    <?php endif; ?>
+
+    
+</div>

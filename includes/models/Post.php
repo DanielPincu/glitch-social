@@ -44,10 +44,12 @@ class Post {
     // Fetch all posts with user info and like count
     public function fetchAll() {
         $stmt = $this->db->query("
-            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, users.username,
-                (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
+                   users.username, profiles.avatar_url,
+                   (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
+            LEFT JOIN profiles ON profiles.user_id = users.id
             ORDER BY posts.created_at DESC
         ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -112,10 +114,12 @@ class Post {
     // Get posts by specific user
     public function getPostsByUser($user_id) {
         $stmt = $this->db->prepare("
-            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, users.username,
-                (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
+                   users.username, profiles.avatar_url,
+                   (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
+            LEFT JOIN profiles ON profiles.user_id = users.id
             WHERE posts.user_id = :user_id
             ORDER BY posts.created_at DESC
         ");

@@ -2,6 +2,7 @@
 require_once __DIR__ . '/includes/controllers/UserController.php';
 require_once __DIR__ . '/includes/controllers/PostController.php';
 require_once __DIR__ . '/includes/controllers/AdminController.php';
+require_once __DIR__ . '/includes/controllers/ProfileController.php';
 require_once __DIR__ . '/includes/helpers/Session.php'; 
 
 // Central Routing System
@@ -96,6 +97,42 @@ switch ($page) {
         $session->destroy();
         header("Location: index.php?page=login");
         exit;
+
+    case 'profile':
+        if (!$session->isLoggedIn()) {
+            header("Location: index.php?page=login");
+            exit;
+        }
+
+        $controller = new ProfileController();
+
+        // Determine which profile to show (user’s own or another user’s)
+        $user_id = $_GET['id'] ?? $session->getUserId();
+
+        // Handle profile updates (only allowed on own profile)
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user_id == $session->getUserId()) {
+            $controller->updateProfile(
+                $user_id,
+                $_POST['bio'] ?? '',
+                $_POST['location'] ?? '',
+                $_POST['website'] ?? '',
+                $_FILES['avatar'] ?? null
+            );
+            header("Location: index.php?page=profile&id={$user_id}");
+            exit;
+        }
+
+        // Fetch profile data and user posts
+        $data = $controller->showProfile($user_id);
+        $profileData = $data['profile'];
+        $posts = $data['posts'];
+        $canEditProfile = ($session->getUserId() == $profileData['id']);
+
+        $title = "Profile";
+        require __DIR__ . '/includes/views/header.php';
+        require __DIR__ . '/includes/views/profile_view.php';
+        require __DIR__ . '/includes/views/footer.php';
+        break;
 
     case 'settings':
         if (!$session->isLoggedIn()) {

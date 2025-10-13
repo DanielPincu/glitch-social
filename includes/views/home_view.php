@@ -99,11 +99,24 @@
               <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
                 <div class="flex justify-between items-center mb-3">
                   <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-black border-2 border-white rounded-full flex items-center justify-center">
-                      <i data-feather="user" class="text-green-500"></i>
+                    <div class="w-20 h-20 border-2 border-white rounded-full overflow-hidden flex items-center justify-center bg-black">
+                      <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>">
+                        <?php if (!empty($post['avatar_url'])): ?>
+                          <img 
+                            src="<?php echo htmlspecialchars($post['avatar_url']); ?>" 
+                            alt="<?php echo htmlspecialchars($post['username']); ?>'s avatar" 
+                            class="w-full h-full object-cover">
+                        <?php else: ?>
+                          <i data-feather="user" class="text-green-400 w-5 h-5"></i>
+                        <?php endif; ?>
+                      </a>
                     </div>
                     <div>
-                      <h4 class="font-bold"><?php echo htmlspecialchars($post['username']); ?></h4>
+                      <h4 class="font-bold">
+                        <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>" class="text-green-200 hover:underline">
+                          <?php echo htmlspecialchars($post['username']); ?>
+                        </a>
+                      </h4>
                       <p class="text-xs">
                         <?php if (!empty($post['created_at'])): ?>
                           <?php echo htmlspecialchars($post['created_at']); ?>
