@@ -7,6 +7,7 @@
   <title>MatrixConnect - Social Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/feather-icons"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
   <link rel="stylesheet" href="styles/styles.css">
 </head>
 
