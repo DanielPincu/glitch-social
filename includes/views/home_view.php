@@ -148,7 +148,7 @@
                   <div class="flex items-center gap-3">
                     <button 
                       type="button" 
-                      onclick="toggleCommentForm(<?php echo $post['id']; ?>)" 
+                      onclick="toggleCommentForm('hot', <?php echo $post['id']; ?>)" 
                       class="flex items-center gap-1 text-gray-200 hover:text-blue-300 transition"
                     >
                       <i data-feather="message-square" class="w-4 h-4"></i>
@@ -161,7 +161,7 @@
                 </div>
                 <!-- Comments Section -->
                 <div class="mt-4 border-t border-gray-400 pt-2">
-                  <div class="comment-form hidden" id="comment-form-<?php echo $post['id']; ?>">
+                  <div class="comment-form hidden" id="hot-comment-form-<?php echo $post['id']; ?>">
                     <form method="POST" class="flex items-center space-x-2 mb-2">
                       <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                       <input type="text" name="comment_content" placeholder="Add a comment..." 
@@ -191,7 +191,7 @@
                                 <div class="flex gap-2 text-xs">
                                   <button 
                                     type="button" 
-                                    onclick="toggleEditComment(<?php echo $comment['id']; ?>)" 
+                                    onclick="toggleEditComment('hot', <?php echo $comment['id']; ?>)" 
                                     class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
                                   >
                                     Edit
@@ -210,9 +210,9 @@
                               <?php endif; ?>
                             </div>
 
-                            <p id="comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
+                            <p id="hot-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
 
-                            <form method="POST" id="edit-form-<?php echo $comment['id']; ?>" class="hidden mt-1 flex space-x-2">
+                            <form method="POST" id="hot-edit-form-<?php echo $comment['id']; ?>" class="hidden mt-1 flex space-x-2">
                               <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
                               <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($comment['content']); ?>" 
                                      class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
@@ -287,7 +287,7 @@
                   <div class="flex items-center gap-3">
                     <button 
                       type="button" 
-                      onclick="toggleCommentForm(<?php echo $post['id']; ?>)" 
+                      onclick="toggleCommentForm('following', <?php echo $post['id']; ?>)" 
                       class="flex items-center gap-1 text-gray-200 hover:text-blue-300 transition"
                     >
                       <i data-feather="message-square" class="w-4 h-4"></i>
@@ -300,7 +300,7 @@
                 </div>
                 <!-- Comments Section -->
                 <div class="mt-4 border-t border-gray-400 pt-2">
-                  <div class="comment-form hidden" id="comment-form-<?php echo $post['id']; ?>">
+                  <div class="comment-form hidden" id="following-comment-form-<?php echo $post['id']; ?>">
                     <form method="POST" class="flex items-center space-x-2 mb-2">
                       <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                       <input type="text" name="comment_content" placeholder="Add a comment..." 
@@ -327,19 +327,31 @@
                             <div class="flex justify-between items-center">
                               <span class="font-semibold text-green-200"><?php echo htmlspecialchars($comment['username']); ?></span>
                               <?php if ($comment['username'] === $_SESSION['username']): ?>
-                                <div class="flex gap-2 text-xs text-gray-400">
-                                  <button type="button" onclick="toggleEditComment(<?php echo $comment['id']; ?>)" class="hover:text-blue-300">Edit</button>
+                                <div class="flex gap-2 text-xs">
+                                  <button 
+                                    type="button" 
+                                    onclick="toggleEditComment('following', <?php echo $comment['id']; ?>)" 
+                                    class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                                  >
+                                    Edit
+                                  </button>
                                   <form method="POST" class="inline">
                                     <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
-                                    <button type="submit" name="delete_comment" class="hover:text-red-400">Delete</button>
+                                    <button 
+                                      type="submit" 
+                                      name="delete_comment" 
+                                      class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition"
+                                    >
+                                      Delete
+                                    </button>
                                   </form>
                                 </div>
                               <?php endif; ?>
                             </div>
 
-                            <p id="comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
+                            <p id="following-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
 
-                            <form method="POST" id="edit-form-<?php echo $comment['id']; ?>" class="hidden mt-1 flex space-x-2">
+                            <form method="POST" id="following-edit-form-<?php echo $comment['id']; ?>" class="hidden mt-1 flex space-x-2">
                               <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
                               <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($comment['content']); ?>" 
                                      class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
@@ -431,25 +443,17 @@
 <script src="scripts/like.js"></script>
 <script src="scripts/comment.js"></script>
 <script>
-  function toggleCommentForm(postId) {
-    const form = document.getElementById(`comment-form-${postId}`);
-    if (form.classList.contains('hidden')) {
-      form.classList.remove('hidden');
-    } else {
-      form.classList.add('hidden');
-    }
+  function toggleCommentForm(tab, postId) {
+    const form = document.getElementById(`${tab}-comment-form-${postId}`);
+    if (form) form.classList.toggle("hidden");
   }
-</script>
-<script>
-  function toggleEditComment(commentId) {
-    const text = document.getElementById(`comment-text-${commentId}`);
-    const form = document.getElementById(`edit-form-${commentId}`);
-    if (form.classList.contains('hidden')) {
-      form.classList.remove('hidden');
-      text.classList.add('hidden');
-    } else {
-      form.classList.add('hidden');
-      text.classList.remove('hidden');
+
+  function toggleEditComment(tab, commentId) {
+    const text = document.getElementById(`${tab}-comment-text-${commentId}`);
+    const form = document.getElementById(`${tab}-edit-form-${commentId}`);
+    if (form && text) {
+      form.classList.toggle("hidden");
+      text.classList.toggle("hidden");
     }
   }
 </script>
