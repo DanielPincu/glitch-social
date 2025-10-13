@@ -83,6 +83,64 @@ class Post {
         return $stmt->fetchColumn() !== false;
     }
 
+    // Add a new comment to a post
+    public function addComment($post_id, $user_id, $content) {
+        $stmt = $this->db->prepare("
+            INSERT INTO comments (post_id, user_id, content)
+            VALUES (:post_id, :user_id, :content)
+        ");
+        return $stmt->execute([
+            ':post_id' => $post_id,
+            ':user_id' => $user_id,
+            ':content' => $content
+        ]);
+    }
+
+    // Fetch all comments for a specific post
+    public function getComments($post_id) {
+        $stmt = $this->db->prepare("
+            SELECT comments.id, comments.content, comments.created_at,
+                   users.username, profiles.avatar_url
+            FROM comments
+            JOIN users ON comments.user_id = users.id
+            LEFT JOIN profiles ON profiles.user_id = users.id
+            WHERE comments.post_id = :post_id
+            ORDER BY comments.created_at ASC
+        ");
+        $stmt->execute([':post_id' => $post_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+
+    // Update an existing comment (only if owned by the user)
+public function updateComment($comment_id, $user_id, $new_content) {
+    $stmt = $this->db->prepare("
+        UPDATE comments 
+        SET content = :content 
+        WHERE id = :comment_id AND user_id = :user_id
+    ");
+    return $stmt->execute([
+        ':content' => $new_content,
+        ':comment_id' => $comment_id,
+        ':user_id' => $user_id
+    ]);
+}
+
+// Delete a comment (only if owned by the user)
+public function deleteComment($comment_id, $user_id) {
+    $stmt = $this->db->prepare("
+        DELETE FROM comments 
+        WHERE id = :comment_id AND user_id = :user_id
+    ");
+    return $stmt->execute([
+        ':comment_id' => $comment_id,
+        ':user_id' => $user_id
+    ]);
+}
+
+
+
     // Get like count for a post
     public function getLikeCount($post_id) {
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM likes WHERE post_id = :post_id");

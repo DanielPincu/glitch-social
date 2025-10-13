@@ -63,4 +63,23 @@ class PostController {
     public function getPostsFromFollowing($user_id) {
         return $this->post->getPostsFromFollowing($user_id);
     }
+
+    // Add a comment to a post
+    public function addComment($post_id, $user_id, $content) {
+        return $this->post->addComment($post_id, $user_id, $content);
+    }
+
+    // Get comments for a post
+    public function getComments($post_id) {
+        return $this->post->getComments($post_id);
+    }
+
+    public function updateComment($comment_id, $user_id, $new_content) {
+    return $this->post->updateComment($comment_id, $user_id, $new_content);
+    }
+
+    public function deleteComment($comment_id, $user_id) {
+    return $this->post->deleteComment($comment_id, $user_id);
 }
+}
+

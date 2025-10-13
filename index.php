@@ -3,7 +3,7 @@ require_once __DIR__ . '/includes/controllers/UserController.php';
 require_once __DIR__ . '/includes/controllers/PostController.php';
 require_once __DIR__ . '/includes/controllers/AdminController.php';
 require_once __DIR__ . '/includes/controllers/ProfileController.php';
-require_once __DIR__ . '/includes/helpers/Session.php'; 
+require_once __DIR__ . '/includes/helpers/Session.php';
 
 // Central Routing System
 $session = new Session();
@@ -37,6 +37,115 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'like') {
         echo json_encode(['success' => true, 'likes' => $likeCount]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Invalid request']);
+    }
+    exit;
+}
+
+// Handle AJAX comment submission
+if (isset($_POST['ajax']) && $_POST['ajax'] === 'comment') {
+    header('Content-Type: application/json');
+
+    if (!$session->isLoggedIn()) {
+        echo json_encode(['success' => false, 'message' => 'Not logged in']);
+        exit;
+    }
+
+    $post_id = (int)($_POST['post_id'] ?? 0);
+    $content = trim($_POST['content'] ?? '');
+
+    if ($post_id && $content) {
+        $user_id = $session->getUserId();
+        $postController->addComment($post_id, $user_id, $content);
+
+        // fetch latest comment
+        $comments = $postController->getComments($post_id);
+        $newComment = end($comments); // latest comment
+
+        ob_start();
+        ?>
+<div class="flex items-start space-x-2 mb-1">
+  <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500">
+    <?php if (!empty($newComment['avatar_url'])): ?>
+      <img src="<?php echo htmlspecialchars($newComment['avatar_url']); ?>" class="w-full h-full object-cover">
+    <?php else: ?>
+      <i data-feather="user" class="text-green-400 w-4 h-4"></i>
+    <?php endif; ?>
+  </div>
+  <div class="text-sm flex flex-col w-full">
+    <div class="flex justify-between items-center">
+      <span class="font-semibold text-green-200"><?php echo htmlspecialchars($newComment['username']); ?></span>
+      <?php if ($newComment['username'] === $_SESSION['username']): ?>
+        <div class="flex gap-2 text-xs">
+          <button type="button" onclick="toggleEditComment(<?php echo $newComment['id']; ?>)" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition">Edit</button>
+          <form method="POST" class="inline">
+            <input type="hidden" name="comment_id" value="<?php echo $newComment['id']; ?>">
+            <button type="submit" name="delete_comment" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition" onclick="return confirm('Are you sure you want to delete this comment?')">Delete</button>
+          </form>
+        </div>
+      <?php endif; ?>
+    </div>
+    <p id="comment-text-<?php echo $newComment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($newComment['content']); ?></p>
+
+    <!-- Hidden inline edit form -->
+    <form method="POST" id="edit-form-<?php echo $newComment['id']; ?>" class="hidden mt-1 flex space-x-2">
+      <input type="hidden" name="comment_id" value="<?php echo $newComment['id']; ?>">
+      <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($newComment['content']); ?>" 
+             class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
+      <button type="submit" name="update_comment" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs transition">
+        Save
+      </button>
+    </form>
+  </div>
+</div>
+        <?php
+        $html = ob_get_clean();
+
+        echo json_encode(['success' => true, 'html' => $html]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Invalid input']);
+    }
+    exit;
+}
+
+// Handle AJAX comment update
+if (isset($_POST['ajax']) && $_POST['ajax'] === 'update_comment') {
+    header('Content-Type: application/json');
+
+    if (!$session->isLoggedIn()) {
+        echo json_encode(['success' => false, 'message' => 'Not logged in']);
+        exit;
+    }
+
+    $comment_id = (int)($_POST['comment_id'] ?? 0);
+    $new_content = trim($_POST['new_content'] ?? '');
+    $user_id = $session->getUserId();
+
+    if ($comment_id && $new_content) {
+        $postController->updateComment($comment_id, $user_id, $new_content);
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Invalid input']);
+    }
+    exit;
+}
+
+// Handle AJAX comment delete
+if (isset($_POST['ajax']) && $_POST['ajax'] === 'delete_comment') {
+    header('Content-Type: application/json');
+
+    if (!$session->isLoggedIn()) {
+        echo json_encode(['success' => false, 'message' => 'Not logged in']);
+        exit;
+    }
+
+    $comment_id = (int)($_POST['comment_id'] ?? 0);
+    $user_id = $session->getUserId();
+
+    if ($comment_id) {
+        $postController->deleteComment($comment_id, $user_id);
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Invalid input']);
     }
     exit;
 }
@@ -251,6 +360,35 @@ switch ($page) {
         $blocked_message = '';
         if ($userController->isBlocked($user_id)) {
             $blocked_message = "You are blocked. You cannot access the feed.";
+        }
+        // Handle new comment submission
+        if (isset($_POST['add_comment']) && isset($_POST['post_id']) && !empty($_POST['comment_content'])) {
+            $post_id = (int)$_POST['post_id'];
+            $comment_content = trim($_POST['comment_content']);
+            if (!empty($comment_content)) {
+                $postController->addComment($post_id, $user_id, $comment_content);
+            }
+            header("Location: index.php");
+            exit;
+        }
+
+        // Handle comment update
+        if (isset($_POST['update_comment'], $_POST['comment_id'])) {
+            $comment_id = (int)$_POST['comment_id'];
+            $new_content = trim($_POST['new_comment_content'] ?? '');
+            if (!empty($new_content)) {
+                $postController->updateComment($comment_id, $user_id, $new_content);
+            }
+            header("Location: index.php");
+            exit;
+        }
+
+        // Handle comment delete
+        if (isset($_POST['delete_comment'], $_POST['comment_id'])) {
+            $comment_id = (int)$_POST['comment_id'];
+            $postController->deleteComment($comment_id, $user_id);
+            header("Location: index.php");
+            exit;
         }
         // Handle new post submission (with image upload validation)
         if (isset($_POST['post_submit']) && !$blocked_message) {

@@ -146,13 +146,83 @@
                   </div>
                   <!-- Placeholder for comments/share -->
                   <div class="flex items-center gap-3">
-                    <span class="flex items-center gap-1 text-gray-200">
-                      <i data-feather="message-square" class="w-4 h-4"></i> Comment
-                    </span>
+                    <button 
+                      type="button" 
+                      onclick="toggleCommentForm(<?php echo $post['id']; ?>)" 
+                      class="flex items-center gap-1 text-gray-200 hover:text-blue-300 transition"
+                    >
+                      <i data-feather="message-square" class="w-4 h-4"></i>
+                      Comment
+                    </button>
                     <span class="flex items-center gap-1 text-gray-200">
                       <i data-feather="share-2" class="w-4 h-4"></i> Share
                     </span>
                   </div>
+                </div>
+                <!-- Comments Section -->
+                <div class="mt-4 border-t border-gray-400 pt-2">
+                  <div class="comment-form hidden" id="comment-form-<?php echo $post['id']; ?>">
+                    <form method="POST" class="flex items-center space-x-2 mb-2">
+                      <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                      <input type="text" name="comment_content" placeholder="Add a comment..." 
+                             class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">
+                      <button type="submit" name="add_comment" 
+                              class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                        Post
+                      </button>
+                    </form>
+                  </div>
+                  <?php 
+                    $comments = $postController->getComments($post['id']);
+                    if (!empty($comments)):
+                      foreach ($comments as $comment): ?>
+                        <div class="flex items-start space-x-2 mb-1">
+                          <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500">
+                            <?php if (!empty($comment['avatar_url'])): ?>
+                              <img src="<?php echo htmlspecialchars($comment['avatar_url']); ?>" class="w-full h-full object-cover">
+                            <?php else: ?>
+                              <i data-feather="user" class="text-green-400 w-4 h-4"></i>
+                            <?php endif; ?>
+                          </div>
+                          <div class="text-sm flex flex-col w-full">
+                            <div class="flex justify-between items-center">
+                              <span class="font-semibold text-green-200"><?php echo htmlspecialchars($comment['username']); ?></span>
+                              <?php if ($comment['username'] === $_SESSION['username']): ?>
+                                <div class="flex gap-2 text-xs">
+                                  <button 
+                                    type="button" 
+                                    onclick="toggleEditComment(<?php echo $comment['id']; ?>)" 
+                                    class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                                  >
+                                    Edit
+                                  </button>
+                                  <form method="POST" class="inline">
+                                    <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
+                                    <button 
+                                      type="submit" 
+                                      name="delete_comment" 
+                                      class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition"
+                                    >
+                                      Delete
+                                    </button>
+                                  </form>
+                                </div>
+                              <?php endif; ?>
+                            </div>
+
+                            <p id="comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
+
+                            <form method="POST" id="edit-form-<?php echo $comment['id']; ?>" class="hidden mt-1 flex space-x-2">
+                              <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
+                              <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($comment['content']); ?>" 
+                                     class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
+                              <button type="submit" name="update_comment" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs transition">
+                                Save
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                  <?php endforeach; endif; ?>
                 </div>
               </div>
             <?php endforeach; ?>
@@ -215,13 +285,71 @@
                     </button>
                   </div>
                   <div class="flex items-center gap-3">
-                    <span class="flex items-center gap-1 text-gray-200">
-                      <i data-feather="message-square" class="w-4 h-4"></i> Comment
-                    </span>
+                    <button 
+                      type="button" 
+                      onclick="toggleCommentForm(<?php echo $post['id']; ?>)" 
+                      class="flex items-center gap-1 text-gray-200 hover:text-blue-300 transition"
+                    >
+                      <i data-feather="message-square" class="w-4 h-4"></i>
+                      Comment
+                    </button>
                     <span class="flex items-center gap-1 text-gray-200">
                       <i data-feather="share-2" class="w-4 h-4"></i> Share
                     </span>
                   </div>
+                </div>
+                <!-- Comments Section -->
+                <div class="mt-4 border-t border-gray-400 pt-2">
+                  <div class="comment-form hidden" id="comment-form-<?php echo $post['id']; ?>">
+                    <form method="POST" class="flex items-center space-x-2 mb-2">
+                      <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                      <input type="text" name="comment_content" placeholder="Add a comment..." 
+                             class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">
+                      <button type="submit" name="add_comment" 
+                              class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                        Post
+                      </button>
+                    </form>
+                  </div>
+                  <?php 
+                    $comments = $postController->getComments($post['id']);
+                    if (!empty($comments)):
+                      foreach ($comments as $comment): ?>
+                        <div class="flex items-start space-x-2 mb-1">
+                          <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500">
+                            <?php if (!empty($comment['avatar_url'])): ?>
+                              <img src="<?php echo htmlspecialchars($comment['avatar_url']); ?>" class="w-full h-full object-cover">
+                            <?php else: ?>
+                              <i data-feather="user" class="text-green-400 w-4 h-4"></i>
+                            <?php endif; ?>
+                          </div>
+                          <div class="text-sm flex flex-col w-full">
+                            <div class="flex justify-between items-center">
+                              <span class="font-semibold text-green-200"><?php echo htmlspecialchars($comment['username']); ?></span>
+                              <?php if ($comment['username'] === $_SESSION['username']): ?>
+                                <div class="flex gap-2 text-xs text-gray-400">
+                                  <button type="button" onclick="toggleEditComment(<?php echo $comment['id']; ?>)" class="hover:text-blue-300">Edit</button>
+                                  <form method="POST" class="inline">
+                                    <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
+                                    <button type="submit" name="delete_comment" class="hover:text-red-400">Delete</button>
+                                  </form>
+                                </div>
+                              <?php endif; ?>
+                            </div>
+
+                            <p id="comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
+
+                            <form method="POST" id="edit-form-<?php echo $comment['id']; ?>" class="hidden mt-1 flex space-x-2">
+                              <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
+                              <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($comment['content']); ?>" 
+                                     class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
+                              <button type="submit" name="update_comment" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs">
+                                Save
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                  <?php endforeach; endif; ?>
                 </div>
               </div>
             <?php endforeach; ?>
@@ -297,7 +425,31 @@
     </div>
 
   </div>
-  <script src="scripts/like.js"></script>
-  <script src="scripts/image-previewer.js"></script>
-  <script src="scripts/tab-switcher.js"></script>
 </main>
+<script src="scripts/tab-switcher.js"></script>
+<script src="scripts/image-previewer.js"></script>
+<script src="scripts/like.js"></script>
+<script src="scripts/comment.js"></script>
+<script>
+  function toggleCommentForm(postId) {
+    const form = document.getElementById(`comment-form-${postId}`);
+    if (form.classList.contains('hidden')) {
+      form.classList.remove('hidden');
+    } else {
+      form.classList.add('hidden');
+    }
+  }
+</script>
+<script>
+  function toggleEditComment(commentId) {
+    const text = document.getElementById(`comment-text-${commentId}`);
+    const form = document.getElementById(`edit-form-${commentId}`);
+    if (form.classList.contains('hidden')) {
+      form.classList.remove('hidden');
+      text.classList.add('hidden');
+    } else {
+      form.classList.add('hidden');
+      text.classList.remove('hidden');
+    }
+  }
+</script>
