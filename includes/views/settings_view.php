@@ -90,6 +90,7 @@
         </a>
       </section>
 
+
       <!-- User Management Section -->
       <section class="border border-yellow-500 rounded-lg p-6 bg-black bg-opacity-60">
         <h2 class="text-2xl font-bold text-yellow-300 mb-4 border-b border-yellow-400 pb-2">User Management</h2>
@@ -303,6 +304,36 @@
       </section>
     </div>
     <?php endif; ?>
+
+    <!-- Blocked Users Section (shown to all users) -->
+    <section class="border border-red-400 rounded-lg p-6 bg-black bg-opacity-60 mt-8">
+      <h2 class="text-2xl font-bold text-red-400 mb-4 border-b border-red-400 pb-2">Blocked Users</h2>
+      <?php 
+        $blockedUsers = $userController->getBlockedUsersByUser($session->getUserId());
+      ?>
+      <?php if (!empty($blockedUsers)): ?>
+        <div class="space-y-3">
+          <?php foreach ($blockedUsers as $blocked): ?>
+            <div class="flex justify-between items-center bg-black bg-opacity-50 border border-red-500 rounded p-3">
+              <div class="flex items-center gap-3">
+                <a href="index.php?page=profile&id=<?php echo $blocked['id']; ?>" class="text-white hover:underline">
+                  @<?php echo htmlspecialchars($blocked['username']); ?>
+                </a>
+              </div>
+              <form method="POST" action="index.php?page=settings">
+                <input type="hidden" name="blocked_id" value="<?php echo $blocked['id']; ?>">
+                <button type="submit" name="unblock_user"
+                  class="px-3 py-1 bg-green-600 text-white font-semibold rounded hover:bg-green-700 border border-green-800">
+                  Unblock
+                </button>
+              </form>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php else: ?>
+        <p class="text-gray-300 italic">You haven't blocked anyone yet.</p>
+      <?php endif; ?>
+    </section>
 
   </div>
 </div>

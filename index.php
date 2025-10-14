@@ -239,6 +239,19 @@ switch ($page) {
             exit;
         }
 
+        // Handle user block/unblock (user-to-user)
+        if (isset($_POST['block_user'], $_POST['blocked_id'])) {
+            $controller->blockUserAndUnfollow($session->getUserId(), (int)$_POST['blocked_id']);
+            // $userController->blockUserByUser($session->getUserId(), (int)$_POST['blocked_id']);
+            header("Location: index.php?page=profile&id={$user_id}");
+            exit;
+        }
+        if (isset($_POST['unblock_user'], $_POST['blocked_id'])) {
+            $userController->unblockUserByUser($session->getUserId(), (int)$_POST['blocked_id']);
+            header("Location: index.php?page=profile&id={$user_id}");
+            exit;
+        }
+
         // Fetch profile data and user posts
         $data = $controller->showProfile($user_id);
         $profileData = $data['profile'];
@@ -303,6 +316,17 @@ switch ($page) {
             exit;
         }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Handle user-to-user block/unblock (from settings)
+            if (isset($_POST['block_user'], $_POST['blocked_id'])) {
+                $userController->blockUserByUser($session->getUserId(), (int)$_POST['blocked_id']);
+                header("Location: index.php?page=settings");
+                exit;
+            }
+            if (isset($_POST['unblock_user'], $_POST['blocked_id'])) {
+                $userController->unblockUserByUser($session->getUserId(), (int)$_POST['blocked_id']);
+                header("Location: index.php?page=settings");
+                exit;
+            }
             // Delete own post
             if (isset($_POST['delete_post'], $_POST['post_id'])) {
                 $postController->deletePostByUser((int)$_POST['post_id'], $user_id);
@@ -336,6 +360,8 @@ switch ($page) {
 
         // My own posts
         $posts = $postController->getPostsByUser($user_id);
+        // Fetch user-to-user blocked list
+        $blockedUsers = $userController->getBlockedUsers($user_id);
 
         // Admin-only
         $allUsers = [];
@@ -439,6 +465,12 @@ switch ($page) {
             $unique[] = $post['id'];
             return true;
         }));
+        // Filter out posts by blocked users (extra safety layer)
+        $blockedUsersList = $userController->getBlockedUsers($viewer_id) ?? [];
+        $blockedIds = array_map(fn($b) => $b['blocked_id'] ?? $b['id'] ?? null, $blockedUsersList);
+        $blockedIds = array_filter($blockedIds); // remove nulls
+        $posts = array_filter($posts, fn($post) => !in_array($post['user_id'], $blockedIds));
+        $followingPosts = array_filter($followingPosts, fn($post) => !in_array($post['user_id'], $blockedIds));
         usort($posts, fn($a, $b) => strtotime($b['created_at']) - strtotime($a['created_at']));
         $title = "Home";
         require __DIR__ . '/includes/views/header.php';

@@ -26,19 +26,34 @@
     </section>
 
     <?php if (!$canEditProfile): ?>
+        <?php
+            $viewerId = $session->getUserId();
+            $isBlocked = $userController->isUserBlockedByUser($viewerId, $profileData['id']);
+            $isFollowing = $controller->isFollowing($session->getUserId(), $profileData['id']);
+            $followCounts = $controller->getFollowCounts($profileData['id']);
+        ?>
         <div class="mt-4">
-            <form method="POST" action="index.php?page=profile&id=<?php echo $profileData['id']; ?>">
+            <form method="POST" action="index.php?page=profile&id=<?php echo $profileData['id']; ?>" class="inline-block ml-2">
+                <input type="hidden" name="blocked_id" value="<?php echo $profileData['id']; ?>">
+                <input type="hidden" name="unfollow_on_block" value="1">
+                <button type="submit" name="<?php echo $isBlocked ? 'unblock_user' : 'block_user'; ?>"
+                    class="px-4 py-2 font-semibold rounded transition duration-200
+                    <?php echo $isBlocked ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'; ?> text-white shadow-md">
+                    <?php echo $isBlocked ? 'Unblock' : 'Block'; ?>
+                </button>
+            </form>
+
+            <?php if (!$isBlocked): ?>
+            <form method="POST" action="index.php?page=profile&id=<?php echo $profileData['id']; ?>" class="inline-block ml-2">
                 <input type="hidden" name="followed_id" value="<?php echo $profileData['id']; ?>">
-                <?php
-                    $isFollowing = $controller->isFollowing($session->getUserId(), $profileData['id']);
-                    $followCounts = $controller->getFollowCounts($profileData['id']);
-                ?>
                 <button type="submit" name="follow_action"
                     class="px-4 py-2 font-semibold rounded transition
                     <?php echo $isFollowing ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'; ?> text-white">
                     <?php echo $isFollowing ? 'Unfollow' : 'Follow'; ?>
                 </button>
             </form>
+            <?php endif; ?>
+
             <div class="mt-2 text-gray-700">
                 <span class="font-semibold"><?php echo $followCounts['followers']; ?></span> Followers ·
                 <span class="font-semibold"><?php echo $followCounts['following']; ?></span> Following

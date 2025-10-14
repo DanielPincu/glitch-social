@@ -48,7 +48,7 @@ class User {
     }
 
     // ----------------------
-    // Block or unblock a user
+    // Block or unblock a user (ADMIN-LEVEL account lock)
     // ----------------------
     public function setBlocked($user_id, $blocked) {
         $sql = $blocked == 1
@@ -68,14 +68,14 @@ class User {
     }
 
     // ----------------------
-    // Check if a user is blocked
+    // Check if a user is blocked (ADMIN-LEVEL lock)
     // ----------------------
     public function isBlocked($user_id) {
         $stmt = $this->db->prepare("SELECT is_blocked FROM users WHERE id = :id");
         $stmt->bindValue(':id', $user_id);
         $stmt->execute();
         $user = $stmt->fetch();
-        return $user && $user['is_blocked'] == 1;
+        return $user && (int)$user['is_blocked'] === 1;
     }
 
     // ----------------------
@@ -86,5 +86,62 @@ class User {
         $stmt->bindValue(':is_admin', $is_admin);
         $stmt->bindValue(':id', $user_id);
         return $stmt->execute();
+    }
+
+    // ----------------------
+    // User-to-user block list (social blocking)
+    // ----------------------
+    public function blockUser($blocker_id, $blocked_id) {
+        if ((int)$blocker_id === (int)$blocked_id) return false; // can't block yourself
+        $stmt = $this->db->prepare("
+            INSERT IGNORE INTO blocked_users (blocker_id, blocked_id)
+            VALUES (:blocker_id, :blocked_id)
+        ");
+        return $stmt->execute([
+            ':blocker_id' => $blocker_id,
+            ':blocked_id' => $blocked_id
+        ]);
+    }
+
+    public function unblockUser($blocker_id, $blocked_id) {
+        $stmt = $this->db->prepare("
+            DELETE FROM blocked_users 
+            WHERE blocker_id = :blocker_id AND blocked_id = :blocked_id
+        ");
+        return $stmt->execute([
+            ':blocker_id' => $blocker_id,
+            ':blocked_id' => $blocked_id
+        ]);
+    }
+
+    public function isUserBlocked($blocker_id, $blocked_id) {
+        $stmt = $this->db->prepare("
+            SELECT 1 FROM blocked_users 
+            WHERE blocker_id = :blocker_id AND blocked_id = :blocked_id
+            LIMIT 1
+        ");
+        $stmt->execute([
+            ':blocker_id' => $blocker_id,
+            ':blocked_id' => $blocked_id
+        ]);
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function getBlockedUsers($blocker_id) {
+        $stmt = $this->db->prepare("
+            SELECT users.id, users.username, profiles.avatar_url
+            FROM blocked_users
+            JOIN users ON users.id = blocked_users.blocked_id
+            LEFT JOIN profiles ON profiles.user_id = users.id
+            WHERE blocked_users.blocker_id = :blocker_id
+            ORDER BY blocked_users.created_at DESC
+        ");
+        $stmt->execute([':blocker_id' => $blocker_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Alias kept because some controllers may call this older name
+    public function getBlockedUsersByUser($blocker_id) {
+        return $this->getBlockedUsers($blocker_id);
     }
 }

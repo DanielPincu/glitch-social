@@ -61,4 +61,44 @@ class UserController {
     public function setAdminStatus($user_id, $is_admin) {
         return $this->user->setAdmin($user_id, $is_admin);
     }
+
+    // ----------------------
+    // User-to-User Blocking System
+    // ----------------------
+
+    // Block another user (user-to-user block)
+    public function blockUserByUser($blocker_id, $blocked_id) {
+        return $this->user->blockUser($blocker_id, $blocked_id);
+    }
+
+    // Unblock a user
+    public function unblockUserByUser($blocker_id, $blocked_id) {
+        return $this->user->unblockUser($blocker_id, $blocked_id);
+    }
+
+    // Check if a user is blocked by another user
+    public function isUserBlockedByUser($blocker_id, $blocked_id) {
+        return $this->user->isUserBlocked($blocker_id, $blocked_id);
+    }
+
+    // Get all users blocked by this user
+    public function getBlockedUsersByUser($blocker_id) {
+        if (empty($blocker_id)) {
+            return [];
+        }
+        return $this->user->getBlockedUsers($blocker_id);
+    }
+
+    // Check if the current user has blocked another user
+    public function hasUserBlocked($blocker_id, $blocked_id) {
+        if (empty($blocker_id) || empty($blocked_id)) {
+            return false;
+        }
+        return $this->user->isUserBlocked($blocker_id, $blocked_id);
+    }
+    // New method to get all users blocked by a given user ID
+    public function getBlockedUsers($user_id) {
+        $userModel = new User();
+        return $userModel->getBlockedUsersByUser($user_id);
+    }
 }
