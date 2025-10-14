@@ -106,7 +106,7 @@ class Post {
     // Fetch all comments for a specific post
     public function getComments($post_id) {
         $stmt = $this->db->prepare("
-            SELECT comments.id, comments.content, comments.created_at,
+            SELECT comments.id, comments.user_id, comments.content, comments.created_at,
                    users.username, profiles.avatar_url
             FROM comments
             JOIN users ON comments.user_id = users.id

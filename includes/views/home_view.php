@@ -195,7 +195,9 @@
                           </div>
                           <div class="text-sm flex flex-col w-full">
                             <div class="flex justify-between items-center">
-                              <span class="font-semibold text-green-200"><?php echo htmlspecialchars($comment['username']); ?></span>
+                              <a href="index.php?page=profile&id=<?php echo $comment['user_id']; ?>" class="font-semibold text-green-200 hover:underline">
+                                <?php echo htmlspecialchars($comment['username']); ?>
+                              </a>
                               <?php if ($comment['username'] === $_SESSION['username']): ?>
                                 <div class="flex gap-2 text-xs">
                                   <button 
@@ -334,7 +336,9 @@
                           </div>
                           <div class="text-sm flex flex-col w-full">
                             <div class="flex justify-between items-center">
-                              <span class="font-semibold text-green-200"><?php echo htmlspecialchars($comment['username']); ?></span>
+                              <a href="index.php?page=profile&id=<?php echo $comment['user_id']; ?>" class="font-semibold text-green-200 hover:underline">
+                                <?php echo htmlspecialchars($comment['username']); ?>
+                              </a>
                               <?php if ($comment['username'] === $_SESSION['username']): ?>
                                 <div class="flex gap-2 text-xs">
                                   <button 
