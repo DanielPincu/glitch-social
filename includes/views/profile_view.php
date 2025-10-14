@@ -125,6 +125,9 @@
                                 <p class="font-semibold text-gray-800">@<?php echo htmlspecialchars($post['username']); ?></p>
                                 <p class="text-gray-500 text-sm"><?php echo htmlspecialchars($post['created_at']); ?></p>
                             </div>
+                            <span class="ml-2 px-2 py-1 text-xs rounded bg-gray-200 text-gray-700">
+                                <?php echo ucfirst(htmlspecialchars($post['visibility'])); ?>
+                            </span>
                         </div>
 
                         <p class="text-gray-700 mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>

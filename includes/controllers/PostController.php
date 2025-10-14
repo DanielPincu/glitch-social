@@ -8,14 +8,14 @@ class PostController {
         $this->post = new Post();
     }
 
-    // Create a new post with optional image file
-    public function createPost($user_id, $content, $file = null) {
-        return $this->post->create($user_id, $content, $file);
+    // Create a new post with optional image file and visibility
+    public function createPost($user_id, $content, $file = null, $visibility = 'public') {
+        return $this->post->create($user_id, $content, $file, $visibility);
     }
 
-    // Fetch all posts for displaying
-    public function getPosts() {
-        return $this->post->fetchAll();
+    // Fetch all posts for displaying, with visibility based on viewer
+    public function getPosts($user_id) {
+        return $this->post->fetchAll($user_id);
     }
     // Like a post
     public function likePost($post_id, $user_id) {
@@ -53,15 +53,15 @@ class PostController {
     }
     // Get all posts (alias for admin use)
     public function getAllPosts() {
-        return $this->getPosts();
+        return $this->getPosts(null);
     }
-    // Update a post’s content and optionally its image
-    public function updatePostContent($post_id, $new_content, $user_id, $new_image_path = null, $remove_image = false) {
-        return $this->post->updateContent($post_id, $new_content, $user_id, $new_image_path, $remove_image);
+    // Update a post’s content, optionally its image, and optionally its visibility
+    public function updatePostContent($post_id, $new_content, $user_id, $new_image_path = null, $remove_image = false, $visibility = null) {
+        return $this->post->updateContent($post_id, $new_content, $user_id, $new_image_path, $remove_image, $visibility);
     }
     // Get posts from users the current user follows
     public function getPostsFromFollowing($user_id) {
-        return $this->post->getPostsFromFollowing($user_id);
+        return $this->post->getPostsFromFollowing($user_id, $user_id);
     }
 
     // Add a comment to a post

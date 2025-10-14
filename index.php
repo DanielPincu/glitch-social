@@ -265,7 +265,7 @@ switch ($page) {
             $adminController = new AdminController();
         }
 
-        // Update post content and image
+        // Update post content, image, and visibility
         if (isset($_POST['update_post'], $_POST['post_id'])) {
             $post_id = (int)$_POST['post_id'];
             $new_content = trim($_POST['new_content'] ?? '');
@@ -294,8 +294,9 @@ switch ($page) {
                 }
             }
 
-            if (!empty($new_content) || $new_image_path || $remove_image) {
-                $postController->updatePostContent($post_id, $new_content, $user_id, $new_image_path, $remove_image);
+            $visibility = $_POST['visibility'] ?? null;
+            if (!empty($new_content) || $new_image_path || $remove_image || $visibility) {
+                $postController->updatePostContent($post_id, $new_content, $user_id, $new_image_path, $remove_image, $visibility);
             }
 
             header("Location: index.php?page=settings");
@@ -341,7 +342,7 @@ switch ($page) {
         $allPosts = [];
         if ($isAdmin) {
             $allUsers = $userController->getAllUsers();
-            $allPosts = $postController->getPosts(); // fetch all posts for admin
+            $allPosts = $postController->getPosts($user_id); // fetch all posts for admin
         }
 
         $title = "Settings";
@@ -414,15 +415,31 @@ switch ($page) {
                     }
                 }
             }
-            // Create post with optional image path
-            $postController->createPost($user_id, $content, $imagePath);
+            // Read post visibility from form
+            $visibility = $_POST['visibility'] ?? 'public';
+            // Create post with optional image path and visibility
+            $postController->createPost($user_id, $content, $imagePath, $visibility);
             header("Location: index.php");
             exit;
         }
-        $followingPosts = $postController->getPostsFromFollowing($user_id);
+        $viewer_id = $session->getUserId();
+        $followingPosts = $postController->getPostsFromFollowing($user_id, $viewer_id);
         $profileController = new ProfileController();
         $followingList = $profileController->getFollowingList($user_id);
-        $posts = $postController->getPosts();
+        $posts = $postController->getPosts($viewer_id);
+
+        // Ensure user sees their own posts (including followers-only and private)
+        $ownPosts = $postController->getPostsByUser($viewer_id, $viewer_id);
+        $posts = array_merge($ownPosts, $posts);
+
+        // Remove duplicates and sort by newest first
+        $unique = [];
+        $posts = array_values(array_filter($posts, function($post) use (&$unique) {
+            if (in_array($post['id'], $unique)) return false;
+            $unique[] = $post['id'];
+            return true;
+        }));
+        usort($posts, fn($a, $b) => strtotime($b['created_at']) - strtotime($a['created_at']));
         $title = "Home";
         require __DIR__ . '/includes/views/header.php';
         require __DIR__ . '/includes/views/home_view.php';

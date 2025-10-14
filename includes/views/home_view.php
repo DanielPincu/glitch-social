@@ -69,10 +69,19 @@
             <textarea name="content" placeholder="What's the truth, Neo?" required
               class="w-full bg-[#e8e8e8] text-black px-5 py-4 rounded border border-[#b0b0b0] resize-y focus:outline-none focus:ring-2 focus:ring-green-500 focus:shadow-[0_0_8px_rgba(0,255,0,0.7)] transition-shadow"></textarea>
             <div class="flex justify-between items-center mt-4">
-              <label for="imageFile" class="cursor-pointer inline-flex items-center px-3 py-1 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#3A6EA5] to-[#5CACEE] text-blue-900 text-xs font-semibold shadow-inner hover:brightness-110 active:brightness-90 transition select-none">
-                <i data-feather="image" class="w-4 h-4 mr-1 drop-shadow-[0_0_3px_rgba(0,255,0,0.7)]"></i> Image
-                <input type="file" name="imageFile" id="imageFile" onchange="previewImage(event)" class="hidden">
-              </label>
+              <div class="flex items-center gap-2">
+                <label for="imageFile" class="cursor-pointer inline-flex items-center px-3 py-1 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#3A6EA5] to-[#5CACEE] text-blue-900 text-xs font-semibold shadow-inner hover:brightness-110 active:brightness-90 transition select-none">
+                  <i data-feather="image" class="w-4 h-4 mr-1 drop-shadow-[0_0_3px_rgba(0,255,0,0.7)]"></i> Image
+                  <input type="file" name="imageFile" id="imageFile" onchange="previewImage(event)" class="hidden">
+                </label>
+                <select name="visibility" id="visibility"
+                  class="px-3 py-1 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#e8e8e8] to-[#d0e4fa] text-blue-900 text-xs font-semibold shadow-inner focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                  style="min-width: 100px;">
+                  <option value="public">Public</option>
+                  <option value="followers">Followers</option>
+                  <option value="private">Private</option>
+                </select>
+              </div>
               <button type="submit" name="post_submit"
                 class="px-6 py-2 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#1E90FF] to-[#5CACEE] text-blue-900 font-bold hover:drop-shadow-[0_0_10px_rgba(30,144,255,0.5)] transition select-none">
                 Post

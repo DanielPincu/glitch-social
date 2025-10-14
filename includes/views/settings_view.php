@@ -63,6 +63,16 @@
                     <input type="file" name="new_image" accept="image/*" class="text-gray-200 text-sm">
                   </div>
 
+                  <div>
+                    <label class="text-sm text-gray-400 block mb-1">Visibility:</label>
+                    <select name="visibility" class="w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2">
+                      <option value="public" <?php echo $post['visibility'] === 'public' ? 'selected' : ''; ?>>Public</option>
+                      <option value="followers" <?php echo $post['visibility'] === 'followers' ? 'selected' : ''; ?>>Followers</option>
+                      <option value="private" <?php echo $post['visibility'] === 'private' ? 'selected' : ''; ?>>Private</option>
+                    </select>
+                    <input type="hidden" name="visibility_fallback" value="<?php echo $post['visibility']; ?>">
+                  </div>
+
                   <button type="submit" name="update_post"
                     class="px-3 py-1 rounded border bg-green-600 border-green-800 text-white font-semibold hover:bg-green-700">
                     Save Changes
@@ -263,6 +273,16 @@
                   <div>
                     <label class="text-sm text-gray-400 block mb-1">Replace image:</label>
                     <input type="file" name="new_image" accept="image/*" class="text-gray-200 text-sm">
+                  </div>
+
+                  <div>
+                    <label class="text-sm text-gray-400 block mb-1">Visibility:</label>
+                    <select name="visibility" class="w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2">
+                      <option value="public" <?php echo $post['visibility'] === 'public' ? 'selected' : ''; ?>>Public</option>
+                      <option value="followers" <?php echo $post['visibility'] === 'followers' ? 'selected' : ''; ?>>Followers</option>
+                      <option value="private" <?php echo $post['visibility'] === 'private' ? 'selected' : ''; ?>>Private</option>
+                    </select>
+                    <input type="hidden" name="visibility_fallback" value="<?php echo $post['visibility']; ?>">
                   </div>
 
                   <button type="submit" name="update_post"

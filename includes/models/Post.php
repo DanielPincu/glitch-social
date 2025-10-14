@@ -9,8 +9,8 @@ class Post {
         $this->db = $database->connect();
     }
 
-    // Create a new post with optional image
-    public function create($user_id, $content, $file = null) {
+    // Create a new post with optional image and visibility
+    public function create($user_id, $content, $file = null, $visibility = 'public') {
         $imagePath = null;
 
         // Handle image upload or direct image path
@@ -33,25 +33,32 @@ class Post {
             $imagePath = $file;
         }
 
-        $stmt = $this->db->prepare("INSERT INTO posts (user_id, content, image_path) VALUES (:user_id, :content, :image_path)");
+        $stmt = $this->db->prepare("INSERT INTO posts (user_id, content, image_path, visibility) VALUES (:user_id, :content, :image_path, :visibility)");
         return $stmt->execute([
             ':user_id' => $user_id,
             ':content' => $content,
-            ':image_path' => $imagePath
+            ':image_path' => $imagePath,
+            ':visibility' => $visibility
         ]);
     }
 
-    // Fetch all posts with user info and like count
-    public function fetchAll() {
-        $stmt = $this->db->query("
+    // Fetch all posts with user info and like count, filtered by visibility for the viewer
+    public function fetchAll($viewer_id) {
+        $stmt = $this->db->prepare("
             SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
                    users.username, profiles.avatar_url,
                    (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
             LEFT JOIN profiles ON profiles.user_id = users.id
+            LEFT JOIN followers ON followers.user_id = posts.user_id AND followers.follower_id = :viewer_id
+            WHERE
+                posts.visibility = 'public'
+                OR (posts.visibility = 'followers' AND followers.follower_id IS NOT NULL)
+                OR (posts.visibility = 'private' AND posts.user_id = :viewer_id)
             ORDER BY posts.created_at DESC
         ");
+        $stmt->execute([':viewer_id' => $viewer_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -170,18 +177,49 @@ public function deleteComment($comment_id, $user_id) {
     }
 
     // Get posts by specific user
-    public function getPostsByUser($user_id) {
-        $stmt = $this->db->prepare("
-            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
+    public function getPostsByUser($user_id, $viewer_id = null) {
+        $query = "
+            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.created_at,
                    users.username, profiles.avatar_url,
                    (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
             LEFT JOIN profiles ON profiles.user_id = users.id
-            WHERE posts.user_id = :user_id
-            ORDER BY posts.created_at DESC
-        ");
-        $stmt->execute([':user_id' => $user_id]);
+        ";
+
+        // Viewer is the same user OR no viewer (e.g. settings/profile page)
+        if ($viewer_id === null || (int)$viewer_id === (int)$user_id) {
+            $query .= " WHERE posts.user_id = :user_id";
+        } else {
+            // Viewer is someone else (apply visibility rules)
+            $query .= "
+                WHERE posts.user_id = :user_id
+                AND (
+                    posts.visibility = 'public'
+                    OR (
+                        posts.visibility = 'followers'
+                        AND (
+                            EXISTS (
+                                SELECT 1 FROM followers
+                                WHERE followers.user_id = :user_id
+                                AND followers.follower_id = :viewer_id
+                            )
+                            OR posts.user_id = :viewer_id
+                        )
+                    )
+                )
+            ";
+        }
+
+        $query .= " ORDER BY posts.created_at DESC";
+
+        $stmt = $this->db->prepare($query);
+        $params = [':user_id' => $user_id];
+        if ($viewer_id !== null && (int)$viewer_id !== (int)$user_id) {
+            $params[':viewer_id'] = $viewer_id;
+        }
+
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -209,8 +247,8 @@ public function deleteComment($comment_id, $user_id) {
         return $stmt->execute([':id' => $post_id, ':user_id' => $user_id]);
     }
 
-    // Update a post’s content and optionally its image (only if it belongs to the user)
-    public function updateContent($post_id, $new_content, $user_id, $new_image_path = null, $remove_image = false) {
+    // Update a post’s content, image, and optionally its visibility (only if it belongs to the user)
+    public function updateContent($post_id, $new_content, $user_id, $new_image_path = null, $remove_image = false, $visibility = null) {
         $sql = "UPDATE posts SET content = :content";
         $params = [
             ':content' => $new_content,
@@ -226,27 +264,62 @@ public function deleteComment($comment_id, $user_id) {
             $params[':image_path'] = $new_image_path;
         }
 
+        // Handle visibility update if provided
+        if ($visibility !== null) {
+            $sql .= ", visibility = :visibility";
+            $params[':visibility'] = $visibility;
+        }
+
         $sql .= " WHERE id = :post_id AND user_id = :user_id";
 
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
     }
 
-    // Get posts from users that the current user follows
-    public function getPostsFromFollowing($user_id) {
-        $stmt = $this->db->prepare("
-            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
+    // Get posts from users that the current user follows, filtered by visibility (updated to allow user to see their own followers-only posts)
+    public function getPostsFromFollowing($user_id, $viewer_id) {
+        $query = "
+            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.created_at,
                    users.username, profiles.avatar_url,
                    (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
             FROM posts
             JOIN users ON posts.user_id = users.id
             LEFT JOIN profiles ON profiles.user_id = users.id
-            WHERE posts.user_id IN (
-                SELECT user_id FROM followers WHERE follower_id = :user_id
+            LEFT JOIN followers ON followers.user_id = posts.user_id AND followers.follower_id = :viewer_id
+            WHERE (
+                posts.user_id IN (SELECT user_id FROM followers WHERE follower_id = :user_id)
+                OR posts.user_id = :viewer_id
+            )
+            AND (
+                posts.visibility = 'public'
+                OR (posts.visibility = 'followers' AND (followers.follower_id IS NOT NULL OR posts.user_id = :viewer_id))
+                OR (posts.visibility = 'private' AND posts.user_id = :viewer_id)
             )
             ORDER BY posts.created_at DESC
+        ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([':user_id' => $user_id, ':viewer_id' => $viewer_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Get posts filtered by visibility for a viewer
+    public function getPosts($viewer_id) {
+        $stmt = $this->db->prepare("
+            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.created_at, 
+                   users.username, profiles.avatar_url,
+                   (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+            FROM posts
+            JOIN users ON posts.user_id = users.id
+            LEFT JOIN profiles ON profiles.user_id = users.id
+            LEFT JOIN followers ON followers.user_id = posts.user_id AND followers.follower_id = :viewer_id
+            WHERE
+                posts.visibility = 'public'
+                OR (posts.user_id = :viewer_id)
+                OR (posts.visibility = 'followers' AND (followers.follower_id IS NOT NULL OR posts.user_id = :viewer_id))
+            ORDER BY posts.created_at DESC
         ");
-        $stmt->execute([':user_id' => $user_id]);
+        $stmt->execute([':viewer_id' => $viewer_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -14,7 +14,8 @@ class ProfileController {
     // Get profile info and their posts
     public function showProfile($user_id) {
         $profile = $this->profileModel->getByUserId($user_id);
-        $posts = $this->postModel->getPostsByUser($user_id);
+        $viewer_id = $_SESSION['user_id'] ?? null; // get logged-in viewer id
+        $posts = $this->postModel->getPostsByUser($user_id, $viewer_id);
         return ['profile' => $profile, 'posts' => $posts];
     }
 
