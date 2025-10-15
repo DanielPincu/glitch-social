@@ -278,34 +278,31 @@ public function deleteComment($comment_id, $user_id) {
 
     // Get posts from users that the current user follows, filtered by visibility (updated to allow user to see their own followers-only posts)
     public function getPostsFromFollowing($user_id, $viewer_id) {
-        $query = "
-            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.created_at,
-                   users.username, profiles.avatar_url,
-                   (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
-            FROM posts
-            JOIN users ON posts.user_id = users.id
-            LEFT JOIN profiles ON profiles.user_id = users.id
-            LEFT JOIN followers ON followers.user_id = posts.user_id AND followers.follower_id = :viewer_id
-            LEFT JOIN blocked_users AS viewer_blocks ON viewer_blocks.blocker_id = :viewer_id AND viewer_blocks.blocked_id = posts.user_id
-            LEFT JOIN blocked_users AS author_blocks ON author_blocks.blocker_id = posts.user_id AND author_blocks.blocked_id = :viewer_id
-            WHERE (
-                posts.user_id IN (SELECT user_id FROM followers WHERE follower_id = :user_id)
-                OR posts.user_id = :viewer_id
-            )
-            AND (
-                posts.visibility = 'public'
-                OR (posts.visibility = 'followers' AND (followers.follower_id IS NOT NULL OR posts.user_id = :viewer_id))
-                OR (posts.visibility = 'private' AND posts.user_id = :viewer_id)
-            )
-            AND viewer_blocks.id IS NULL
-            AND author_blocks.id IS NULL
-            ORDER BY posts.created_at DESC
-        ";
+    $query = "
+        SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.created_at,
+               users.username, profiles.avatar_url,
+               (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+        FROM posts
+        JOIN users ON posts.user_id = users.id
+        LEFT JOIN profiles ON profiles.user_id = users.id
+        LEFT JOIN followers ON followers.user_id = posts.user_id AND followers.follower_id = :viewer_id
+        LEFT JOIN blocked_users AS viewer_blocks ON viewer_blocks.blocker_id = :viewer_id AND viewer_blocks.blocked_id = posts.user_id
+        LEFT JOIN blocked_users AS author_blocks ON author_blocks.blocker_id = posts.user_id AND author_blocks.blocked_id = :viewer_id
+        WHERE posts.user_id IN (SELECT user_id FROM followers WHERE follower_id = :user_id)
+        AND (
+            posts.visibility = 'public'
+            OR (posts.visibility = 'followers' AND followers.follower_id IS NOT NULL)
+        )
+        AND viewer_blocks.id IS NULL
+        AND author_blocks.id IS NULL
+        AND posts.user_id != :viewer_id
+        ORDER BY posts.created_at DESC
+    ";
 
-        $stmt = $this->db->prepare($query);
-        $stmt->execute([':user_id' => $user_id, ':viewer_id' => $viewer_id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    $stmt = $this->db->prepare($query);
+    $stmt->execute([':user_id' => $user_id, ':viewer_id' => $viewer_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     // Get posts filtered by visibility for a viewer
     public function getPosts($viewer_id) {
