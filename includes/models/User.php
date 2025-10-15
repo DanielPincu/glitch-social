@@ -9,9 +9,9 @@ class User {
         $this->db = $database->connect();
     }
 
-    // ----------------------
+    
     // Register a new user
-    // ----------------------
+    
     public function register($username, $email, $password) {
         // Check if username or email exists
         $stmt = $this->db->prepare("SELECT id FROM users WHERE username = :username OR email = :email");
@@ -28,9 +28,9 @@ class User {
         ]);
     }
 
-    // ----------------------
+    
     // Login user
-    // ----------------------
+    
     public function login($username, $password) {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE username = :username");
         $stmt->execute([':username' => $username]);
@@ -47,9 +47,9 @@ class User {
         return false;
     }
 
-    // ----------------------
+    
     // Block or unblock a user (ADMIN-LEVEL account lock)
-    // ----------------------
+    
     public function setBlocked($user_id, $blocked) {
         $sql = $blocked == 1
             ? "UPDATE users SET is_blocked = 1, is_admin = 0 WHERE id = :id"
@@ -59,17 +59,26 @@ class User {
         return $stmt->execute([':id' => $user_id]);
     }
 
-    // ----------------------
+    
+    // Fetch a single user by ID
+    
+    public function getUserById($user_id) {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE id = :id");
+        $stmt->execute([':id' => $user_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    
     // Fetch all users
-    // ----------------------
+    
     public function getAllUsers() {
         $stmt = $this->db->query("SELECT id, username, email, is_admin, is_blocked FROM users");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // ----------------------
+    
     // Check if a user is blocked (ADMIN-LEVEL lock)
-    // ----------------------
+    
     public function isBlocked($user_id) {
         $stmt = $this->db->prepare("SELECT is_blocked FROM users WHERE id = :id");
         $stmt->bindValue(':id', $user_id);
@@ -78,9 +87,9 @@ class User {
         return $user && (int)$user['is_blocked'] === 1;
     }
 
-    // ----------------------
+    
     // Set admin status for a user
-    // ----------------------
+    
     public function setAdmin($user_id, $is_admin) {
         $stmt = $this->db->prepare("UPDATE users SET is_admin = :is_admin WHERE id = :id");
         $stmt->bindValue(':is_admin', $is_admin);
@@ -88,9 +97,9 @@ class User {
         return $stmt->execute();
     }
 
-    // ----------------------
+    
     // User-to-user block list (social blocking)
-    // ----------------------
+    
     public function blockUser($blocker_id, $blocked_id) {
         if ((int)$blocker_id === (int)$blocked_id) return false; // can't block yourself
         $stmt = $this->db->prepare("

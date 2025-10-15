@@ -33,6 +33,11 @@ class UserController {
         return $this->user->isBlocked($user_id);
     }
 
+    // Get user by ID
+    public function getUserById($user_id) {
+        return $this->user->getUserById($user_id);
+    }
+
     // Fetch all users
     public function getAllUsers() {
         return $this->user->getAllUsers();

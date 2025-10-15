@@ -488,7 +488,17 @@ switch ($page) {
         $blockedIds = array_map(fn($b) => $b['blocked_id'] ?? $b['id'] ?? null, $blockedUsersList);
         $blockedIds = array_filter($blockedIds); // remove nulls
         $posts = array_filter($posts, fn($post) => !in_array($post['user_id'], $blockedIds));
+        // Also filter out posts by users who are admin-blocked (is_blocked == 1)
+        $posts = array_filter($posts, function ($post) use ($userController) {
+            $user = $userController->getUserById($post['user_id']);
+            return !($user && isset($user['is_blocked']) && $user['is_blocked'] == 1);
+        });
         $followingPosts = array_filter($followingPosts, fn($post) => !in_array($post['user_id'], $blockedIds));
+        // Also filter out posts by users who are admin-blocked (is_blocked == 1)
+        $followingPosts = array_filter($followingPosts, function ($post) use ($userController) {
+            $user = $userController->getUserById($post['user_id']);
+            return !($user && isset($user['is_blocked']) && $user['is_blocked'] == 1);
+        });
         usort($posts, fn($a, $b) => strtotime($b['created_at']) - strtotime($a['created_at']));
         $title = "Home";
         require __DIR__ . '/includes/views/header.php';
