@@ -10,8 +10,23 @@ class ImageResizer
     protected $image;
     protected $imageType;
 
+    public static function isValidImage($filePath) {
+        if (!file_exists($filePath)) return false;
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $filePath);
+        finfo_close($finfo);
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        return in_array($mimeType, $allowedTypes);
+    }
+
     public function load($filename)
     {
+        if (!self::isValidImage($filename)) {
+            throw new Exception("Invalid or unsupported image type.");
+        }
+
         $info = getimagesize($filename);
         $this->imageType = $info[2];
         switch ($this->imageType) {
@@ -311,10 +326,17 @@ switch ($page) {
                 $basename = uniqid('', true) . '.' . $ext;
                 $targetPath = $targetDir . $basename;
 
-                if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                    $resizer = new ImageResizer();
-                    $resizer->resizeAvatarImage($targetPath);
-                    $avatarPath = 'img/avatars/' . $basename;
+                if (ImageResizer::isValidImage($file['tmp_name'])) {
+                    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                        $resizer = new ImageResizer();
+                        $resizer->resizeAvatarImage($targetPath);
+                        $avatarPath = 'img/avatars/' . $basename;
+                    }
+                } else {
+                    if (file_exists($targetPath)) unlink($targetPath);
+                    $_SESSION['upload_error'] = "⚠️ Invalid file type. Only images (JPEG, PNG, GIF) are allowed.";
+                    header("Location: index.php?page=profile&id={$user_id}");
+                    exit;
                 }
             }
 
@@ -512,10 +534,17 @@ switch ($page) {
                 }
                 $basename = uniqid('img_', true) . '.' . $ext;
                 $targetPath = $targetDir . $basename;
-                if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                    $resizer = new ImageResizer();
-                    $resizer->resizePostImage($targetPath);
-                    $imagePath = 'uploads/' . $basename;
+                if (ImageResizer::isValidImage($file['tmp_name'])) {
+                    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                        $resizer = new ImageResizer();
+                        $resizer->resizePostImage($targetPath);
+                        $imagePath = 'uploads/' . $basename;
+                    }
+                } else {
+                    if (file_exists($targetPath)) unlink($targetPath);
+                    $_SESSION['upload_error'] = "⚠️ Invalid file type. Only images (JPEG, PNG, GIF) are allowed.";
+                    header("Location: index.php?page=home");
+                    exit;
                 }
             }
             // Read post visibility from form

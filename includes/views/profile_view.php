@@ -1,3 +1,8 @@
+<?php if (isset($_SESSION['upload_error'])): ?>
+    <div style="background-color: #ff0000; color: #fff; padding: 12px; border-radius: 6px; font-weight: bold; text-align: center; margin-bottom: 20px; box-shadow: 0 0 10px rgba(255,0,0,0.6);">
+      <?php echo $_SESSION['upload_error']; unset($_SESSION['upload_error']); ?>
+    </div>
+<?php endif; ?>
 <div class="max-w-4xl mx-auto px-4 py-8 relative z-10 text-black h-[1200px]">
     <section class="text-center mb-10">
         <?php if (!empty($profileData['avatar_url'])): ?>
