@@ -5,6 +5,80 @@ require_once __DIR__ . '/includes/controllers/AdminController.php';
 require_once __DIR__ . '/includes/controllers/ProfileController.php';
 require_once __DIR__ . '/includes/helpers/Session.php';
 
+class ImageResizer
+{
+    protected $image;
+    protected $imageType;
+
+    public function load($filename)
+    {
+        $info = getimagesize($filename);
+        $this->imageType = $info[2];
+        switch ($this->imageType) {
+            case IMAGETYPE_JPEG:
+                $this->image = imagecreatefromjpeg($filename);
+                break;
+            case IMAGETYPE_PNG:
+                $this->image = imagecreatefrompng($filename);
+                imagealphablending($this->image, false);
+                imagesavealpha($this->image, true);
+                break;
+            case IMAGETYPE_GIF:
+                $this->image = imagecreatefromgif($filename);
+                break;
+            default:
+                throw new Exception("Unsupported image type.");
+        }
+    }
+
+    public function save($filename, $imageType = IMAGETYPE_JPEG, $compression = 90)
+    {
+        switch ($imageType) {
+            case IMAGETYPE_JPEG:
+                imagejpeg($this->image, $filename, $compression);
+                break;
+            case IMAGETYPE_PNG:
+                imagepng($this->image, $filename);
+                break;
+            case IMAGETYPE_GIF:
+                imagegif($this->image, $filename);
+                break;
+        }
+    }
+
+    public function resize($width, $height)
+    {
+        $newImage = imagecreatetruecolor($width, $height);
+        imagealphablending($newImage, false);
+        imagesavealpha($newImage, true);
+        imagecopyresampled($newImage, $this->image, 0, 0, 0, 0, $width, $height, imagesx($this->image), imagesy($this->image));
+        $this->image = $newImage;
+    }
+
+    public function resizeToWidth($filePath, $maxWidth)
+    {
+        $this->load($filePath);
+        $width = imagesx($this->image);
+        $height = imagesy($this->image);
+        if ($width > $maxWidth) {
+            $ratio = $maxWidth / $width;
+            $newHeight = $height * $ratio;
+            $this->resize($maxWidth, $newHeight);
+            $this->save($filePath, $this->imageType);
+        }
+    }
+
+    public function resizePostImage($filePath)
+    {
+        $this->resizeToWidth($filePath, 1200);
+    }
+
+    public function resizeAvatarImage($filePath)
+    {
+        $this->resizeToWidth($filePath, 256);
+    }
+}
+
 // Central Routing System
 $session = new Session();
 $userController = new UserController();
@@ -62,42 +136,42 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'comment') {
         $newComment = end($comments); // latest comment
 
         ob_start();
-        ?>
-<div class="flex items-start space-x-2 mb-1">
-  <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500">
-    <?php if (!empty($newComment['avatar_url'])): ?>
-      <img src="<?php echo htmlspecialchars($newComment['avatar_url']); ?>" class="w-full h-full object-cover">
-    <?php else: ?>
-      <i data-feather="user" class="text-green-400 w-4 h-4"></i>
-    <?php endif; ?>
-  </div>
-  <div class="text-sm flex flex-col w-full">
-    <div class="flex justify-between items-center">
-      <span class="font-semibold text-green-200"><?php echo htmlspecialchars($newComment['username']); ?></span>
-      <?php if ($newComment['username'] === $_SESSION['username']): ?>
-        <div class="flex gap-2 text-xs">
-          <button type="button" onclick="toggleEditComment(<?php echo $newComment['id']; ?>)" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition">Edit</button>
-          <form method="POST" class="inline">
-            <input type="hidden" name="comment_id" value="<?php echo $newComment['id']; ?>">
-            <button type="submit" name="delete_comment" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition" onclick="return confirm('Are you sure you want to delete this comment?')">Delete</button>
-          </form>
-        </div>
-      <?php endif; ?>
-    </div>
-    <p id="comment-text-<?php echo $newComment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($newComment['content']); ?></p>
+?>
+        <div class="flex items-start space-x-2 mb-1">
+            <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500">
+                <?php if (!empty($newComment['avatar_url'])): ?>
+                    <img src="<?php echo htmlspecialchars($newComment['avatar_url']); ?>" class="w-full h-full object-cover">
+                <?php else: ?>
+                    <i data-feather="user" class="text-green-400 w-4 h-4"></i>
+                <?php endif; ?>
+            </div>
+            <div class="text-sm flex flex-col w-full">
+                <div class="flex justify-between items-center">
+                    <span class="font-semibold text-green-200"><?php echo htmlspecialchars($newComment['username']); ?></span>
+                    <?php if ($newComment['username'] === $_SESSION['username']): ?>
+                        <div class="flex gap-2 text-xs">
+                            <button type="button" onclick="toggleEditComment(<?php echo $newComment['id']; ?>)" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition">Edit</button>
+                            <form method="POST" class="inline">
+                                <input type="hidden" name="comment_id" value="<?php echo $newComment['id']; ?>">
+                                <button type="submit" name="delete_comment" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition" onclick="return confirm('Are you sure you want to delete this comment?')">Delete</button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <p id="comment-text-<?php echo $newComment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($newComment['content']); ?></p>
 
-    <!-- Hidden inline edit form -->
-    <form method="POST" id="edit-form-<?php echo $newComment['id']; ?>" class="hidden mt-1 flex space-x-2">
-      <input type="hidden" name="comment_id" value="<?php echo $newComment['id']; ?>">
-      <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($newComment['content']); ?>" 
-             class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
-      <button type="submit" name="update_comment" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs transition">
-        Save
-      </button>
-    </form>
-  </div>
-</div>
-        <?php
+                <!-- Hidden inline edit form -->
+                <form method="POST" id="edit-form-<?php echo $newComment['id']; ?>" class="hidden mt-1 flex space-x-2">
+                    <input type="hidden" name="comment_id" value="<?php echo $newComment['id']; ?>">
+                    <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($newComment['content']); ?>"
+                        class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
+                    <button type="submit" name="update_comment" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs transition">
+                        Save
+                    </button>
+                </form>
+            </div>
+        </div>
+<?php
         $html = ob_get_clean();
 
         echo json_encode(['success' => true, 'html' => $html]);
@@ -228,12 +302,28 @@ switch ($page) {
 
         // Handle profile updates (only allowed on own profile)
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user_id == $session->getUserId()) {
+            $avatarPath = null;
+            if (!empty($_FILES['avatar']['tmp_name'])) {
+                $file = $_FILES['avatar'];
+                $targetDir = __DIR__ . '/img/avatars/';
+                if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $basename = uniqid('', true) . '.' . $ext;
+                $targetPath = $targetDir . $basename;
+
+                if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                    $resizer = new ImageResizer();
+                    $resizer->resizeAvatarImage($targetPath);
+                    $avatarPath = 'img/avatars/' . $basename;
+                }
+            }
+
             $controller->updateProfile(
                 $user_id,
                 $_POST['bio'] ?? '',
                 $_POST['location'] ?? '',
                 $_POST['website'] ?? '',
-                $_FILES['avatar'] ?? null
+                $avatarPath
             );
             header("Location: index.php?page=profile&id={$user_id}");
             exit;
@@ -285,33 +375,25 @@ switch ($page) {
             $remove_image = isset($_POST['remove_image']);
             $file = $_FILES['new_image'] ?? null;
             $new_image_path = null;
-
-            // Handle new image upload
+            // Handle new image upload (no validation)
             if ($file && $file['error'] === UPLOAD_ERR_OK && $file['size'] > 0) {
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                $maxSize = 5 * 1024 * 1024; // 5MB
-                $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                $mimeType = finfo_file($finfo, $file['tmp_name']);
-                finfo_close($finfo);
-                if (in_array($mimeType, $allowedTypes) && $file['size'] <= $maxSize) {
-                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-                    $targetDir = __DIR__ . '/uploads/';
-                    if (!is_dir($targetDir)) {
-                        mkdir($targetDir, 0777, true);
-                    }
-                    $basename = uniqid('img_', true) . '.' . $ext;
-                    $targetPath = $targetDir . $basename;
-                    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                        $new_image_path = 'uploads/' . $basename;
-                    }
+                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $targetDir = __DIR__ . '/uploads/';
+                if (!is_dir($targetDir)) {
+                    mkdir($targetDir, 0777, true);
+                }
+                $basename = uniqid('img_', true) . '.' . $ext;
+                $targetPath = $targetDir . $basename;
+                if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                    $resizer = new ImageResizer();
+                    $resizer->resizePostImage($targetPath);
+                    $new_image_path = 'uploads/' . $basename;
                 }
             }
-
             $visibility = $_POST['visibility'] ?? null;
             if (!empty($new_content) || $new_image_path || $remove_image || $visibility) {
                 $postController->updatePostContent($post_id, $new_content, $user_id, $new_image_path, $remove_image, $visibility);
             }
-
             header("Location: index.php?page=settings");
             exit;
         }
@@ -417,28 +499,23 @@ switch ($page) {
             header("Location: index.php");
             exit;
         }
-        // Handle new post submission (with image upload validation)
+        // Handle new post submission (image upload, no validation)
         if (isset($_POST['post_submit']) && !$blocked_message) {
             $content = $_POST['content'] ?? '';
             $file = $_FILES['imageFile'] ?? null;
             $imagePath = null;
             if ($file && $file['error'] === UPLOAD_ERR_OK && $file['size'] > 0) {
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                $maxSize = 5 * 1024 * 1024; // 5MB
-                $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                $mimeType = finfo_file($finfo, $file['tmp_name']);
-                finfo_close($finfo);
-                if (in_array($mimeType, $allowedTypes) && $file['size'] <= $maxSize) {
-                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-                    $targetDir = __DIR__ . '/uploads/';
-                    if (!is_dir($targetDir)) {
-                        mkdir($targetDir, 0777, true);
-                    }
-                    $basename = uniqid('img_', true) . '.' . $ext;
-                    $targetPath = $targetDir . $basename;
-                    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                        $imagePath = 'uploads/' . $basename;
-                    }
+                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $targetDir = __DIR__ . '/uploads/';
+                if (!is_dir($targetDir)) {
+                    mkdir($targetDir, 0777, true);
+                }
+                $basename = uniqid('img_', true) . '.' . $ext;
+                $targetPath = $targetDir . $basename;
+                if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                    $resizer = new ImageResizer();
+                    $resizer->resizePostImage($targetPath);
+                    $imagePath = 'uploads/' . $basename;
                 }
             }
             // Read post visibility from form
@@ -460,7 +537,7 @@ switch ($page) {
 
         // Remove duplicates and sort by newest first
         $unique = [];
-        $posts = array_values(array_filter($posts, function($post) use (&$unique) {
+        $posts = array_values(array_filter($posts, function ($post) use (&$unique) {
             if (in_array($post['id'], $unique)) return false;
             $unique[] = $post['id'];
             return true;

@@ -53,24 +53,8 @@ class ProfileController {
     }
 
     // Update profile for logged-in user
-    public function updateProfile($user_id, $bio, $location, $website, $avatarFile = null) {
-        $avatarPath = null;
-
-        // Handle avatar upload
-        if ($avatarFile && isset($avatarFile['error']) && $avatarFile['error'] === UPLOAD_ERR_OK) {
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (in_array($avatarFile['type'], $allowedTypes)) {
-                $uploadDir = __DIR__ . '/../../img/avatars/';
-                if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-
-                $filename = time() . '_' . basename($avatarFile['name']);
-                $destination = $uploadDir . $filename;
-                if (move_uploaded_file($avatarFile['tmp_name'], $destination)) {
-                    $avatarPath = 'img/avatars/' . $filename;
-                }
-            }
-        }
-
+    public function updateProfile($user_id, $bio, $location, $website, $avatarPath = null) {
+        // Always delegate saving to the model, including avatar if provided
         return $this->profileModel->save($user_id, $bio, $location, $website, $avatarPath);
     }
     // Follow or unfollow another user (toggle behavior)
