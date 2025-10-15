@@ -15,7 +15,7 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   is_admin TINYINT(1) NOT NULL DEFAULT 0,
-  is_blocked TINYINT(1) NOT NULL DEFAULT 0,
+  is_blocked TINYINT(1) NOT NULL DEFAULT 0
 );
 
 -- PROFILES TABLE
@@ -74,6 +74,7 @@ CREATE TABLE likes (
   FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
+-- USER BLOCKS TABLE 
 CREATE TABLE blocked_users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     blocker_id INT NOT NULL,
@@ -81,17 +82,4 @@ CREATE TABLE blocked_users (
     CONSTRAINT fk_blocker_user FOREIGN KEY (blocker_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_blocked_user FOREIGN KEY (blocked_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT unique_block_pair UNIQUE (blocker_id, blocked_id)
-);
-
-CREATE TABLE notifications (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,   -- who receives the notification
-  actor_id INT NOT NULL,  -- who triggered the action
-  type ENUM('like','comment','follow','share') NOT NULL,
-  post_id INT DEFAULT NULL,     -- nullable, only for post-related notifications
-  is_read TINYINT(1) NOT NULL DEFAULT 0,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (actor_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );

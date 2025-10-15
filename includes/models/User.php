@@ -134,7 +134,7 @@ class User {
             JOIN users ON users.id = blocked_users.blocked_id
             LEFT JOIN profiles ON profiles.user_id = users.id
             WHERE blocked_users.blocker_id = :blocker_id
-            ORDER BY blocked_users.created_at DESC
+            ORDER BY blocked_users.blocked_id DESC
         ");
         $stmt->execute([':blocker_id' => $blocker_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

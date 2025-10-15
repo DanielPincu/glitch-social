@@ -163,9 +163,6 @@
                       <i data-feather="message-square" class="w-4 h-4"></i>
                       Comment
                     </button>
-                    <span class="flex items-center gap-1 text-gray-200">
-                      <i data-feather="share-2" class="w-4 h-4"></i> Share
-                    </span>
                   </div>
                 </div>
                 <!-- Comments Section -->
@@ -304,9 +301,6 @@
                       <i data-feather="message-square" class="w-4 h-4"></i>
                       Comment
                     </button>
-                    <span class="flex items-center gap-1 text-gray-200">
-                      <i data-feather="share-2" class="w-4 h-4"></i> Share
-                    </span>
                   </div>
                 </div>
                 <!-- Comments Section -->
