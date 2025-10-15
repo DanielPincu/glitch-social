@@ -47,12 +47,9 @@ CREATE TABLE posts (
   user_id INT NOT NULL,
   content TEXT DEFAULT NULL,
   image_path VARCHAR(255) DEFAULT NULL,         -- post image
-  shared_post_id INT DEFAULT NULL,              -- for sharing
-  pinned TINYINT(1) NOT NULL DEFAULT 0,
   visibility ENUM('public','private','followers') NOT NULL DEFAULT 'public',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (shared_post_id) REFERENCES posts(id) ON DELETE SET NULL
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- COMMENTS TABLE
