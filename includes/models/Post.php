@@ -134,16 +134,34 @@ public function updateComment($comment_id, $user_id, $new_content) {
     ]);
 }
 
-// Delete a comment (only if owned by the user)
-public function deleteComment($comment_id, $user_id) {
-    $stmt = $this->db->prepare("
-        DELETE FROM comments 
-        WHERE id = :comment_id AND user_id = :user_id
-    ");
-    return $stmt->execute([
-        ':comment_id' => $comment_id,
-        ':user_id' => $user_id
-    ]);
+// Delete a comment if authorized: comment owner, post owner, or admin
+public function deleteComment($comment_id, $user_id, $isAdmin = false) {
+    // Fetch the comment
+    $comment = $this->getCommentById($comment_id);
+    if (!$comment) {
+        return false; // Comment not found
+    }
+    // Fetch the post
+    $post = $this->getPostById($comment['post_id']);
+    if (!$post) {
+        return false; // Post not found
+    }
+    // Check authorization
+    if (
+        $comment['user_id'] == $user_id ||
+        $post['user_id'] == $user_id ||
+        $isAdmin
+    ) {
+        $stmt = $this->db->prepare("
+            DELETE FROM comments
+            WHERE id = :comment_id
+        ");
+        return $stmt->execute([
+            ':comment_id' => $comment_id
+        ]);
+    }
+    // Not authorized
+    return false;
 }
 
 
