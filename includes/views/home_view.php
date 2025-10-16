@@ -113,18 +113,22 @@
               <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
                 <div class="flex justify-between items-center mb-3">
                   <div class="flex items-center space-x-3">
-                    <div class="w-20 h-20 border-2 border-white rounded-full overflow-hidden flex items-center justify-center bg-black">
-                      <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>">
-                        <?php if (!empty($post['avatar_url'])): ?>
-                          <img 
-                            src="<?php echo htmlspecialchars($post['avatar_url']); ?>" 
-                            alt="<?php echo htmlspecialchars($post['username']); ?>'s avatar" 
-                            class="w-full h-full object-cover">
-                        <?php else: ?>
-                          <i data-feather="user" class="text-green-400 w-5 h-5"></i>
-                        <?php endif; ?>
-                      </a>
-                    </div>
+                   <?php if (!empty($post['avatar_url'])): ?>
+                     <div class="w-20 h-20 border-2 border-white overflow-hidden bg-black">
+                       <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>">
+                         <img 
+                           src="<?php echo htmlspecialchars($post['avatar_url']); ?>" 
+                           alt="<?php echo htmlspecialchars($post['username']); ?>'s avatar" 
+                           class="w-full h-full object-cover">
+                       </a>
+                     </div>
+                   <?php else: ?>
+                     <div class="w-20 h-20 border-2 border-white overflow-hidden flex items-center justify-center bg-black">
+                       <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>">
+                         <i data-feather="user" class="text-green-400 w-5 h-5"></i>
+                       </a>
+                     </div>
+                   <?php endif; ?>
                     <div>
                       <h4 class="font-bold">
                         <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>" class="text-green-200 hover:underline">
@@ -242,18 +246,22 @@
               <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
                 <div class="flex justify-between items-center mb-3">
                   <div class="flex items-center space-x-3">
-                    <div class="w-20 h-20 border-2 border-white rounded-full overflow-hidden flex items-center justify-center bg-black">
-                      <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>">
-                        <?php if (!empty($post['avatar_url'])): ?>
-                          <img 
-                            src="<?php echo htmlspecialchars($post['avatar_url']); ?>" 
-                            alt="<?php echo htmlspecialchars($post['username']); ?>'s avatar" 
+                    <?php if (!empty($post['avatar_url'])): ?>
+                      <div class="w-20 h-20 border-2 border-white overflow-hidden bg-black">
+                        <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>">
+                          <img
+                            src="<?php echo htmlspecialchars($post['avatar_url']); ?>"
+                            alt="<?php echo htmlspecialchars($post['username']); ?>'s avatar"
                             class="w-full h-full object-cover">
-                        <?php else: ?>
+                        </a>
+                      </div>
+                    <?php else: ?>
+                      <div class="w-20 h-20 border-2 border-white overflow-hidden flex items-center justify-center bg-black">
+                        <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>">
                           <i data-feather="user" class="text-green-400 w-5 h-5"></i>
-                        <?php endif; ?>
-                      </a>
-                    </div>
+                        </a>
+                      </div>
+                    <?php endif; ?>
                     <div>
                       <h4 class="font-bold">
                         <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>" class="text-green-200 hover:underline">

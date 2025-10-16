@@ -8,7 +8,7 @@
         <?php if (!empty($profileData['avatar_url'])): ?>
             <img src="<?php echo htmlspecialchars($profileData['avatar_url']); ?>"
                  alt="Profile Avatar"
-                 class="w-64 h-64 mx-auto rounded-full border-4 border-gray-300 object-cover shadow-md">
+                 class="w-64 h-64 mx-auto border-4 border-gray-300 object-cover shadow-md">
         <?php else: ?>
             <div class="w-64 h-64 mx-auto flex items-center justify-center rounded-full border-4 border-gray-300 bg-gray-100 shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user text-green-400 w-20 h-20">
