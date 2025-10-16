@@ -64,7 +64,7 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'comment') {
 
         ob_start();
 ?>
-        <div class="flex items-start space-x-2 mb-1">
+        <div class="flex items-start space-x-2 mb-1" data-comment-id="<?php echo $newComment['id']; ?>">
             <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500">
                 <?php if (!empty($newComment['avatar_url'])): ?>
                     <img src="<?php echo htmlspecialchars($newComment['avatar_url']); ?>" class="w-full h-full object-cover">
@@ -77,25 +77,22 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'comment') {
                     <span class="font-semibold text-green-200"><?php echo htmlspecialchars($newComment['username']); ?></span>
                     <?php if ($newComment['username'] === $_SESSION['username']): ?>
                         <div class="flex gap-2 text-xs">
-                            <button type="button" onclick="toggleEditComment(<?php echo $newComment['id']; ?>)" class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition">Edit</button>
+                            <button type="button"
+                                class="edit-comment-btn bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                                data-comment-id="<?php echo $newComment['id']; ?>">
+                                Edit
+                            </button>
                             <form method="POST" class="inline">
                                 <input type="hidden" name="comment_id" value="<?php echo $newComment['id']; ?>">
-                                <button type="submit" name="delete_comment" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition" onclick="return confirm('Are you sure you want to delete this comment?')">Delete</button>
+                                <button type="submit" name="delete_comment" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition"
+                                    onclick="return confirm('Are you sure you want to delete this comment?')">Delete</button>
                             </form>
                         </div>
                     <?php endif; ?>
                 </div>
-                <p id="comment-text-<?php echo $newComment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($newComment['content']); ?></p>
-
-                <!-- Hidden inline edit form -->
-                <form method="POST" id="edit-form-<?php echo $newComment['id']; ?>" class="hidden mt-1 flex space-x-2">
-                    <input type="hidden" name="comment_id" value="<?php echo $newComment['id']; ?>">
-                    <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($newComment['content']); ?>"
-                        class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
-                    <button type="submit" name="update_comment" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs transition">
-                        Save
-                    </button>
-                </form>
+                <p id="comment-text-<?php echo $newComment['id']; ?>" class="text-gray-300" data-comment-text>
+                    <?php echo htmlspecialchars($newComment['content']); ?>
+                </p>
             </div>
         </div>
 <?php

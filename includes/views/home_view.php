@@ -187,7 +187,7 @@
                     $comments = $postController->getComments($post['id']);
                     if (!empty($comments)):
                       foreach ($comments as $comment): ?>
-                        <div class="flex items-start space-x-2 mb-1">
+                        <div class="flex items-start space-x-2 mb-1" data-comment-id="<?php echo $comment['id']; ?>">
                           <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500">
                             <?php if (!empty($comment['avatar_url'])): ?>
                               <img src="<?php echo htmlspecialchars($comment['avatar_url']); ?>" class="w-full h-full object-cover">
@@ -204,8 +204,8 @@
                                 <div class="flex gap-2 text-xs">
                                   <button 
                                     type="button" 
-                                    onclick="toggleEditComment('hot', <?php echo $comment['id']; ?>)" 
-                                    class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                                    class="edit-comment-btn bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                                    data-comment-id="<?php echo $comment['id']; ?>"
                                   >
                                     Edit
                                   </button>
@@ -222,17 +222,7 @@
                                 </div>
                               <?php endif; ?>
                             </div>
-
-                            <p id="hot-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
-
-                            <form method="POST" id="hot-edit-form-<?php echo $comment['id']; ?>" class="hidden mt-1 flex space-x-2">
-                              <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
-                              <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($comment['content']); ?>" 
-                                     class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
-                              <button type="submit" name="update_comment" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs transition">
-                                Save
-                              </button>
-                            </form>
+                            <p id="hot-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300" data-comment-text><?php echo htmlspecialchars($comment['content']); ?></p>
                           </div>
                         </div>
                   <?php endforeach; endif; ?>
@@ -325,7 +315,7 @@
                     $comments = $postController->getComments($post['id']);
                     if (!empty($comments)):
                       foreach ($comments as $comment): ?>
-                        <div class="flex items-start space-x-2 mb-1">
+                        <div class="flex items-start space-x-2 mb-1" data-comment-id="<?php echo $comment['id']; ?>">
                           <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500">
                             <?php if (!empty($comment['avatar_url'])): ?>
                               <img src="<?php echo htmlspecialchars($comment['avatar_url']); ?>" class="w-full h-full object-cover">
@@ -342,8 +332,8 @@
                                 <div class="flex gap-2 text-xs">
                                   <button 
                                     type="button" 
-                                    onclick="toggleEditComment('following', <?php echo $comment['id']; ?>)" 
-                                    class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                                    class="edit-comment-btn bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                                    data-comment-id="<?php echo $comment['id']; ?>"
                                   >
                                     Edit
                                   </button>
@@ -360,17 +350,7 @@
                                 </div>
                               <?php endif; ?>
                             </div>
-
-                            <p id="following-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300"><?php echo htmlspecialchars($comment['content']); ?></p>
-
-                            <form method="POST" id="following-edit-form-<?php echo $comment['id']; ?>" class="hidden mt-1 flex space-x-2">
-                              <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
-                              <input type="text" name="new_comment_content" value="<?php echo htmlspecialchars($comment['content']); ?>" 
-                                     class="w-full bg-gray-800 text-white text-sm px-3 py-1 rounded border border-gray-600 focus:outline-none">
-                              <button type="submit" name="update_comment" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs">
-                                Save
-                              </button>
-                            </form>
+                            <p id="following-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300" data-comment-text><?php echo htmlspecialchars($comment['content']); ?></p>
                           </div>
                         </div>
                   <?php endforeach; endif; ?>
@@ -458,14 +438,5 @@
   function toggleCommentForm(tab, postId) {
     const form = document.getElementById(`${tab}-comment-form-${postId}`);
     if (form) form.classList.toggle("hidden");
-  }
-
-  function toggleEditComment(tab, commentId) {
-    const text = document.getElementById(`${tab}-comment-text-${commentId}`);
-    const form = document.getElementById(`${tab}-edit-form-${commentId}`);
-    if (form && text) {
-      form.classList.toggle("hidden");
-      text.classList.toggle("hidden");
-    }
   }
 </script>

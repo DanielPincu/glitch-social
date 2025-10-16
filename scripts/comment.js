@@ -1,98 +1,181 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Handle new comment submission for both tabs
+  // ===== Helpers =====
+  function findCommentItem(target) {
+    return target.closest("[data-comment], .comment-item, .flex.items-start");
+  }
+  function extractCommentId(root) {
+    if (!root) return null;
+    // 1) data-comment-id attribute
+    let id = root.getAttribute("data-comment-id");
+    if (id) return id;
+    // 2) hidden inputs
+    const hidden = root.querySelector("input[name='comment_id'], input[name='commentId']");
+    if (hidden) return hidden.value;
+    // 3) element ids with patterns
+    const hint = root.querySelector("[id*='edit-form-'], [id*='comment-text-']");
+    if (hint && hint.id) {
+      const m = hint.id.match(/(\d+)/);
+      if (m) return m[1];
+    }
+    return null;
+  }
+  function findCommentText(root, id) {
+    if (!root) return null;
+    // 1) by id patterns
+    if (id) {
+      const byId = root.querySelector(`#hot-comment-text-${id}`)
+        || root.querySelector(`#following-comment-text-${id}`)
+        || document.getElementById(`comment-text-${id}`);
+      if (byId) return byId;
+    }
+    // 2) explicit data attr
+    const explicit = root.querySelector("[data-comment-text]");
+    if (explicit) return explicit;
+    // 3) heuristic candidates
+    const candidates = root.querySelectorAll(".comment-text, .whitespace-pre-wrap, p, .text-sm, .text-base");
+    for (const el of candidates) {
+      if (el.closest("form, button, .actions")) continue;
+      if (el.textContent && el.textContent.trim().length) return el;
+    }
+    return null;
+  }
+
+  // ===== New Comment Submission =====
   document.querySelectorAll(".comment-form form").forEach(form => {
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
       const postId = this.querySelector("input[name='post_id']").value;
-      const content = this.querySelector("input[name='comment_content']").value.trim();
+      const contentInput = this.querySelector("input[name='comment_content'], textarea[name='comment_content']");
+      const content = contentInput.value.trim();
       if (!content) return;
 
       fetch("index.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `ajax=comment&post_id=${postId}&content=${encodeURIComponent(content)}`
+        body: `ajax=comment&post_id=${encodeURIComponent(postId)}&content=${encodeURIComponent(content)}`
       })
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
-          const postContainer = this.closest(".xp-window");
-          const commentSection = postContainer.querySelector(".mt-4");
+        if (data && data.success) {
+          const postContainer = this.closest(".xp-window") || document;
+          const commentSection = postContainer.querySelector(".mt-4") || document.querySelector(".mt-4");
 
-          // Insert new comment HTML returned by server
+          // Insert server-rendered HTML for the new comment
           commentSection.insertAdjacentHTML("beforeend", data.html);
 
-          // Reset and hide the form
-          const input = this.querySelector("input[name='comment_content']");
-          input.value = "";
-          this.closest(".comment-form").classList.add("hidden");
+          // Reset and hide composer
+          contentInput.value = "";
+          const cf = this.closest(".comment-form");
+          if (cf) cf.classList.add("hidden");
 
-          // Reinitialize feather icons for new elements
+          // Re-init icons if present
           if (window.feather) feather.replace();
-
-          // Reattach event listeners for edit/delete buttons dynamically
-          attachCommentActionListeners();
         }
-      });
+      })
+      .catch(() => {});
     });
   });
 
-  // Function to handle comment delete/edit re-binding
-  function attachCommentActionListeners() {
-    // DELETE comment for both tabs
-    document.querySelectorAll("form button[name='delete_comment']").forEach(button => {
-      button.addEventListener("click", function (e) {
-        e.preventDefault();
-        const form = this.closest("form");
-        const commentId = form.querySelector("input[name='comment_id']").value;
+  // ===== Inline Edit (delegated, robust) =====
+  document.body.addEventListener("click", function(e) {
+    const editBtn = e.target.closest("[data-action='edit-comment'], .edit-comment-btn, button[name='edit_comment']");
+    if (!editBtn) return;
+    e.preventDefault();
 
-        if (!confirm("Are you sure you want to delete this comment?")) return;
+    const commentItem = findCommentItem(editBtn);
+    if (!commentItem) return;
+    const commentId = extractCommentId(commentItem);
+    const textElem = findCommentText(commentItem, commentId);
+    if (!textElem) return; // nothing to edit
 
-        fetch("index.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `ajax=delete_comment&comment_id=${commentId}`
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            const commentElement = form.closest(".flex.items-start");
-            if (commentElement) commentElement.remove();
-          }
-        });
-      });
+    // If already editing, ignore
+    if (commentItem.querySelector(".inline-editor")) return;
+
+    const originalText = textElem.textContent.trim().replace(/\s+/g, " ");
+
+    // Build inline editor (textarea + buttons)
+    const editorWrap = document.createElement("div");
+    editorWrap.className = "inline-editor flex items-center w-full";
+
+    const textarea = document.createElement("textarea");
+    textarea.className = "w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none";
+    textarea.value = originalText;
+
+    const saveBtn = document.createElement("button");
+    saveBtn.type = "button";
+    saveBtn.className = "ml-2 px-3 py-1 text-sm bg-blue-600 text-white rounded";
+    saveBtn.textContent = "Save";
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.type = "button";
+    cancelBtn.className = "ml-2 px-3 py-1 text-sm bg-gray-500 text-white rounded";
+    cancelBtn.textContent = "Cancel";
+
+    editorWrap.appendChild(textarea);
+    editorWrap.appendChild(saveBtn);
+    editorWrap.appendChild(cancelBtn);
+
+    // Swap into DOM
+    textElem.classList.add("hidden");
+    textElem.insertAdjacentElement("afterend", editorWrap);
+    textarea.focus();
+
+    const restore = () => {
+      editorWrap.remove();
+      textElem.classList.remove("hidden");
+    };
+
+    cancelBtn.addEventListener("click", restore);
+
+    saveBtn.addEventListener("click", () => {
+      const newContent = textarea.value.trim();
+      if (!newContent || newContent === originalText) { restore(); return; }
+
+      const cid = commentId || extractCommentId(commentItem);
+      if (!cid) { restore(); return; }
+
+      fetch("index.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `ajax=update_comment&comment_id=${encodeURIComponent(cid)}&new_content=${encodeURIComponent(newContent)}`
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success) {
+          textElem.textContent = newContent;
+        }
+        restore();
+      })
+      .catch(() => restore());
     });
+  });
 
-    // EDIT comment for both tabs
-    document.querySelectorAll("form[id^='hot-edit-form-'], form[id^='following-edit-form-']").forEach(form => {
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
+  // ===== Delegated Delete =====
+  document.body.addEventListener("click", function(e) {
+    const deleteButton = e.target.closest("form button[name='delete_comment']");
+    if (!deleteButton) return;
+    e.preventDefault();
 
-        const commentId = this.querySelector("input[name='comment_id']").value;
-        const newContent = this.querySelector("input[name='new_comment_content']").value.trim();
-        if (!newContent) return;
+    const form = deleteButton.closest("form");
+    const hidden = form.querySelector("input[name='comment_id'], input[name='commentId']");
+    const commentId = hidden ? hidden.value : null;
+    if (!commentId) return;
 
-        fetch("index.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `ajax=update_comment&comment_id=${commentId}&new_content=${encodeURIComponent(newContent)}`
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            const tabPrefix = this.id.startsWith("hot-") ? "hot" : "following";
-            const textElem = document.getElementById(`${tabPrefix}-comment-text-${commentId}`);
-            if (textElem) {
-              textElem.textContent = newContent;
-              this.classList.add("hidden");
-              textElem.classList.remove("hidden");
-            }
-          }
-        });
-      });
-    });
-  }
+    if (!confirm("Are you sure you want to delete this comment?")) return;
 
-  // Initial listener attachment
-  attachCommentActionListeners();
+    fetch("index.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `ajax=delete_comment&comment_id=${encodeURIComponent(commentId)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.success) {
+        const commentElement = form.closest("[data-comment], .comment-item, .flex.items-start");
+        if (commentElement) commentElement.remove();
+      }
+    })
+    .catch(() => {});
+  });
 });
