@@ -85,7 +85,7 @@
 
         <a href="index.php" class="inline-block mt-6">
           <button type="button" class="bg-gradient-to-b from-blue-500 to-blue-700 text-white font-semibold px-5 py-2 rounded border border-blue-800 shadow-md hover:from-blue-600 hover:to-blue-800 active:translate-y-0.5 active:shadow-none">
-            Return to Home
+            Go Back Home
           </button>
         </a>
       </section>
@@ -298,7 +298,7 @@
 
         <a href="index.php" class="inline-block mt-6">
           <button type="button" class="bg-gradient-to-b from-blue-500 to-blue-700 text-white font-semibold px-5 py-2 rounded border border-blue-800 shadow-md hover:from-blue-600 hover:to-blue-800 active:translate-y-0.5 active:shadow-none">
-            Return to Home
+            Go Back Home
           </button>
         </a>
       </section>
@@ -334,6 +334,7 @@
         <p class="text-gray-300 italic">You haven't blocked anyone yet.</p>
       <?php endif; ?>
     </section>
+
 
   </div>
 </div>

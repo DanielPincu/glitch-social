@@ -161,4 +161,18 @@ class User {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row && $row['is_admin'] === 1;
     }
+
+    // Search users by username (for search bar)
+    public function searchByUsername($query) {
+        $stmt = $this->db->prepare("
+            SELECT users.id, users.username, profiles.avatar_url
+            FROM users
+            LEFT JOIN profiles ON profiles.user_id = users.id
+            WHERE users.username LIKE :query
+            ORDER BY users.username ASC
+            LIMIT 20
+        ");
+        $stmt->execute([':query' => '%' . $query . '%']);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

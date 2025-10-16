@@ -106,4 +106,11 @@ class UserController {
         $userModel = new User();
         return $userModel->getBlockedUsers($user_id);
     }
+    // Search users by username
+    public function searchUsers($query) {
+        if (empty($query)) {
+            return [];
+        }
+        return $this->user->searchByUsername($query);
+    }
 }

@@ -407,6 +407,22 @@ switch ($page) {
         require __DIR__ . '/includes/views/footer.php';
         break;
 
+    case 'search':
+        if (!$session->isLoggedIn()) {
+            header("Location: index.php?page=login");
+            exit;
+        }
+        $searchQuery = $_GET['q'] ?? '';
+        $searchResults = [];
+        if (!empty($searchQuery)) {
+            $searchResults = $userController->searchUsers($searchQuery);
+        }
+        $title = "Search";
+        require __DIR__ . '/includes/views/header.php';
+        require __DIR__ . '/includes/views/search_view.php';
+        require __DIR__ . '/includes/views/footer.php';
+        break;
+
     case 'home':
     default:
         if (!$session->isLoggedIn()) {

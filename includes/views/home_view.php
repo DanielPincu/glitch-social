@@ -13,6 +13,23 @@
       <!-- System Status -->
       <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
         <h3 class="font-bold mb-3">SYSTEM STATUS</h3>
+        <!-- User Search -->
+        <form method="get" action="index.php" class="mb-3">
+          <input type="hidden" name="page" value="search">
+          <input 
+            type="text" 
+            name="q" 
+            placeholder="Search for the One..." 
+            value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
+            class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none"
+          >
+          <button 
+            type="submit" 
+            class="w-full my-2 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#1E90FF] to-[#5CACEE] text-blue-900 font-bold hover:drop-shadow-[0_0_10px_rgba(30,144,255,0.5)] transition select-none"
+          >
+            Search
+          </button>
+        </form>
         <div class="space-y-1 text-xs font-mono matrix-text">
           <p>CPU Usage: 37%</p>
           <p>RAM: 1.2GB / 4GB</p>
