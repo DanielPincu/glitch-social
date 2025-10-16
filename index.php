@@ -229,7 +229,7 @@ switch ($page) {
             $avatarPath = null;
             if (!empty($_FILES['avatar']['tmp_name'])) {
                 $file = $_FILES['avatar'];
-                $targetDir = __DIR__ . '/img/avatars/';
+                $targetDir = __DIR__ . '/uploads/avatars/';
                 if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
                 $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $basename = uniqid('', true) . '.' . $ext;
@@ -239,7 +239,7 @@ switch ($page) {
                     if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                         $resizer = new ImageResizer();
                         $resizer->resizeAvatarImage($targetPath);
-                        $avatarPath = 'img/avatars/' . $basename;
+                        $avatarPath = 'uploads/avatars/' . $basename;
                     }
                 } else {
                     if (file_exists($targetPath)) unlink($targetPath);
@@ -309,7 +309,7 @@ switch ($page) {
             // Handle new image upload (no validation)
             if ($file && $file['error'] === UPLOAD_ERR_OK && $file['size'] > 0) {
                 $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-                $targetDir = __DIR__ . '/uploads/';
+                $targetDir = __DIR__ . '/uploads/posts/';
                 if (!is_dir($targetDir)) {
                     mkdir($targetDir, 0777, true);
                 }
@@ -318,7 +318,7 @@ switch ($page) {
                 if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                     $resizer = new ImageResizer();
                     $resizer->resizePostImage($targetPath);
-                    $new_image_path = 'uploads/' . $basename;
+                    $new_image_path = 'uploads/posts/' . $basename;
                 }
             }
             $visibility = $_POST['visibility'] ?? null;
@@ -437,7 +437,7 @@ switch ($page) {
             $imagePath = null;
             if ($file && $file['error'] === UPLOAD_ERR_OK && $file['size'] > 0) {
                 $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-                $targetDir = __DIR__ . '/uploads/';
+                $targetDir = __DIR__ . '/uploads/posts/';
                 if (!is_dir($targetDir)) {
                     mkdir($targetDir, 0777, true);
                 }
@@ -447,7 +447,7 @@ switch ($page) {
                     if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                         $resizer = new ImageResizer();
                         $resizer->resizePostImage($targetPath);
-                        $imagePath = 'uploads/' . $basename;
+                        $imagePath = 'uploads/posts/' . $basename;
                     }
                 } else {
                     if (file_exists($targetPath)) unlink($targetPath);

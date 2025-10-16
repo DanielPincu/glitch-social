@@ -391,7 +391,7 @@
                   ?>
                   <div class="flex items-center space-x-2">
                     <a href="index.php?page=profile&id=<?php echo $followedUser['id']; ?>">
-                      <div class="w-8 h-8 bg-black border-2 border-green-500 rounded-full flex items-center justify-center overflow-hidden">
+                      <div class="w-8 h-8 bg-black border-2 border-green-500 flex items-center justify-center overflow-hidden">
                         <?php if ($avatar): ?>
                           <img src="<?php echo $avatar; ?>" alt="<?php echo htmlspecialchars($followedUser['username']); ?>'s avatar" class="object-cover w-full h-full">
                         <?php else: ?>
