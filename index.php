@@ -397,7 +397,8 @@ switch ($page) {
         $allPosts = [];
         if ($isAdmin) {
             $allUsers = $userController->getAllUsers();
-            $allPosts = $postController->getPosts($user_id); // fetch all posts for admin
+            $adminController = new AdminController();
+            $allPosts = $adminController->listPosts(); // fetch ALL posts, bypassing visibility
         }
 
         $title = "Settings";

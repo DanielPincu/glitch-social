@@ -33,7 +33,7 @@ class AdminController extends UserController {
     // Fetch all posts
     public function listPosts() {
         $post = new Post();
-        return $post->fetchAll();
+        return $post->fetchAll(null, true);
     }
 
     // Delete a post by ID

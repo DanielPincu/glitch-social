@@ -42,24 +42,40 @@ class Post {
         ]);
     }
 
-    // Fetch all posts with user info and like count, filtered by visibility for the viewer
-    public function fetchAll($viewer_id = null) {
-        $stmt = $this->db->prepare("
-            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
-                   users.username, profiles.avatar_url,
-                   (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
-            FROM posts
-            JOIN users ON posts.user_id = users.id
-            LEFT JOIN profiles ON profiles.user_id = users.id
-            LEFT JOIN followers ON followers.user_id = posts.user_id AND followers.follower_id = :viewer_id
-            WHERE
-                posts.visibility = 'public'
-                OR (posts.visibility = 'followers' AND followers.follower_id IS NOT NULL)
-                OR (posts.visibility = 'private' AND posts.user_id = :viewer_id)
-            ORDER BY posts.created_at DESC
-        ");
-        $stmt->execute([':viewer_id' => $viewer_id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Fetch all posts
+    // If $isAdmin is true, fetch all posts (no visibility restrictions).
+    // Otherwise, filter by visibility for the viewer.
+    public function fetchAll($viewer_id = null, $isAdmin = false) {
+        if ($isAdmin) {
+            $stmt = $this->db->prepare("
+                SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
+                       users.username, profiles.avatar_url,
+                       (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+                FROM posts
+                JOIN users ON posts.user_id = users.id
+                LEFT JOIN profiles ON profiles.user_id = users.id
+                ORDER BY posts.created_at DESC
+            ");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $stmt = $this->db->prepare("
+                SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
+                       users.username, profiles.avatar_url,
+                       (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
+                FROM posts
+                JOIN users ON posts.user_id = users.id
+                LEFT JOIN profiles ON profiles.user_id = users.id
+                LEFT JOIN followers ON followers.user_id = posts.user_id AND followers.follower_id = :viewer_id
+                WHERE
+                    posts.visibility = 'public'
+                    OR (posts.visibility = 'followers' AND followers.follower_id IS NOT NULL)
+                    OR (posts.visibility = 'private' AND posts.user_id = :viewer_id)
+                ORDER BY posts.created_at DESC
+            ");
+            $stmt->execute([':viewer_id' => $viewer_id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
 
     // Like a post
