@@ -189,7 +189,7 @@
             <?php foreach ($allPosts as $post): ?>
               <div class="bg-cyan-900 bg-opacity-60 border border-cyan-600 rounded-lg p-4">
                 <div class="flex items-center mb-2">
-                  <span class="text-cyan-300 font-bold mr-3">@<?php echo htmlspecialchars($post['username']); ?></span>
+                  <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>" class="text-cyan-300 font-bold mr-3">@<?php echo htmlspecialchars($post['username']); ?></a>
                   <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
                 </div>
                 <p class="text-cyan-100 mb-2"><?php echo htmlspecialchars($post['content']); ?></p>
