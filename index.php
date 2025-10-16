@@ -25,7 +25,7 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'like') {
         exit;
     }
     header('Content-Type: application/json');
-    $post_id = (int)($_POST['post_id'] ?? 0);
+    $post_id = $_POST['post_id'] ?? 0;
     $action = $_POST['action'] ?? null;
 
     if ($post_id && $action) {
@@ -51,7 +51,7 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'comment') {
         exit;
     }
 
-    $post_id = (int)($_POST['post_id'] ?? 0);
+    $post_id = $_POST['post_id'] ?? 0;
     $content = trim($_POST['content'] ?? '');
 
     if ($post_id && $content) {
@@ -114,7 +114,7 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'update_comment') {
         exit;
     }
 
-    $comment_id = (int)($_POST['comment_id'] ?? 0);
+    $comment_id = $_POST['comment_id'] ?? 0;
     $new_content = trim($_POST['new_content'] ?? '');
     $user_id = $session->getUserId();
 
@@ -136,7 +136,7 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'delete_comment') {
         exit;
     }
 
-    $comment_id = (int)($_POST['comment_id'] ?? 0);
+    $comment_id = $_POST['comment_id'] ?? 0;
     $user_id = $session->getUserId();
 
     if ($comment_id) {
@@ -170,8 +170,8 @@ $title = '';
 // Handle follow/unfollow actions
 if (isset($_POST['follow_action'], $_POST['followed_id']) && $session->isLoggedIn()) {
     $controller = new ProfileController();
-    $controller->toggleFollow($session->getUserId(), (int)$_POST['followed_id']);
-    header("Location: index.php?page=profile&id=" . (int)$_POST['followed_id']);
+    $controller->toggleFollow($session->getUserId(), $_POST['followed_id']);
+    header("Location: index.php?page=profile&id=" . $_POST['followed_id']);
     exit;
 }
 
@@ -278,13 +278,13 @@ switch ($page) {
 
         // Handle user block/unblock (user-to-user)
         if (isset($_POST['block_user'], $_POST['blocked_id'])) {
-            $controller->blockUserAndUnfollow($session->getUserId(), (int)$_POST['blocked_id']);
-            // $userController->blockUserByUser($session->getUserId(), (int)$_POST['blocked_id']);
+            $controller->blockUserAndUnfollow($session->getUserId(), $_POST['blocked_id']);
+            // $userController->blockUserByUser($session->getUserId(), $_POST['blocked_id']);
             header("Location: index.php?page=profile&id={$user_id}");
             exit;
         }
         if (isset($_POST['unblock_user'], $_POST['blocked_id'])) {
-            $userController->unblockUserByUser($session->getUserId(), (int)$_POST['blocked_id']);
+            $userController->unblockUserByUser($session->getUserId(), $_POST['blocked_id']);
             header("Location: index.php?page=profile&id={$user_id}");
             exit;
         }
@@ -317,7 +317,7 @@ switch ($page) {
 
         // Update post content, image, and visibility
         if (isset($_POST['update_post'], $_POST['post_id'])) {
-            $post_id = (int)$_POST['post_id'];
+            $post_id = $_POST['post_id'];
             $new_content = trim($_POST['new_content'] ?? '');
             $remove_image = isset($_POST['remove_image']);
             $file = $_FILES['new_image'] ?? null;
@@ -347,18 +347,18 @@ switch ($page) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Handle user-to-user block/unblock (from settings)
             if (isset($_POST['block_user'], $_POST['blocked_id'])) {
-                $userController->blockUserByUser($session->getUserId(), (int)$_POST['blocked_id']);
+                $userController->blockUserByUser($session->getUserId(), $_POST['blocked_id']);
                 header("Location: index.php?page=settings");
                 exit;
             }
             if (isset($_POST['unblock_user'], $_POST['blocked_id'])) {
-                $userController->unblockUserByUser($session->getUserId(), (int)$_POST['blocked_id']);
+                $userController->unblockUserByUser($session->getUserId(), $_POST['blocked_id']);
                 header("Location: index.php?page=settings");
                 exit;
             }
             // Delete own post
             if (isset($_POST['delete_post'], $_POST['post_id'])) {
-                $postController->deletePostByUser((int)$_POST['post_id'], $user_id);
+                $postController->deletePostByUser($_POST['post_id'], $user_id);
                 header("Location: index.php?page=settings");
                 exit;
             }
@@ -367,20 +367,20 @@ switch ($page) {
             if ($isAdmin) {
                 if (isset($_POST['block_user'], $_POST['user_id'])) {
                     // Demote user before blocking
-                    $adminController->demoteFromAdmin((int)$_POST['user_id']);
-                    $adminController->blockUser((int)$_POST['user_id']);
+                    $adminController->demoteFromAdmin($_POST['user_id']);
+                    $adminController->blockUser($_POST['user_id']);
                 }
                 if (isset($_POST['unblock_user'], $_POST['user_id'])) {
-                    $adminController->unblockUser((int)$_POST['user_id']);
+                    $adminController->unblockUser($_POST['user_id']);
                 }
                 if (isset($_POST['promote_user'], $_POST['user_id'])) {
-                    $adminController->promoteToAdmin((int)$_POST['user_id']);
+                    $adminController->promoteToAdmin($_POST['user_id']);
                 }
                 if (isset($_POST['demote_user'], $_POST['user_id'])) {
-                    $adminController->demoteFromAdmin((int)$_POST['user_id']);
+                    $adminController->demoteFromAdmin($_POST['user_id']);
                 }
                 if (isset($_POST['admin_delete_post'], $_POST['post_id'])) {
-                    $adminController->deletePost((int)$_POST['post_id']);
+                    $adminController->deletePost($_POST['post_id']);
                 }
                 header("Location: index.php?page=settings");
                 exit;
@@ -419,7 +419,7 @@ switch ($page) {
         }
         // Handle new comment submission
         if (isset($_POST['add_comment']) && isset($_POST['post_id']) && !empty($_POST['comment_content'])) {
-            $post_id = (int)$_POST['post_id'];
+            $post_id = $_POST['post_id'];
             $comment_content = trim($_POST['comment_content']);
             if (!empty($comment_content)) {
                 $postController->addComment($post_id, $user_id, $comment_content);
@@ -430,7 +430,7 @@ switch ($page) {
 
         // Handle comment update
         if (isset($_POST['update_comment'], $_POST['comment_id'])) {
-            $comment_id = (int)$_POST['comment_id'];
+            $comment_id = $_POST['comment_id'];
             $new_content = trim($_POST['new_comment_content'] ?? '');
             if (!empty($new_content)) {
                 $postController->updateComment($comment_id, $user_id, $new_content);
@@ -441,7 +441,7 @@ switch ($page) {
 
         // Handle comment delete
         if (isset($_POST['delete_comment'], $_POST['comment_id'])) {
-            $comment_id = (int)$_POST['comment_id'];
+            $comment_id = $_POST['comment_id'];
             $comment = $postController->getCommentById($comment_id);
             $canDelete = false;
             if ($session->isAdmin()) {

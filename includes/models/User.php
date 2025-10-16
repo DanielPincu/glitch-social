@@ -84,7 +84,7 @@ class User {
         $stmt->bindValue(':id', $user_id);
         $stmt->execute();
         $user = $stmt->fetch();
-        return $user && (int)$user['is_blocked'] === 1;
+        return $user && $user['is_blocked'] === 1;
     }
 
     
@@ -159,6 +159,6 @@ class User {
         $stmt = $this->db->prepare("SELECT is_admin FROM users WHERE id = :id");
         $stmt->execute([':id' => $user_id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row && (int)$row['is_admin'] === 1;
+        return $row && $row['is_admin'] === 1;
     }
 }

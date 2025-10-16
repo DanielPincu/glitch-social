@@ -43,7 +43,7 @@ class Post {
     }
 
     // Fetch all posts with user info and like count, filtered by visibility for the viewer
-    public function fetchAll($viewer_id) {
+    public function fetchAll($viewer_id = null) {
         $stmt = $this->db->prepare("
             SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
                    users.username, profiles.avatar_url,
@@ -188,7 +188,7 @@ public function deleteComment($comment_id, $user_id) {
         ";
 
         // Viewer is the same user OR no viewer (e.g. settings/profile page)
-        if ($viewer_id === null || (int)$viewer_id === (int)$user_id) {
+        if ($viewer_id === null || $viewer_id === $user_id) {
             $query .= " WHERE posts.user_id = :user_id";
         } else {
             // Viewer is someone else (apply visibility rules)
@@ -215,7 +215,7 @@ public function deleteComment($comment_id, $user_id) {
 
         $stmt = $this->db->prepare($query);
         $params = [':user_id' => $user_id];
-        if ($viewer_id !== null && (int)$viewer_id !== (int)$user_id) {
+        if ($viewer_id !== null && $viewer_id !== $user_id) {
             $params[':viewer_id'] = $viewer_id;
         }
 

@@ -337,5 +337,3 @@
 
   </div>
 </div>
-
-<script src="js/image-previewer.js"></script>
