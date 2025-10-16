@@ -146,7 +146,7 @@
                 <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-3 border-2 border-white">
-                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-full max-h-96 object-contain">
+                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-full max-h-96 object-cover object-center">
                   </div>
                 <?php endif; ?>
                 <!-- Post actions -->
@@ -279,7 +279,7 @@
                 <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-3 border-2 border-white">
-                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-full max-h-96 object-contain">
+                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-full max-h-96 object-cover object-center">
                   </div>
                 <?php endif; ?>
                 <!-- Post actions -->

@@ -83,7 +83,7 @@ class ImageResizer
 
     public function resizePostImage($filePath)
     {
-        $this->resizeToWidth($filePath, 1200);
+        $this->resizeToWidth($filePath, 800);
     }
 
     public function resizeAvatarImage($filePath)
