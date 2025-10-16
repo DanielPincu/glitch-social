@@ -149,8 +149,16 @@ class User {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Maybe I scrap this later. Maybe...
     // Alias kept because some controllers may call this older name
-    public function getBlockedUsersByUser($blocker_id) {
-        return $this->getBlockedUsers($blocker_id);
+    // public function getBlockedUsersByUser($blocker_id) {
+    //     return $this->getBlockedUsers($blocker_id);
+    // }
+
+    public function isAdmin($user_id) {
+        $stmt = $this->db->prepare("SELECT is_admin FROM users WHERE id = :id");
+        $stmt->execute([':id' => $user_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row && (int)$row['is_admin'] === 1;
     }
 }

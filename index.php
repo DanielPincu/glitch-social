@@ -140,8 +140,24 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'delete_comment') {
     $user_id = $session->getUserId();
 
     if ($comment_id) {
-        $postController->deleteComment($comment_id, $user_id);
-        echo json_encode(['success' => true]);
+        $comment = $postController->getCommentById($comment_id);
+        $canDelete = false;
+        if ($session->isAdmin()) {
+            $canDelete = true;
+        } elseif ($comment && $comment['user_id'] == $user_id) {
+            $canDelete = true;
+        } elseif ($comment) {
+            $post = $postController->getPostById($comment['post_id']);
+            if ($post && $post['user_id'] == $user_id) {
+                $canDelete = true;
+            }
+        }
+        if ($canDelete) {
+            $postController->deleteComment($comment_id, $user_id);
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Not authorized']);
+        }
     } else {
         echo json_encode(['success' => false, 'message' => 'Invalid input']);
     }
@@ -426,7 +442,21 @@ switch ($page) {
         // Handle comment delete
         if (isset($_POST['delete_comment'], $_POST['comment_id'])) {
             $comment_id = (int)$_POST['comment_id'];
-            $postController->deleteComment($comment_id, $user_id);
+            $comment = $postController->getCommentById($comment_id);
+            $canDelete = false;
+            if ($session->isAdmin()) {
+                $canDelete = true;
+            } elseif ($comment && $comment['user_id'] == $user_id) {
+                $canDelete = true;
+            } elseif ($comment) {
+                $post = $postController->getPostById($comment['post_id']);
+                if ($post && $post['user_id'] == $user_id) {
+                    $canDelete = true;
+                }
+            }
+            if ($canDelete) {
+                $postController->deleteComment($comment_id, $user_id);
+            }
             header("Location: index.php");
             exit;
         }

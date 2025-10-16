@@ -1,5 +1,7 @@
 <?php
+
 require_once __DIR__ . '/../models/Post.php';
+require_once __DIR__ . '/../models/User.php';
 
 class PostController {
     private $post;
@@ -79,7 +81,35 @@ class PostController {
     }
 
     public function deleteComment($comment_id, $user_id) {
-    return $this->post->deleteComment($comment_id, $user_id);
-}
+        // Load the comment
+        $comment = $this->post->getCommentById($comment_id);
+        if (!$comment) {
+            return false;
+        }
+        // If user is the comment owner, allow
+        if ($comment['user_id'] == $user_id) {
+            return $this->post->deleteComment($comment_id, $user_id);
+        }
+        // Otherwise, check if user is the post owner
+        $post = $this->post->getPostById($comment['post_id']);
+        if ($post && $post['user_id'] == $user_id) {
+            return $this->post->deleteComment($comment_id, $user_id);
+        }
+        // Otherwise, check if user is admin
+        $userModel = new User();
+        if ($userModel->isAdmin($user_id)) {
+            return $this->post->deleteComment($comment_id, $user_id);
+        }
+        // Not authorized
+        return false;
+    }
+
+    public function getCommentById($comment_id) {
+        return $this->post->getCommentById($comment_id);
+    }
+
+    public function getPostById($post_id) {
+        return $this->post->getPostById($post_id);
+    }
 }
 

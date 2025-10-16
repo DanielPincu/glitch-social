@@ -204,15 +204,27 @@
                               <a href="index.php?page=profile&id=<?php echo $comment['user_id']; ?>" class="font-semibold text-green-200 hover:underline">
                                 <?php echo htmlspecialchars($comment['username']); ?>
                               </a>
-                              <?php if ($comment['username'] === $_SESSION['username']): ?>
+                              <?php 
+                              $canDelete = false;
+                              if (!empty($_SESSION['is_admin']) && $_SESSION['is_admin']) {
+                                  $canDelete = true; // admin
+                              } elseif ($comment['user_id'] == $user_id) {
+                                  $canDelete = true; // comment owner
+                              } elseif ($post['user_id'] == $user_id) {
+                                  $canDelete = true; // post owner
+                              }
+                              ?>
+                              <?php if ($canDelete): ?>
                                 <div class="flex gap-2 text-xs">
-                                  <button 
-                                    type="button" 
-                                    class="edit-comment-btn bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
-                                    data-comment-id="<?php echo $comment['id']; ?>"
-                                  >
-                                    Edit
-                                  </button>
+                                  <?php if ($comment['user_id'] == $user_id): ?>
+                                    <button 
+                                      type="button" 
+                                      class="edit-comment-btn bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                                      data-comment-id="<?php echo $comment['id']; ?>"
+                                    >
+                                      Edit
+                                    </button>
+                                  <?php endif; ?>
                                   <form method="POST" class="inline">
                                     <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
                                     <button 
@@ -336,15 +348,27 @@
                               <a href="index.php?page=profile&id=<?php echo $comment['user_id']; ?>" class="font-semibold text-green-200 hover:underline">
                                 <?php echo htmlspecialchars($comment['username']); ?>
                               </a>
-                              <?php if ($comment['username'] === $_SESSION['username']): ?>
+                              <?php 
+                              $canDelete = false;
+                              if (!empty($_SESSION['is_admin']) && $_SESSION['is_admin']) {
+                                  $canDelete = true; // admin
+                              } elseif ($comment['user_id'] == $user_id) {
+                                  $canDelete = true; // comment owner
+                              } elseif ($post['user_id'] == $user_id) {
+                                  $canDelete = true; // post owner
+                              }
+                              ?>
+                              <?php if ($canDelete): ?>
                                 <div class="flex gap-2 text-xs">
-                                  <button 
-                                    type="button" 
-                                    class="edit-comment-btn bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
-                                    data-comment-id="<?php echo $comment['id']; ?>"
-                                  >
-                                    Edit
-                                  </button>
+                                  <?php if ($comment['user_id'] == $user_id): ?>
+                                    <button 
+                                      type="button" 
+                                      class="edit-comment-btn bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                                      data-comment-id="<?php echo $comment['id']; ?>"
+                                    >
+                                      Edit
+                                    </button>
+                                  <?php endif; ?>
                                   <form method="POST" class="inline">
                                     <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
                                     <button 

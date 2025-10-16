@@ -327,4 +327,27 @@ public function deleteComment($comment_id, $user_id) {
         $stmt->execute([':viewer_id' => $viewer_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    // Fetch a single comment by its ID
+    public function getCommentById($comment_id) {
+        $stmt = $this->db->prepare("
+            SELECT id, post_id, user_id, content, created_at
+            FROM comments
+            WHERE id = :comment_id
+            LIMIT 1
+        ");
+        $stmt->execute([':comment_id' => $comment_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Fetch a single post by its ID
+    public function getPostById($post_id) {
+        $stmt = $this->db->prepare("
+            SELECT id, user_id, content, created_at, image_path, visibility
+            FROM posts
+            WHERE id = :post_id
+            LIMIT 1
+        ");
+        $stmt->execute([':post_id' => $post_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

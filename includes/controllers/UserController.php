@@ -104,6 +104,6 @@ class UserController {
     // New method to get all users blocked by a given user ID
     public function getBlockedUsers($user_id) {
         $userModel = new User();
-        return $userModel->getBlockedUsersByUser($user_id);
+        return $userModel->getBlockedUsers($user_id);
     }
 }
