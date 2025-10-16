@@ -483,6 +483,7 @@
 <script src="scripts/image-previewer.js"></script>
 <script src="scripts/like.js"></script>
 <script src="scripts/comment.js"></script>
+
 <script>
   function toggleCommentForm(tab, postId) {
     const form = document.getElementById(`${tab}-comment-form-${postId}`);

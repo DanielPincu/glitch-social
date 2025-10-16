@@ -1,7 +1,6 @@
-<?php
-// includes/views/search_view.php
-?>
+
 <main class="container mx-auto px-4 pb-16 pt-8 relative z-10">
+  
   <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-6 rounded-lg shadow-lg border border-[#b0b0b0]">
     <h2 class="mb-4 text-green-400 italic">Follow the white rabbit... search begins.</h2>
     
@@ -43,6 +42,10 @@
           Go Back Home
         </button>
       </a>
+      <div id="matrix-container" class="mt-2 bg-black">
+          <canvas id="matrix-canvas"></canvas>
+      </div>
     </div>
   </div>
 </main>
+<script src="scripts/matrix-cipher.js"></script>
