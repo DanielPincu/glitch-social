@@ -68,7 +68,7 @@ class ProfileController {
         $avatarPath = null;
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
             require_once __DIR__ . '/../helpers/ImageResizer.php';
-            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/avatars/';
+            $uploadDir = __DIR__ . '/../../uploads/avatars/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -82,13 +82,13 @@ class ProfileController {
                 header('Location: index.php?page=profile&id=' . urlencode($user_id));
                 exit;
             }
-            // Generate unique filename
-            $newName = 'avatar_' . $user_id . '_' . time() . '.' . $ext;
+            // Generate unique filename, similar to post uploads
+            $newName = uniqid('avatar_', true) . '.' . $ext;
             $targetPath = $uploadDir . $newName;
             if (move_uploaded_file($tmpName, $targetPath)) {
                 // Resize the avatar image
                 $imageResizer->resizeAvatarImage($targetPath);
-                $avatarPath = '/uploads/avatars/' . $newName;
+                $avatarPath = 'uploads/avatars/' . basename($targetPath);
             } else {
                 $session->setFlash('error', 'Failed to upload avatar image.');
                 header('Location: index.php?page=profile&id=' . urlencode($user_id));

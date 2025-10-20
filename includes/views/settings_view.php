@@ -108,7 +108,11 @@
               <tbody>
                 <?php foreach ($allUsers as $user): ?>
                   <tr class="odd:bg-yellow-950 even:bg-yellow-800/40">
-                    <td class="px-2 py-2 border-b border-yellow-700"><?php echo htmlspecialchars($user['username']); ?></td>
+                    <td class="px-2 py-2 border-b border-yellow-700">
+                      <a href="index.php?page=profile&id=<?php echo $user['id']; ?>" class="text-yellow-300 hover:underline">
+                        <?php echo htmlspecialchars($user['username']); ?>
+                      </a>
+                    </td>
                     <td class="px-2 py-2 border-b border-yellow-700">
                       <?php echo $user['is_admin'] ? '<span class="font-bold text-yellow-400">Admin</span>' : 'User'; ?>
                     </td>
