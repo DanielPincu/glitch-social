@@ -160,21 +160,35 @@ switch ($page) {
         }));
         // Filter out posts by blocked users (extra safety layer)
         $blockedUsersList = $userController->getBlockedUsers($viewer_id) ?? [];
-        $blockedIds = array_map(fn($b) => $b['blocked_id'] ?? $b['id'] ?? null, $blockedUsersList);
+        $blockedIds = array_map(function($b) {
+            if (isset($b['blocked_id'])) {
+                return $b['blocked_id'];
+            } elseif (isset($b['id'])) {
+                return $b['id'];
+            } else {
+                return null;
+            }
+        }, $blockedUsersList);
         $blockedIds = array_filter($blockedIds); // remove nulls
-        $posts = array_filter($posts, fn($post) => !in_array($post['user_id'], $blockedIds));
+        $posts = array_filter($posts, function($post) use ($blockedIds) {
+            return !in_array($post['user_id'], $blockedIds);
+        });
         // Also filter out posts by users who are admin-blocked (is_blocked == 1)
         $posts = array_filter($posts, function ($post) use ($userController) {
             $user = $userController->getUserById($post['user_id']);
             return !($user && isset($user['is_blocked']) && $user['is_blocked'] == 1);
         });
-        $followingPosts = array_filter($followingPosts, fn($post) => !in_array($post['user_id'], $blockedIds));
+        $followingPosts = array_filter($followingPosts, function($post) use ($blockedIds) {
+            return !in_array($post['user_id'], $blockedIds);
+        });
         // Also filter out posts by users who are admin-blocked (is_blocked == 1)
         $followingPosts = array_filter($followingPosts, function ($post) use ($userController) {
             $user = $userController->getUserById($post['user_id']);
             return !($user && isset($user['is_blocked']) && $user['is_blocked'] == 1);
         });
-        usort($posts, fn($a, $b) => strtotime($b['created_at']) - strtotime($a['created_at']));
+        usort($posts, function($a, $b) {
+            return strtotime($b['created_at']) - strtotime($a['created_at']);
+        });
         $title = "Home";
         require __DIR__ . '/includes/views/header.php';
         require __DIR__ . '/includes/views/home_view.php';

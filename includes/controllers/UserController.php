@@ -189,7 +189,8 @@ class UserController {
             if (isset($_POST['block_user']) && isset($_POST['blocked_id'])) {
                 $blocked_id = $_POST['blocked_id'];
                 if ($blocker_id && $blocked_id) {
-                    $this->blockUserByUser($blocker_id, $blocked_id);
+                    $profileController = new ProfileController();
+                    $profileController->blockUserAndUnfollow($blocker_id, $blocked_id);
                 }
                 // Determine redirect: if in settings, go to settings, else profile
                 $redirect = isset($_POST['from_settings'])
