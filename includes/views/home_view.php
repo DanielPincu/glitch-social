@@ -9,7 +9,7 @@
     
 
     <!-- Left Sidebar -->
-    <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-1 flex flex-col">
+    <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto flex flex-col">
       <!-- System Status -->
       <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
         <h3 class="font-bold mb-3">SYSTEM STATUS</h3>
@@ -30,12 +30,7 @@
             Search
           </button>
         </form>
-        <div class="space-y-1 text-xs font-mono matrix-text">
-          <p>CPU Usage: 37%</p>
-          <p>RAM: 1.2GB / 4GB</p>
-          <p>Uptime: 12h 42m</p>
-          <p>Latency: 42ms</p>
-        </div>
+       
       </div>
       <!-- Weather Forecast -->
       <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
