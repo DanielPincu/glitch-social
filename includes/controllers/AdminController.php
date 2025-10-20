@@ -41,4 +41,24 @@ class AdminController extends UserController {
         $post = new Post();
         return $post->delete($post_id);
     }
+
+    public function handleAdminActions() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+
+        if (isset($_POST['block_user'], $_POST['user_id'])) {
+            $this->demoteFromAdmin($_POST['user_id']);
+            $this->blockUser($_POST['user_id']);
+        } elseif (isset($_POST['unblock_user'], $_POST['user_id'])) {
+            $this->unblockUser($_POST['user_id']);
+        } elseif (isset($_POST['promote_user'], $_POST['user_id'])) {
+            $this->promoteToAdmin($_POST['user_id']);
+        } elseif (isset($_POST['demote_user'], $_POST['user_id'])) {
+            $this->demoteFromAdmin($_POST['user_id']);
+        } elseif (isset($_POST['admin_delete_post'], $_POST['post_id'])) {
+            $this->deletePost($_POST['post_id']);
+        }
+
+        header('Location: index.php?page=settings');
+        exit;
+    }
 }

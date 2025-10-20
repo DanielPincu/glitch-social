@@ -167,13 +167,8 @@ if (isset($_POST['ajax']) && $_POST['ajax'] === 'delete_comment') {
 $page = $_GET['page'] ?? 'home';
 $title = '';
 
-// Handle follow/unfollow actions
-if (isset($_POST['follow_action'], $_POST['followed_id']) && $session->isLoggedIn()) {
-    $controller = new ProfileController();
-    $controller->toggleFollow($session->getUserId(), $_POST['followed_id']);
-    header("Location: index.php?page=profile&id=" . $_POST['followed_id']);
-    exit;
-}
+// Handle follow/unfollow actions (now handled by UserController)
+$userController->handleFollowAction($session);
 
 switch ($page) {
     case 'login':
@@ -182,46 +177,11 @@ switch ($page) {
             header("Location: index.php");
             exit;
         }
-        $login_error = '';
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'] ?? '';
-            $password = $_POST['password'] ?? '';
-            if ($userController->login($username, $password)) {
-                header("Location: index.php");
-                exit;
-            } else {
-                $login_error = "Invalid username or password";
-            }
-        }
-        $title = "Login";
-        require __DIR__ . '/includes/views/header.php';
-        require __DIR__ . '/includes/views/login_view.php';
-        require __DIR__ . '/includes/views/footer.php';
+        $userController->handleLogin();
         break;
 
     case 'register':
-        $register_error = '';
-        $register_success = false;
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $password = $_POST['password'] ?? '';
-            $confirm_password = $_POST['confirm_password'] ?? '';
-            if ($password !== $confirm_password) {
-                $register_error = "Passwords do not match";
-            } else {
-                $result = $userController->register($username, $email, $password);
-                if ($result) {
-                    $register_success = true;
-                } else {
-                    $register_error = "Registration failed. Username might already be taken.";
-                }
-            }
-        }
-        $title = "Register";
-        require __DIR__ . '/includes/views/header.php';
-        require __DIR__ . '/includes/views/register_view.php';
-        require __DIR__ . '/includes/views/footer.php';
+        $userController->handleRegister();
         break;
 
     case 'logout':
@@ -240,54 +200,11 @@ switch ($page) {
         // Determine which profile to show (user’s own or another user’s)
         $user_id = $_GET['id'] ?? $session->getUserId();
 
-        // Handle profile updates (only allowed on own profile)
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user_id == $session->getUserId()) {
-            $avatarPath = null;
-            if (!empty($_FILES['avatar']['tmp_name'])) {
-                $file = $_FILES['avatar'];
-                $targetDir = __DIR__ . '/uploads/avatars/';
-                if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
-                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-                $basename = uniqid('', true) . '.' . $ext;
-                $targetPath = $targetDir . $basename;
+        // Handle profile updates and avatar upload via controller
+        $controller->handleProfileUpdate($user_id, $session);
 
-                if (ImageResizer::isValidImage($file['tmp_name'])) {
-                    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                        $resizer = new ImageResizer();
-                        $resizer->resizeAvatarImage($targetPath);
-                        $avatarPath = 'uploads/avatars/' . $basename;
-                    }
-                } else {
-                    if (file_exists($targetPath)) unlink($targetPath);
-                    $_SESSION['upload_error'] = "⚠️ Invalid file type. Only images (JPEG, PNG, GIF) are allowed.";
-                    header("Location: index.php?page=profile&id={$user_id}");
-                    exit;
-                }
-            }
-
-            $controller->updateProfile(
-                $user_id,
-                $_POST['bio'] ?? '',
-                $_POST['location'] ?? '',
-                $_POST['website'] ?? '',
-                $avatarPath
-            );
-            header("Location: index.php?page=profile&id={$user_id}");
-            exit;
-        }
-
-        // Handle user block/unblock (user-to-user)
-        if (isset($_POST['block_user'], $_POST['blocked_id'])) {
-            $controller->blockUserAndUnfollow($session->getUserId(), $_POST['blocked_id']);
-            // $userController->blockUserByUser($session->getUserId(), $_POST['blocked_id']);
-            header("Location: index.php?page=profile&id={$user_id}");
-            exit;
-        }
-        if (isset($_POST['unblock_user'], $_POST['blocked_id'])) {
-            $userController->unblockUserByUser($session->getUserId(), $_POST['blocked_id']);
-            header("Location: index.php?page=profile&id={$user_id}");
-            exit;
-        }
+        // Handle user block/unblock (user-to-user) - now handled by UserController
+        $userController->handleBlockActions($session);
 
         // Fetch profile data and user posts
         $data = $controller->showProfile($user_id);
@@ -315,75 +232,14 @@ switch ($page) {
             $adminController = new AdminController();
         }
 
-        // Update post content, image, and visibility
-        if (isset($_POST['update_post'], $_POST['post_id'])) {
-            $post_id = $_POST['post_id'];
-            $new_content = trim($_POST['new_content'] ?? '');
-            $remove_image = isset($_POST['remove_image']);
-            $file = $_FILES['new_image'] ?? null;
-            $new_image_path = null;
-            // Handle new image upload (no validation)
-            if ($file && $file['error'] === UPLOAD_ERR_OK && $file['size'] > 0) {
-                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-                $targetDir = __DIR__ . '/uploads/posts/';
-                if (!is_dir($targetDir)) {
-                    mkdir($targetDir, 0777, true);
-                }
-                $basename = uniqid('img_', true) . '.' . $ext;
-                $targetPath = $targetDir . $basename;
-                if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                    $resizer = new ImageResizer();
-                    $resizer->resizePostImage($targetPath);
-                    $new_image_path = 'uploads/posts/' . $basename;
-                }
-            }
-            $visibility = $_POST['visibility'] ?? null;
-            if (!empty($new_content) || $new_image_path || $remove_image || $visibility) {
-                $postController->updatePostContent($post_id, $new_content, $user_id, $new_image_path, $remove_image, $visibility);
-            }
-            header("Location: index.php?page=settings");
-            exit;
-        }
+        // Refactored: handle post update and delete via PostController
+        $postController->handlePostUpdate($session);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Handle user-to-user block/unblock (from settings)
-            if (isset($_POST['block_user'], $_POST['blocked_id'])) {
-                $userController->blockUserByUser($session->getUserId(), $_POST['blocked_id']);
-                header("Location: index.php?page=settings");
-                exit;
-            }
-            if (isset($_POST['unblock_user'], $_POST['blocked_id'])) {
-                $userController->unblockUserByUser($session->getUserId(), $_POST['blocked_id']);
-                header("Location: index.php?page=settings");
-                exit;
-            }
-            // Delete own post
-            if (isset($_POST['delete_post'], $_POST['post_id'])) {
-                $postController->deletePostByUser($_POST['post_id'], $user_id);
-                header("Location: index.php?page=settings");
-                exit;
-            }
-
-            // Admin actions
+            // Handle user-to-user block/unblock (from settings) - now handled by UserController
+            $userController->handleBlockActions($session);
+            $postController->handlePostDelete($session);
             if ($isAdmin) {
-                if (isset($_POST['block_user'], $_POST['user_id'])) {
-                    // Demote user before blocking
-                    $adminController->demoteFromAdmin($_POST['user_id']);
-                    $adminController->blockUser($_POST['user_id']);
-                }
-                if (isset($_POST['unblock_user'], $_POST['user_id'])) {
-                    $adminController->unblockUser($_POST['user_id']);
-                }
-                if (isset($_POST['promote_user'], $_POST['user_id'])) {
-                    $adminController->promoteToAdmin($_POST['user_id']);
-                }
-                if (isset($_POST['demote_user'], $_POST['user_id'])) {
-                    $adminController->demoteFromAdmin($_POST['user_id']);
-                }
-                if (isset($_POST['admin_delete_post'], $_POST['post_id'])) {
-                    $adminController->deletePost($_POST['post_id']);
-                }
-                header("Location: index.php?page=settings");
-                exit;
+                $adminController->handleAdminActions();
             }
         }
 
@@ -412,11 +268,7 @@ switch ($page) {
             header("Location: index.php?page=login");
             exit;
         }
-        $searchQuery = $_GET['q'] ?? '';
-        $searchResults = [];
-        if (!empty($searchQuery)) {
-            $searchResults = $userController->searchUsers($searchQuery);
-        }
+        $searchResults = $userController->handleSearch();
         $title = "Search";
         require __DIR__ . '/includes/views/header.php';
         require __DIR__ . '/includes/views/search_view.php';
@@ -434,82 +286,11 @@ switch ($page) {
         if ($userController->isBlocked($user_id)) {
             $blocked_message = "You are blocked. You cannot access the feed.";
         }
-        // Handle new comment submission
-        if (isset($_POST['add_comment']) && isset($_POST['post_id']) && !empty($_POST['comment_content'])) {
-            $post_id = $_POST['post_id'];
-            $comment_content = trim($_POST['comment_content']);
-            if (!empty($comment_content)) {
-                $postController->addComment($post_id, $user_id, $comment_content);
-            }
-            header("Location: index.php");
-            exit;
-        }
 
-        // Handle comment update
-        if (isset($_POST['update_comment'], $_POST['comment_id'])) {
-            $comment_id = $_POST['comment_id'];
-            $new_content = trim($_POST['new_comment_content'] ?? '');
-            if (!empty($new_content)) {
-                $postController->updateComment($comment_id, $user_id, $new_content);
-            }
-            header("Location: index.php");
-            exit;
-        }
+        // Refactored: handle comment and post actions via PostController
+        $postController->handleCommentActions($session);
+        $postController->handleNewPost($session);
 
-        // Handle comment delete
-        if (isset($_POST['delete_comment'], $_POST['comment_id'])) {
-            $comment_id = $_POST['comment_id'];
-            $comment = $postController->getCommentById($comment_id);
-            $canDelete = false;
-            if ($session->isAdmin()) {
-                $canDelete = true;
-            } elseif ($comment && $comment['user_id'] == $user_id) {
-                $canDelete = true;
-            } elseif ($comment) {
-                $post = $postController->getPostById($comment['post_id']);
-                if ($post && $post['user_id'] == $user_id) {
-                    $canDelete = true;
-                }
-            }
-            if ($canDelete) {
-                $postController->deleteComment($comment_id, $user_id);
-            }
-            header("Location: index.php");
-            exit;
-        }
-        // Handle new post submission (image upload, no validation)
-        if (isset($_POST['post_submit']) && !$blocked_message) {
-            $content = $_POST['content'] ?? '';
-            $file = $_FILES['imageFile'] ?? null;
-            $imagePath = null;
-            if ($file && $file['error'] === UPLOAD_ERR_OK && $file['size'] > 0) {
-                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-                $targetDir = __DIR__ . '/uploads/posts/';
-                if (!is_dir($targetDir)) {
-                    mkdir($targetDir, 0777, true);
-                }
-                $basename = uniqid('img_', true) . '.' . $ext;
-                $targetPath = $targetDir . $basename;
-                if (ImageResizer::isValidImage($file['tmp_name'])) {
-                    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                        $resizer = new ImageResizer();
-                        $resizer->resizePostImage($targetPath);
-                        $imagePath = 'uploads/posts/' . $basename;
-                    }
-                } else {
-                    if (file_exists($targetPath)) unlink($targetPath);
-                    $_SESSION['upload_error'] = "⚠️ Invalid file type. Only images (JPEG, PNG, GIF) are allowed.";
-                    header("Location: index.php?page=home");
-                    exit;
-                }
-            }
-            // Read post visibility from form
-            $visibility = $_POST['visibility'] ?? 'public';
-            // Create post with optional image path and visibility
-            $postController->createPost($user_id, $content, $imagePath, $visibility);
-            header("Location: index.php");
-            exit;
-        }
         $viewer_id = $session->getUserId();
         $followingPosts = $postController->getPostsFromFollowing($user_id, $viewer_id);
         $profileController = new ProfileController();

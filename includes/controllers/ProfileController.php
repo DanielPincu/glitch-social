@@ -57,6 +57,55 @@ class ProfileController {
         // Always delegate saving to the model, including avatar if provided
         return $this->profileModel->save($user_id, $bio, $location, $website, $avatarPath);
     }
+
+    // Handle profile update including avatar upload
+    public function handleProfileUpdate($user_id, $session) {
+        // Only allow POST and only for the logged-in user
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || $user_id != $session->getUserId()) {
+            return;
+        }
+
+        $avatarPath = null;
+        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
+            require_once __DIR__ . '/../helpers/ImageResizer.php';
+            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/avatars/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $file = $_FILES['avatar'];
+            $tmpName = $file['tmp_name'];
+            $originalName = basename($file['name']);
+            $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+            $imageResizer = new ImageResizer();
+            if (!ImageResizer::isValidImage($tmpName)) {
+                $session->setFlash('error', 'Invalid image type for avatar.');
+                header('Location: index.php?page=profile&id=' . urlencode($user_id));
+                exit;
+            }
+            // Generate unique filename
+            $newName = 'avatar_' . $user_id . '_' . time() . '.' . $ext;
+            $targetPath = $uploadDir . $newName;
+            if (move_uploaded_file($tmpName, $targetPath)) {
+                // Resize the avatar image
+                $imageResizer->resizeAvatarImage($targetPath);
+                $avatarPath = '/uploads/avatars/' . $newName;
+            } else {
+                $session->setFlash('error', 'Failed to upload avatar image.');
+                header('Location: index.php?page=profile&id=' . urlencode($user_id));
+                exit;
+            }
+        }
+
+        $this->updateProfile(
+            $user_id,
+            $_POST['bio'] ?? '',
+            $_POST['location'] ?? '',
+            $_POST['website'] ?? '',
+            $avatarPath
+        );
+        header('Location: index.php?page=profile&id=' . urlencode($user_id));
+        exit;
+    }
     // Follow or unfollow another user (toggle behavior)
     public function toggleFollow($follower_id, $user_id) {
         // Prevent following if blocked

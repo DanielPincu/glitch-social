@@ -1,5 +1,5 @@
 <?php
-
+require_once __DIR__ . '/../helpers/ImageResizer.php';
 require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../models/User.php';
 
@@ -111,5 +111,147 @@ class PostController {
     public function getPostById($post_id) {
         return $this->post->getPostById($post_id);
     }
-}
 
+    // Handles new post creation, including optional image upload and validation.
+    public function handleNewPost($session) {
+        if (isset($_POST['post_submit'])) {
+            // Check if user is logged in
+            if (!$session->isLoggedIn()) {
+                header("Location: index.php");
+                exit();
+            }
+            $user_id = $session->getUserId();
+            $content = isset($_POST['content']) ? trim($_POST['content']) : '';
+            $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
+            $imagePath = null;
+            if (isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] == UPLOAD_ERR_OK && $_FILES['imageFile']['size'] > 0) {
+                $fileTmp = $_FILES['imageFile']['tmp_name'];
+                $fileName = basename($_FILES['imageFile']['name']);
+                $uploadDir = __DIR__ . '/../../uploads/posts/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $targetPath = $uploadDir . uniqid('post_', true) . '_' . $fileName;
+                // Validate image
+                if (\ImageResizer::isValidImage($fileTmp)) {
+                    if (move_uploaded_file($fileTmp, $targetPath)) {
+                        // Resize image and save
+                        $imageResizer = new \ImageResizer();
+                        $imageResizer->load($targetPath);
+                        $imageResizer->resizeToWidth($targetPath, 800);
+                        // Store relative path for DB
+                        $imagePath = 'uploads/posts/' . basename($targetPath);
+                    } else {
+                        $_SESSION['error'] = "Failed to save uploaded image.";
+                        header("Location: index.php");
+                        exit();
+                    }
+                } else {
+                    $_SESSION['error'] = "Invalid file type for image upload.";
+                    header("Location: index.php");
+                    exit();
+                }
+            }
+            $this->createPost($user_id, $content, $imagePath, $visibility);
+            header("Location: index.php");
+            exit();
+        }
+    }
+
+    // Handles comment actions: add, update, delete.
+    public function handleCommentActions($session) {
+        $user_id = $session->getUserId();
+        if (!$user_id) return;
+        // Add comment
+        if (isset($_POST['add_comment'])) {
+            $post_id = $_POST['post_id'] ?? null;
+            $comment_content = trim($_POST['comment_content'] ?? '');
+            if ($post_id && $comment_content !== '') {
+                $this->addComment($post_id, $user_id, $comment_content);
+            }
+            header("Location: index.php");
+            exit();
+        }
+        // Update comment
+        if (isset($_POST['update_comment'])) {
+            $comment_id = $_POST['comment_id'] ?? null;
+            $new_content = trim($_POST['new_comment_content'] ?? '');
+            if ($comment_id && $new_content !== '') {
+                $this->updateComment($comment_id, $user_id, $new_content);
+            }
+            header("Location: index.php");
+            exit();
+        }
+        // Delete comment
+        if (isset($_POST['delete_comment'])) {
+            $comment_id = $_POST['comment_id'] ?? null;
+            if ($comment_id) {
+                $this->deleteComment($comment_id, $user_id);
+            }
+            header("Location: index.php");
+            exit();
+        }
+    }
+
+    // Handles updating a post, including image management and visibility.
+    public function handlePostUpdate($session) {
+        if (isset($_POST['update_post'])) {
+            $user_id = $session->getUserId();
+            if (!$user_id) {
+                header("Location: index.php");
+                exit();
+            }
+            $post_id = $_POST['post_id'] ?? null;
+            $new_content = trim($_POST['new_content'] ?? '');
+            $remove_image = !empty($_POST['remove_image']);
+            $visibility = $_POST['visibility'] ?? null;
+            $new_image_path = null;
+            // Handle uploaded image
+            if (isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] == UPLOAD_ERR_OK && $_FILES['imageFile']['size'] > 0) {
+                $fileTmp = $_FILES['imageFile']['tmp_name'];
+                $fileName = basename($_FILES['imageFile']['name']);
+                $uploadDir = __DIR__ . '/../../uploads/posts/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $targetPath = $uploadDir . uniqid('post_', true) . '_' . $fileName;
+                if (\ImageResizer::isValidImage($fileTmp)) {
+                    if (move_uploaded_file($fileTmp, $targetPath)) {
+                        $imageResizer = new \ImageResizer();
+                        $imageResizer->load($targetPath);
+                        $imageResizer->resizeToWidth($targetPath, 800);
+                        $new_image_path = 'uploads/posts/' . basename($targetPath);
+                    } else {
+                        $_SESSION['error'] = "Failed to save uploaded image.";
+                        header("Location: index.php?page=settings");
+                        exit();
+                    }
+                } else {
+                    $_SESSION['error'] = "Invalid file type for image upload.";
+                    header("Location: index.php?page=settings");
+                    exit();
+                }
+            }
+            $this->updatePostContent($post_id, $new_content, $user_id, $new_image_path, $remove_image, $visibility);
+            header("Location: index.php?page=settings");
+            exit();
+        }
+    }
+
+    // Handles deleting a user's own post.
+    public function handlePostDelete($session) {
+        if (isset($_POST['delete_post'])) {
+            $user_id = $session->getUserId();
+            if (!$user_id) {
+                header("Location: index.php");
+                exit();
+            }
+            $post_id = $_POST['post_id'] ?? null;
+            if ($post_id) {
+                $this->deletePostByUser($post_id, $user_id);
+            }
+            header("Location: index.php?page=settings");
+            exit();
+        }
+    }
+}

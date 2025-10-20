@@ -87,7 +87,7 @@
             <i data-feather="edit-2" class="text-green-400 drop-shadow-[0_0_3px_rgba(0,255,0,0.7)]"></i>
             <h3 class="text-lg font-semibold text-green-400 drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">Create Post</h3>
           </div>
-          <form method="post" enctype="multipart/form-data">
+          <form method="post" enctype="multipart/form-data" action="index.php?page=home">
             <textarea name="content" placeholder="What's the truth, Neo?" required
               class="w-full bg-[#e8e8e8] text-black px-5 py-4 rounded border border-[#b0b0b0] resize-y focus:outline-none focus:ring-2 focus:ring-green-500 focus:shadow-[0_0_8px_rgba(0,255,0,0.7)] transition-shadow"></textarea>
             <div class="flex justify-between items-center mt-4">
@@ -194,7 +194,7 @@
                 <!-- Comments Section -->
                 <div class="mt-4 border-t border-gray-400 pt-2">
                   <div class="comment-form hidden" id="hot-comment-form-<?php echo $post['id']; ?>">
-                    <form method="POST" class="flex items-center space-x-2 mb-2">
+                    <form method="POST" action="index.php?page=home" class="flex items-center space-x-2 mb-2">
                       <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                       <input type="text" name="comment_content" placeholder="Add a comment..." 
                              class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">
@@ -242,7 +242,7 @@
                                       Edit
                                     </button>
                                   <?php endif; ?>
-                                  <form method="POST" class="inline">
+                                  <form method="POST" action="index.php?page=home" class="inline">
                                     <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
                                     <button 
                                       type="submit" 
@@ -338,7 +338,7 @@
                 <!-- Comments Section -->
                 <div class="mt-4 border-t border-gray-400 pt-2">
                   <div class="comment-form hidden" id="following-comment-form-<?php echo $post['id']; ?>">
-                    <form method="POST" class="flex items-center space-x-2 mb-2">
+                    <form method="POST" action="index.php?page=home" class="flex items-center space-x-2 mb-2">
                       <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                       <input type="text" name="comment_content" placeholder="Add a comment..." 
                              class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">
@@ -386,7 +386,7 @@
                                       Edit
                                     </button>
                                   <?php endif; ?>
-                                  <form method="POST" class="inline">
+                                  <form method="POST" action="index.php?page=home" class="inline">
                                     <input type="hidden" name="comment_id" value="<?php echo $comment['id']; ?>">
                                     <button 
                                       type="submit" 

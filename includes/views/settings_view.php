@@ -24,7 +24,7 @@
                 <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
                 
                 <div class="flex gap-2 mt-3">
-                  <form method="post" class="inline">
+                  <form method="post" action="index.php?page=settings" class="inline">
                     <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                     <button type="button"
                       onclick="document.getElementById('edit-form-<?php echo $post['id']; ?>').classList.toggle('hidden')"
@@ -33,7 +33,7 @@
                     </button>
                   </form>
 
-                  <form method="post" class="inline">
+                  <form method="post" action="index.php?page=settings" class="inline">
                     <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                     <button type="submit" name="delete_post"
                       onclick="return confirm('Delete this post?')"
@@ -44,7 +44,7 @@
                 </div>
 
                 <!-- Hidden edit form -->
-                <form id="edit-form-<?php echo $post['id']; ?>" method="post" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
+                <form id="edit-form-<?php echo $post['id']; ?>" method="post" action="index.php?page=settings" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                   <textarea name="new_content" rows="3" class="w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2"><?php echo htmlspecialchars($post['content']); ?></textarea>
 
@@ -119,19 +119,20 @@
                       <div class="flex flex-wrap gap-1">
                         <?php if ($user['is_blocked']): ?>
                           <!-- Blocked users: only show Unblock button -->
-                          <form method="post" class="inline">
-                            <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                            <button type="submit" name="unblock_user"
-                              class="px-2 w-20 py-1 rounded border bg-green-600 border-green-800 hover:bg-green-700 text-white font-semibold"
-                              onclick="return confirm('Unblock this user?')">
-                              Unblock
-                            </button>
-                          </form>
+                      <form method="post" action="index.php?page=settings" class="inline">
+                        <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                        <input type="hidden" name="from_settings" value="1">
+                        <button type="submit" name="unblock_user"
+                          class="px-2 w-20 py-1 rounded border bg-green-600 border-green-800 hover:bg-green-700 text-white font-semibold"
+                          onclick="return confirm('Unblock this user?')">
+                          Unblock
+                        </button>
+                      </form>
                         <?php else: ?>
                           <!-- Active users -->
                           <?php if ($user['is_admin']): ?>
                             <?php if ($user['id'] != $currentUserId): ?>
-                              <form method="post" class="inline">
+                              <form method="post" action="index.php?page=settings" class="inline">
                                 <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                 <button type="submit" name="demote_user"
                                   class="px-2 w-20 py-1 rounded border bg-blue-700 border-blue-900 hover:bg-blue-800 text-white font-semibold"
@@ -139,8 +140,9 @@
                                   Demote
                                 </button>
                               </form>
-                              <form method="post" class="inline">
+                              <form method="post" action="index.php?page=settings" class="inline">
                                 <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                                <input type="hidden" name="from_settings" value="1">
                                 <button type="submit" name="block_user"
                                   class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold"
                                   onclick="return confirm('Block this user? This will remove admin privileges.')">
@@ -151,7 +153,7 @@
                               <span class="text-xs text-gray-400 ml-2">You</span>
                             <?php endif; ?>
                           <?php else: ?>
-                            <form method="post" class="inline">
+                            <form method="post" action="index.php?page=settings" class="inline">
                               <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                               <button type="submit" name="promote_user"
                                 class="px-2 w-20 py-1 rounded border bg-yellow-700 border-yellow-900 hover:bg-yellow-800 text-white font-semibold"
@@ -159,8 +161,9 @@
                                 Promote
                               </button>
                             </form>
-                            <form method="post" class="inline">
+                            <form method="post" action="index.php?page=settings" class="inline">
                               <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                              <input type="hidden" name="from_settings" value="1">
                               <button type="submit" name="block_user"
                                 class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold"
                                 onclick="return confirm('Block this user?')">
@@ -198,7 +201,7 @@
                     <img id="previewImg-admin-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
                   </div>
                 <?php endif; ?>
-                <form method="post" class="mt-2">
+                <form method="post" action="index.php?page=settings" class="mt-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                   <button type="submit" name="admin_delete_post"
                     onclick="return confirm('Delete this post?')"
@@ -237,7 +240,7 @@
                 <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
                 
                 <div class="flex gap-2 mt-3">
-                  <form method="post" class="inline">
+                  <form method="post" action="index.php?page=settings" class="inline">
                     <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                     <button type="button"
                       onclick="document.getElementById('edit-form-<?php echo $post['id']; ?>').classList.toggle('hidden')"
@@ -246,7 +249,7 @@
                     </button>
                   </form>
 
-                  <form method="post" class="inline">
+                  <form method="post" action="index.php?page=settings" class="inline">
                     <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                     <button type="submit" name="delete_post"
                       onclick="return confirm('Delete this post?')"
@@ -257,7 +260,7 @@
                 </div>
 
                 <!-- Hidden edit form -->
-                <form id="edit-form-<?php echo $post['id']; ?>" method="post" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
+                <form id="edit-form-<?php echo $post['id']; ?>" method="post" action="index.php?page=settings" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                   <textarea name="new_content" rows="3" class="w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2"><?php echo htmlspecialchars($post['content']); ?></textarea>
 
@@ -322,6 +325,7 @@
               </div>
               <form method="POST" action="index.php?page=settings">
                 <input type="hidden" name="blocked_id" value="<?php echo $blocked['id']; ?>">
+                <input type="hidden" name="from_settings" value="1">
                 <button type="submit" name="unblock_user"
                   class="px-3 py-1 bg-green-600 text-white font-semibold rounded hover:bg-green-700 border border-green-800">
                   Unblock
