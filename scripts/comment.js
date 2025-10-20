@@ -1,19 +1,37 @@
 document.addEventListener("DOMContentLoaded", () => {
   // ===== Helpers =====
   function findCommentItem(target) {
-    return target.closest("[data-comment-id]");
+    return target.closest("[data-comment], .comment-item, .flex.items-start");
   }
   function extractCommentId(root) {
-    return root ? root.getAttribute("data-comment-id") : null;
+    if (!root) return null;
+    // 1) data-comment-id attribute
+    let id = root.getAttribute("data-comment-id");
+    if (id) return id;
+    // 2) hidden inputs
+    const hidden = root.querySelector("input[name='comment_id'], input[name='commentId']");
+    if (hidden) return hidden.value;
+    // 3) element ids with patterns
+    const hint = root.querySelector("[id*='edit-form-'], [id*='comment-text-']");
+    if (hint && hint.id) {
+      const m = hint.id.match(/(\d+)/);
+      if (m) return m[1];
+    }
+    return null;
   }
   function findCommentText(root, id) {
     if (!root) return null;
+    // 1) by id patterns
     if (id) {
-      const byId = root.querySelector(`#comment-text-${id}`);
+      const byId = root.querySelector(`#hot-comment-text-${id}`)
+        || root.querySelector(`#following-comment-text-${id}`)
+        || document.getElementById(`comment-text-${id}`);
       if (byId) return byId;
     }
+    // 2) explicit data attr
     const explicit = root.querySelector("[data-comment-text]");
     if (explicit) return explicit;
+    // 3) heuristic candidates
     const candidates = root.querySelectorAll(".comment-text, .whitespace-pre-wrap, p, .text-sm, .text-base");
     for (const el of candidates) {
       if (el.closest("form, button, .actions")) continue;
@@ -21,42 +39,46 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return null;
   }
-  function sendAjax(data) {
-    return fetch("index.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(data).toString()
-    }).then(res => res.json());
-  }
 
-  // ===== New Comment Submission (delegated) =====
-  document.body.addEventListener("submit", e => {
-    const form = e.target.closest(".comment-form form");
-    if (!form) return;
-    e.preventDefault();
+  // ===== New Comment Submission =====
+  document.querySelectorAll(".comment-form form").forEach(form => {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-    const postId = form.querySelector("input[name='post_id']")?.value;
-    const contentInput = form.querySelector("input[name='comment_content'], textarea[name='comment_content']");
-    const content = contentInput?.value.trim();
-    if (!postId || !content) return;
+      const postId = this.querySelector("input[name='post_id']").value;
+      const contentInput = this.querySelector("input[name='comment_content'], textarea[name='comment_content']");
+      const content = contentInput.value.trim();
+      if (!content) return;
 
-    sendAjax({ ajax: "comment", post_id: postId, content }).then(data => {
-      if (data && data.success) {
-        const postContainer = form.closest(".xp-window") || document;
-        const commentSection = postContainer.querySelector(".mt-4") || document.querySelector(".mt-4");
-        if (commentSection) commentSection.insertAdjacentHTML("beforeend", data.html);
+      fetch("index.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `ajax=comment&post_id=${encodeURIComponent(postId)}&content=${encodeURIComponent(content)}`
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success) {
+          const postContainer = this.closest(".xp-window") || document;
+          const commentSection = postContainer.querySelector(".mt-4") || document.querySelector(".mt-4");
 
-        contentInput.value = "";
-        const cf = form.closest(".comment-form");
-        if (cf) cf.classList.add("hidden");
+          // Insert server-rendered HTML for the new comment
+          commentSection.insertAdjacentHTML("beforeend", data.html);
 
-        if (window.feather) feather.replace();
-      }
-    }).catch(() => {});
+          // Reset and hide composer
+          contentInput.value = "";
+          const cf = this.closest(".comment-form");
+          if (cf) cf.classList.add("hidden");
+
+          // Re-init icons if present
+          if (window.feather) feather.replace();
+        }
+      })
+      .catch(() => {});
+    });
   });
 
-  // ===== Inline Edit (delegated) =====
-  document.body.addEventListener("click", e => {
+  // ===== Inline Edit (delegated, robust) =====
+  document.body.addEventListener("click", function(e) {
     const editBtn = e.target.closest("[data-action='edit-comment'], .edit-comment-btn, button[name='edit_comment']");
     if (!editBtn) return;
     e.preventDefault();
@@ -65,10 +87,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!commentItem) return;
     const commentId = extractCommentId(commentItem);
     const textElem = findCommentText(commentItem, commentId);
-    if (!textElem || commentItem.querySelector(".inline-editor")) return;
+    if (!textElem) return; // nothing to edit
+
+    // If already editing, ignore
+    if (commentItem.querySelector(".inline-editor")) return;
 
     const originalText = textElem.textContent.trim().replace(/\s+/g, " ");
 
+    // Build inline editor (textarea + buttons)
     const editorWrap = document.createElement("div");
     editorWrap.className = "inline-editor flex items-center w-full";
 
@@ -90,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     editorWrap.appendChild(saveBtn);
     editorWrap.appendChild(cancelBtn);
 
+    // Swap into DOM
     textElem.classList.add("hidden");
     textElem.insertAdjacentElement("afterend", editorWrap);
     textarea.focus();
@@ -104,38 +131,51 @@ document.addEventListener("DOMContentLoaded", () => {
     saveBtn.addEventListener("click", () => {
       const newContent = textarea.value.trim();
       if (!newContent || newContent === originalText) { restore(); return; }
-      if (!commentId) { restore(); return; }
 
-      sendAjax({ ajax: "update_comment", comment_id: commentId, new_content: newContent })
-        .then(data => {
-          if (data && data.success) {
-            textElem.textContent = newContent;
-          }
-          restore();
-        })
-        .catch(() => restore());
+      const cid = commentId || extractCommentId(commentItem);
+      if (!cid) { restore(); return; }
+
+      fetch("index.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `ajax=update_comment&comment_id=${encodeURIComponent(cid)}&new_content=${encodeURIComponent(newContent)}`
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success) {
+          textElem.textContent = newContent;
+        }
+        restore();
+      })
+      .catch(() => restore());
     });
   });
 
   // ===== Delegated Delete =====
-  document.body.addEventListener("click", e => {
+  document.body.addEventListener("click", function(e) {
     const deleteButton = e.target.closest("form button[name='delete_comment']");
     if (!deleteButton) return;
     e.preventDefault();
 
     const form = deleteButton.closest("form");
-    const commentId = form?.querySelector("input[name='comment_id'], input[name='commentId']")?.value;
+    const hidden = form.querySelector("input[name='comment_id'], input[name='commentId']");
+    const commentId = hidden ? hidden.value : null;
     if (!commentId) return;
 
     if (!confirm("Are you sure you want to delete this comment?")) return;
 
-    sendAjax({ ajax: "delete_comment", comment_id: commentId })
-      .then(data => {
-        if (data && data.success) {
-          const commentElement = form.closest("[data-comment-id]");
-          if (commentElement) commentElement.remove();
-        }
-      })
-      .catch(() => {});
+    fetch("index.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `ajax=delete_comment&comment_id=${encodeURIComponent(commentId)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.success) {
+        const commentElement = form.closest("[data-comment], .comment-item, .flex.items-start");
+        if (commentElement) commentElement.remove();
+      }
+    })
+    .catch(() => {});
   });
 });
