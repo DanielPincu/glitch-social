@@ -204,6 +204,10 @@ class PostController {
             $post_id = $_POST['post_id'] ?? null;
             $new_content = trim($_POST['new_content'] ?? '');
             $remove_image = !empty($_POST['remove_image']);
+            // Ignore remove checkbox if a new image is being uploaded
+            if (isset($_FILES['new_image']) && $_FILES['new_image']['error'] === UPLOAD_ERR_OK && $_FILES['new_image']['size'] > 0) {
+                $remove_image = false;
+            }
             $visibility = $_POST['visibility'] ?? null;
             $new_image_path = null;
             // Handle uploaded image
