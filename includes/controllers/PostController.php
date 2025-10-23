@@ -207,9 +207,10 @@ class PostController {
             $visibility = $_POST['visibility'] ?? null;
             $new_image_path = null;
             // Handle uploaded image
-            if (isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] == UPLOAD_ERR_OK && $_FILES['imageFile']['size'] > 0) {
-                $fileTmp = $_FILES['imageFile']['tmp_name'];
-                $fileName = basename($_FILES['imageFile']['name']);
+            $file = $_FILES['new_image'] ?? ($_FILES['imageFile'] ?? null);
+            if ($file && $file['error'] === UPLOAD_ERR_OK && $file['size'] > 0) {
+                $fileTmp = $file['tmp_name'];
+                $fileName = basename($file['name']);
                 $uploadDir = __DIR__ . '/../../uploads/posts/';
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0777, true);
