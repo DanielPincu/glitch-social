@@ -218,6 +218,16 @@ class PostController {
                 $targetPath = $uploadDir . uniqid('post_', true) . '_' . $fileName;
                 if (\ImageResizer::isValidImage($fileTmp)) {
                     if (move_uploaded_file($fileTmp, $targetPath)) {
+                        // Delete old image if exists
+                        $oldPost = $this->getPostById($post_id);
+                        if ($oldPost && !empty($oldPost['image_path'])) {
+                            $oldImagePath = __DIR__ . '/../../' . $oldPost['image_path'];
+                            if (file_exists($oldImagePath)) {
+                                unlink($oldImagePath);
+                            }
+                        }
+
+                        // Resize and save new image
                         $imageResizer = new \ImageResizer();
                         $imageResizer->load($targetPath);
                         $imageResizer->resizeToWidth($targetPath, 800);
@@ -231,6 +241,16 @@ class PostController {
                     $_SESSION['error'] = "Invalid file type for image upload.";
                     header("Location: index.php?page=settings");
                     exit();
+                }
+            }
+            // If remove_image checkbox is checked, delete old image file
+            if ($remove_image) {
+                $oldPost = $this->getPostById($post_id);
+                if ($oldPost && !empty($oldPost['image_path'])) {
+                    $oldImagePath = __DIR__ . '/../../' . $oldPost['image_path'];
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
                 }
             }
             $this->updatePostContent($post_id, $new_content, $user_id, $new_image_path, $remove_image, $visibility);

@@ -96,6 +96,18 @@ class ProfileController {
             }
         }
 
+
+        // If uploading a new avatar, delete the old one after successful upload
+        if ($avatarPath) {
+            $oldProfile = $this->profileModel->getByUserId($user_id);
+            if ($oldProfile && !empty($oldProfile['avatar_url'])) {
+                $oldAvatarPath = __DIR__ . '/../../' . $oldProfile['avatar_url'];
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath);
+                }
+            }
+        }
+
         $this->updateProfile(
             $user_id,
             $_POST['bio'] ?? '',
