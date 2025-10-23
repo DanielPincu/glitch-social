@@ -41,6 +41,17 @@ CREATE TABLE followers (
   FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,           -- the recipient of the notification
+  actor_id INT NOT NULL,          -- who triggered it (the one who posted)
+  post_id INT DEFAULT NULL,       -- which post caused it
+  type ENUM('post', 'follow') NOT NULL DEFAULT 'post',
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (actor_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+);
+
 -- POSTS TABLE
 CREATE TABLE posts (
   id INT AUTO_INCREMENT PRIMARY KEY,

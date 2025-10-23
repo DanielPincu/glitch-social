@@ -45,6 +45,7 @@
 <script src="scripts/logout.js"></script>
 <script src="scripts/matrix-rain.js"></script>
 <script src="scripts/taskbar.js"></script>
+<script src="scripts/notifications.js"></script>
 
 </body>
 </html>

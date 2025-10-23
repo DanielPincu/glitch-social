@@ -34,6 +34,9 @@ class AjaxController
             case 'delete_comment':
                 $this->handleDeleteComment();
                 break;
+            case 'delete_all_notifications':
+                $this->handleDeleteAllNotifications();
+                break;
         }
         exit;
     }
@@ -187,5 +190,21 @@ class AjaxController
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid input']);
         }
+    }
+
+    private function handleDeleteAllNotifications()
+    {
+        header('Content-Type: application/json');
+
+        if (!$this->session->isLoggedIn()) {
+            echo json_encode(['success' => false, 'message' => 'Not logged in']);
+            return;
+        }
+
+        $userId = $this->session->getUserId();
+        $this->postController->deleteAllNotifications($userId);
+
+        echo json_encode(['success' => true]);
+        exit;
     }
 }

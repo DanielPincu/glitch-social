@@ -12,7 +12,11 @@ class PostController {
 
     // Create a new post with optional image file and visibility
     public function createPost($user_id, $content, $file = null, $visibility = 'public') {
-        return $this->post->create($user_id, $content, $file, $visibility);
+        $post_id = $this->post->create($user_id, $content, $file, $visibility);
+        if ($post_id) {
+            $this->post->notifyFollowersOfPost($user_id, $post_id);
+        }
+        return $post_id;
     }
 
     // Fetch all posts for displaying, with visibility based on viewer
@@ -152,7 +156,7 @@ class PostController {
                     exit();
                 }
             }
-            $this->createPost($user_id, $content, $imagePath, $visibility);
+            $post_id = $this->createPost($user_id, $content, $imagePath, $visibility);
             header("Location: index.php");
             exit();
         }
@@ -278,5 +282,11 @@ class PostController {
             header("Location: index.php?page=settings");
             exit();
         }
+    }
+
+    // Delete all notifications for a user
+    public function deleteAllNotifications($user_id)
+    {
+        $this->post->deleteAllNotifications($user_id);
     }
 }

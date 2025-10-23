@@ -33,13 +33,38 @@ class Post {
             $imagePath = $file;
         }
 
-        $stmt = $this->db->prepare("INSERT INTO posts (user_id, content, image_path, visibility) VALUES (:user_id, :content, :image_path, :visibility)");
-        return $stmt->execute([
+        $stmt = $this->db->prepare("
+            INSERT INTO posts (user_id, content, image_path, visibility)
+            VALUES (:user_id, :content, :image_path, :visibility)
+        ");
+
+        if ($stmt->execute([
             ':user_id' => $user_id,
             ':content' => $content,
             ':image_path' => $imagePath,
             ':visibility' => $visibility
-        ]);
+        ])) {
+            return $this->db->lastInsertId(); // return the new post ID
+        }
+
+        return false;
+    }
+
+    // Notify all followers of a user about a new post
+    public function notifyFollowersOfPost($user_id, $post_id) {
+        $stmt = $this->db->prepare("SELECT follower_id FROM followers WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $followers = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        if (!$followers) return;
+
+        $insert = $this->db->prepare("
+            INSERT INTO notifications (user_id, actor_id, post_id, type)
+            VALUES (?, ?, ?, 'post')
+        ");
+        foreach ($followers as $follower_id) {
+            $insert->execute([$follower_id, $user_id, $post_id]);
+        }
     }
 
     // Fetch all posts
@@ -383,5 +408,36 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
         ");
         $stmt->execute([':post_id' => $post_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    // Count unread notifications for a user
+    public function countUnreadNotifications($user_id) {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) FROM notifications
+            WHERE user_id = :user_id
+        ");
+        $stmt->execute([':user_id' => $user_id]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    // Fetch the 10 most recent notifications for a user
+    public function getRecentNotifications($user_id) {
+        $stmt = $this->db->prepare("
+            SELECT n.*, u.username AS actor_name, p.content AS post_content
+            FROM notifications n
+            JOIN users u ON n.actor_id = u.id
+            LEFT JOIN posts p ON n.post_id = p.id
+            WHERE n.user_id = :user_id
+            ORDER BY n.id DESC
+            LIMIT 10
+        ");
+        $stmt->execute([':user_id' => $user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    // Delete all notifications for a user
+    public function deleteAllNotifications($user_id) {
+        $stmt = $this->db->prepare("DELETE FROM notifications WHERE user_id = :user_id");
+        return $stmt->execute([':user_id' => $user_id]);
     }
 }

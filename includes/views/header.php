@@ -37,14 +37,69 @@
       </a>
     </div>
 
+    <!-- Notification Bell moved to taskbar right side -->
+
     <div class="ml-auto flex items-center space-x-2">
       <div class="bg-green-500 px-2 py-1 text-xs">
         ONLINE
+      </div>
+      <div class="relative">
+        <button id="notif-button" class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm flex items-center relative">
+          <i data-feather="bell" class="w-4 h-4"></i>
+          <?php
+            require_once __DIR__ . '/../models/Post.php';
+            $notif = new Post();
+            $notifCount = $notif->countUnreadNotifications($session->getUserId());
+            if ($notifCount > 0): ?>
+              <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1"><?php echo $notifCount; ?></span>
+          <?php endif; ?>
+        </button>
+
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute bottom-10 right-0 w-64 bg-[#222] border border-gray-600 rounded shadow-lg z-50">
+<?php
+  $notifs = $notif->getRecentNotifications($session->getUserId());
+?>
+<div class="p-2 text-sm text-gray-300 flex justify-between items-center">
+  <strong>Notifications</strong>
+  <?php if (!empty($notifs)): ?>
+    <button id="delete-all-notifications" class="text-xs text-red-400 hover:underline p-2">
+      Delete all
+    </button>
+  <?php endif; ?>
+</div>
+
+<div class="max-h-64 overflow-y-auto">
+  <?php if (empty($notifs)): ?>
+    <div class="p-3 text-xs text-gray-400 text-center">
+      💤 No notifications yet — you're all caught up!
+    </div>
+  <?php else: ?>
+    <?php foreach ($notifs as $n): ?>
+      <div class="p-2 border-b border-gray-700 text-xs notification-item"
+           data-id="<?php echo $n['id']; ?>">
+        <a
+          href="index.php?page=profile&amp;id=<?php echo urlencode($n['actor_id']); ?>"
+          class="text-green-400 hover:underline"
+        ><?php echo htmlspecialchars($n['actor_name']); ?></a>
+        <?php if ($n['type'] === 'post'): ?>
+          <a href="index.php?page=home#post-<?php echo $n['post_id']; ?>" class="text-blue-400 hover:underline">
+            posted something new.
+          </a>
+        <?php elseif ($n['type'] === 'follow'): ?>
+          started following you.
+        <?php endif; ?>
+      </div>
+    <?php endforeach; ?>
+  <?php endif; ?>
+</div>
+        </div>
       </div>
       <div class="text-xs">
         <span id="current-time"></span>
       </div>
     </div>
+    
   </nav>
 
   <!-- START MENU -->

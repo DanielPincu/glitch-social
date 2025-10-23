@@ -122,7 +122,7 @@
         <div id="hotFeed">
           <?php if (!empty($posts)): ?>
             <?php foreach ($posts as $post): ?>
-              <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
+              <div id="post-<?php echo $post['id']; ?>" class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
                 <div class="flex justify-between items-center mb-3">
                   <div class="flex items-center space-x-3">
                    <?php if (!empty($post['avatar_url'])): ?>
@@ -267,7 +267,7 @@
         <div id="followingFeed" class="hidden h-full">
           <?php if (!empty($followingPosts)): ?>
             <?php foreach ($followingPosts as $post): ?>
-              <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
+              <div id="post-<?php echo $post['id']; ?>" class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
                 <div class="flex justify-between items-center mb-3">
                   <div class="flex items-center space-x-3">
                     <?php if (!empty($post['avatar_url'])): ?>
