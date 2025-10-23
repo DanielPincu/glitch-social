@@ -1,14 +1,11 @@
--- Drop and recreate database
+-- reset database
 DROP DATABASE IF EXISTS Glitch_Social;
-CREATE DATABASE Glitch_Social
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_bin;
+CREATE DATABASE Glitch_Social CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 USE Glitch_Social;
 
--- Use InnoDB as default engine
 SET default_storage_engine=INNODB;
 
--- USERS TABLE
+-- users
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(50) NOT NULL UNIQUE,
@@ -18,7 +15,7 @@ CREATE TABLE users (
   is_blocked TINYINT(1) NOT NULL DEFAULT 0
 );
 
--- PROFILES TABLE
+-- profiles
 CREATE TABLE profiles (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL UNIQUE,
@@ -30,7 +27,7 @@ CREATE TABLE profiles (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- FOLLOWERS TABLE
+-- followers
 CREATE TABLE followers (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
@@ -38,32 +35,23 @@ CREATE TABLE followers (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY user_follower (user_id, follower_id),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_followers_user_follower (user_id, follower_id)
 );
 
-CREATE TABLE notifications (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,           -- the recipient of the notification
-  actor_id INT NOT NULL,          -- who triggered it (the one who posted)
-  post_id INT DEFAULT NULL,       -- which post caused it
-  type ENUM('post', 'follow') NOT NULL DEFAULT 'post',
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (actor_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
-);
-
--- POSTS TABLE
+-- posts
 CREATE TABLE posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   content TEXT DEFAULT NULL,
-  image_path VARCHAR(255) DEFAULT NULL,         -- post image
+  image_path VARCHAR(255) DEFAULT NULL,
   visibility ENUM('public','private','followers') NOT NULL DEFAULT 'public',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_posts_user_created_at (user_id, created_at)
 );
 
--- COMMENTS TABLE
+-- comments
 CREATE TABLE comments (
   id INT AUTO_INCREMENT PRIMARY KEY,
   post_id INT NOT NULL,
@@ -71,10 +59,11 @@ CREATE TABLE comments (
   content TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_comments_post_created_at (post_id, created_at)
 );
 
--- LIKES TABLE
+-- likes
 CREATE TABLE likes (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
@@ -82,15 +71,106 @@ CREATE TABLE likes (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY user_post (user_id, post_id),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  INDEX idx_likes_user_post (user_id, post_id)
 );
 
--- USER BLOCKS TABLE 
+-- blocked users
 CREATE TABLE blocked_users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    blocker_id INT NOT NULL,
-    blocked_id INT NOT NULL,
-    CONSTRAINT fk_blocker_user FOREIGN KEY (blocker_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_blocked_user FOREIGN KEY (blocked_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT unique_block_pair UNIQUE (blocker_id, blocked_id)
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  blocker_id INT NOT NULL,
+  blocked_id INT NOT NULL,
+  FOREIGN KEY (blocker_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (blocked_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_block_pair (blocker_id, blocked_id),
+  INDEX idx_blocked_users_blocker_blocked (blocker_id, blocked_id)
 );
+
+-- notifications
+CREATE TABLE notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,    -- recipient
+  actor_id INT NOT NULL,   -- who triggered it
+  post_id INT DEFAULT NULL,
+  type ENUM('post','follow') NOT NULL DEFAULT 'post',
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (actor_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  INDEX idx_notifications_user_id (user_id),
+  INDEX idx_notifications_actor_id (actor_id),
+  INDEX idx_notifications_post_id (post_id),
+  INDEX idx_notifications_type (type)
+);
+
+-- triggers
+DELIMITER //
+CREATE TRIGGER after_post_insert_notification
+AFTER INSERT ON posts
+FOR EACH ROW
+BEGIN
+  -- Only notify followers if visibility allows (public or followers)
+  IF NEW.visibility IN ('public', 'followers') THEN
+    INSERT INTO notifications (user_id, actor_id, post_id, type)
+    SELECT f.follower_id, NEW.user_id, NEW.id, 'post'
+    FROM followers f
+    WHERE f.user_id = NEW.user_id;
+  END IF;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER after_follow_insert_notification
+AFTER INSERT ON followers
+FOR EACH ROW
+BEGIN
+  INSERT INTO notifications (user_id, actor_id, post_id, type)
+  VALUES (NEW.user_id, NEW.follower_id, NULL, 'follow');
+END //
+DELIMITER ;
+
+-- views
+CREATE OR REPLACE VIEW view_post_notifications AS
+SELECT 
+  n.id            AS notification_id,
+  u.username      AS recipient,
+  a.username      AS actor,
+  n.type,
+  p.content       AS post_content,
+  p.visibility    AS post_visibility,
+  n.post_id,
+  n.user_id,
+  n.actor_id
+FROM notifications n
+JOIN users u ON n.user_id = u.id
+JOIN users a ON n.actor_id = a.id
+LEFT JOIN posts p ON n.post_id = p.id
+WHERE n.type = 'post'
+ORDER BY n.id DESC;
+
+CREATE OR REPLACE VIEW view_follow_notifications AS
+SELECT 
+  n.id       AS notification_id,
+  u.username AS recipient,
+  a.username AS actor,
+  n.type,
+  n.user_id,
+  n.actor_id
+FROM notifications n
+JOIN users u ON n.user_id = u.id
+JOIN users a ON n.actor_id = a.id
+WHERE n.type = 'follow'
+ORDER BY n.id DESC;
+
+CREATE OR REPLACE VIEW view_all_posts AS
+SELECT 
+  p.id          AS post_id,
+  p.user_id,
+  u.username,
+  p.content,
+  p.image_path,
+  p.visibility,
+  p.created_at
+FROM posts p
+JOIN users u   ON u.id = p.user_id
+LEFT JOIN profiles pr ON pr.user_id = p.user_id
+ORDER BY p.created_at DESC;

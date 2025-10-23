@@ -50,22 +50,6 @@ class Post {
         return false;
     }
 
-    // Notify all followers of a user about a new post
-    public function notifyFollowersOfPost($user_id, $post_id) {
-        $stmt = $this->db->prepare("SELECT follower_id FROM followers WHERE user_id = ?");
-        $stmt->execute([$user_id]);
-        $followers = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-        if (!$followers) return;
-
-        $insert = $this->db->prepare("
-            INSERT INTO notifications (user_id, actor_id, post_id, type)
-            VALUES (?, ?, ?, 'post')
-        ");
-        foreach ($followers as $follower_id) {
-            $insert->execute([$follower_id, $user_id, $post_id]);
-        }
-    }
 
     // Fetch all posts
     // If $isAdmin is true, fetch all posts (no visibility restrictions).

@@ -13,9 +13,6 @@ class PostController {
     // Create a new post with optional image file and visibility
     public function createPost($user_id, $content, $file = null, $visibility = 'public') {
         $post_id = $this->post->create($user_id, $content, $file, $visibility);
-        if ($post_id) {
-            $this->post->notifyFollowersOfPost($user_id, $post_id);
-        }
         return $post_id;
     }
 

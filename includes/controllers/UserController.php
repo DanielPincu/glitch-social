@@ -175,7 +175,6 @@ class UserController {
             if ($follower_id && $followed_id) {
                 $profileController = new ProfileController();
                 $profileController->toggleFollow($follower_id, $followed_id);
-                $this->user->createFollowNotification($follower_id, $followed_id);
             }
             header('Location: index.php?page=profile&id=' . urlencode($followed_id));
             exit();

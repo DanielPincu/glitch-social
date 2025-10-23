@@ -176,19 +176,5 @@ class User {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Create a notification when a user follows another
-    public function createFollowNotification($follower_id, $followed_id) {
-        try {
-            $stmt = $this->db->prepare("
-                INSERT INTO notifications (user_id, actor_id, type)
-                VALUES (:user_id, :actor_id, 'follow')
-            ");
-            $stmt->execute([
-                ':user_id' => $followed_id, // who receives
-                ':actor_id' => $follower_id // who triggers
-            ]);
-        } catch (Exception $e) {
-            error_log("Failed to create follow notification: " . $e->getMessage());
-        }
-    }
+    
 }

@@ -264,7 +264,7 @@
           <?php endif; ?>
         </div>
 
-        <div id="followingFeed" class="hidden h-full">
+        <div id="followingFeed" class="hidden">
           <?php if (!empty($followingPosts)): ?>
             <?php foreach ($followingPosts as $post): ?>
               <div id="post-<?php echo $post['id']; ?>" class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
