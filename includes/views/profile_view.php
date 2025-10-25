@@ -3,8 +3,8 @@
         <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
     </div>
 <?php endif; ?>
-<div class="min-h-screen flex items-center justify-center p-6 w-full h-full z-10 relative">
-    <div class="bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg shadow-lg w-full max-w-6xl p-8 border border-gray-400 space-y-12 text-white">
+<div class="p-6 w-full h-full z-10 relative flex justify-center">
+    <div class="bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg w-full max-w-7xl mx-auto p-8 border border-gray-400 space-y-12 text-white overflow-y-auto h-[90vh]">
         <section class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60 text-center">
             <section class="text-center mb-10">
                 <?php if (!empty($profileData['avatar_url'])): ?>
