@@ -5,6 +5,7 @@
             <p class="mb-4 text-red-600 font-semibold"><?php echo htmlspecialchars($login_error, ENT_QUOTES); ?></p>
         <?php endif; ?>
         <form method="post" class="space-y-4">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES); ?>">
             <input type="text" name="username" placeholder="Username" required class="w-full px-4 py-2 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
             <input type="password" name="password" placeholder="Password" required class="w-full px-4 py-2 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
             <button type="submit" name="login" class="w-full bg-gradient-to-b from-blue-500 to-blue-700 text-white font-semibold px-5 py-2 rounded border border-blue-800 shadow-md hover:from-blue-600 hover:to-blue-800 active:translate-y-0.5 active:shadow-none transition duration-150">Login</button>

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/ProfileController.php';
+require_once __DIR__ . '/../helpers/Session.php';
 
 class UserController {
     protected $user;
@@ -120,8 +121,12 @@ class UserController {
 
     // 1. Handle POST login requests
     public function handleLogin() {
+        $session = new Session();
         $login_error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!$session->validateCsrfToken($_POST['csrf_token'] ?? '')) {
+                die('CSRF validation failed.');
+            }
             $username = isset($_POST['username']) ? trim($_POST['username']) : '';
             $password = isset($_POST['password']) ? $_POST['password'] : '';
             if (!empty($username) && !empty($password)) {
@@ -135,6 +140,9 @@ class UserController {
                 $login_error = 'Please enter both username and password.';
             }
         }
+        if (!$session->getCsrfToken()) {
+            $session->generateCsrfToken();
+        }
         // Render login view with error if any
         require_once __DIR__ . '/../views/header.php';
         require_once __DIR__ . '/../views/login_view.php';
@@ -143,9 +151,13 @@ class UserController {
 
     // 2. Handle POST registration requests
     public function handleRegister() {
+        $session = new Session();
         $register_success = '';
         $register_error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!$session->validateCsrfToken($_POST['csrf_token'] ?? '')) {
+                die('CSRF validation failed.');
+            }
             $username = isset($_POST['username']) ? trim($_POST['username']) : '';
             $email = isset($_POST['email']) ? trim($_POST['email']) : '';
             $password = isset($_POST['password']) ? $_POST['password'] : '';
@@ -161,6 +173,9 @@ class UserController {
             } else {
                 $register_error = 'Please fill out all fields.';
             }
+        }
+        if (!$session->getCsrfToken()) {
+            $session->generateCsrfToken();
         }
         require_once __DIR__ . '/../views/header.php';
         require_once __DIR__ . '/../views/register_view.php';

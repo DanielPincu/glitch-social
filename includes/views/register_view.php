@@ -11,6 +11,7 @@
       </div>
     <?php endif; ?>
     <form method="post">
+      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES); ?>">
       <input
         type="text"
         name="username"

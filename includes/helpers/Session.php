@@ -4,6 +4,15 @@ class Session {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        if (empty($_SESSION['csrf_token'])) {
+            $this->generateCsrfToken();
+        }
+    }
+
+    private function ensureCsrfToken() {
+        if (empty($_SESSION['csrf_token'])) {
+            $this->generateCsrfToken();
+        }
     }
 
     public function isLoggedIn() {
@@ -12,6 +21,22 @@ class Session {
 
     public function isAdmin() {
         return isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
+    }
+
+    public function getCsrfToken() {
+        $this->ensureCsrfToken();
+        return $_SESSION['csrf_token'];
+    }
+
+    public function validateCsrfToken($token) {
+        if (!isset($_SESSION['csrf_token'])) {
+            return false;
+        }
+        return hash_equals($_SESSION['csrf_token'], $token);
+    }
+
+    public function generateCsrfToken() {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
 
     public function getUserId() {
@@ -27,6 +52,7 @@ class Session {
         $_SESSION['username']  = $user['username'];
         $_SESSION['is_admin']  = $user['is_admin'];
         $_SESSION['email']     = $user['email'];
+        $this->generateCsrfToken();
     }
 
     public function logout() {
@@ -41,9 +67,8 @@ class Session {
         }
 
         session_destroy();
+        $this->generateCsrfToken();
     }
 
-    public function destroy() {
-        $this->logout();
-    }
+   
 }

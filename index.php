@@ -35,7 +35,7 @@ switch ($page) {
         break;
 
     case 'logout':
-        $session->destroy();
+        $session->logout();
         header("Location: index.php?page=login");
         exit;
 
