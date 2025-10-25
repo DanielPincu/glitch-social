@@ -42,10 +42,15 @@
   </div>
 </div>
 
-<script src="scripts/logout.js"></script>
+
 <script src="scripts/matrix-rain.js"></script>
-<script src="scripts/taskbar.js"></script>
-<script src="scripts/notifications.js"></script>
+
+<?php if (!empty($_SESSION['user_id'])): ?>
+  <script src="scripts/logout.js"></script>
+  <script src="scripts/taskbar.js"></script>
+  <script src="scripts/notifications.js"></script>
+<?php endif; ?>
+
 
 </body>
 </html>
