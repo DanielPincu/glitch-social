@@ -1,11 +1,25 @@
-<div class="min-h-screen flex items-center justify-center p-6 w-full h-full z-10 relative">
-  <div class="bg-[#008080] rounded-lg shadow-lg w-full p-8 border border-gray-400 space-y-12">
+<div class="p-6 w-full h-full z-10 relative">
+  <div class="flex w-full max-w-7xl mx-auto bg-black bg-opacity-50 rounded-lg shadow-lg border border-gray-400 overflow-hidden">
+    <!-- Sidebar Navigation -->
+    <nav class="w-1/4 bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] border-r border-gray-500 text-white flex flex-col p-6 space-y-4">
+      <h2 class="text-2xl font-bold mb-4 text-teal-300 border-b border-teal-400 pb-2">Settings</h2>
+      <a href="#myposts" class="hover:text-teal-300 transition">📜 My Posts</a>
+      <?php if (!empty($isAdmin) && $isAdmin): ?>
+        <a href="#usermanagement" class="hover:text-yellow-300 transition">👥 User Management</a>
+        <a href="#allposts" class="hover:text-cyan-300 transition">🌐 All Posts</a>
+      <?php endif; ?>
+      <a href="#blockedusers" class="hover:text-red-400 transition">🚫 Blocked Users</a>
+      <a href="index.php" class="hover:text-white transition mt-auto">🏠 Go Back Home</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="w-3/4 p-8 space-y-10 overflow-y-auto h-[90vh]">
 
     <?php if (!empty($isAdmin) && $isAdmin): ?>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+    <div class="flex flex-col space-y-8 w-full">
 
       <!-- My Posts Section -->
-      <section class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60">
+      <section id="myposts" class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60">
         <h1 class="text-3xl font-bold text-white mb-4 border-b border-teal-400 pb-2">My Posts</h1>
         <p class="text-gray-200 mb-6">Manage your own posts below.</p>
 
@@ -17,8 +31,8 @@
               <div class="bg-black bg-opacity-70 border border-teal-500 rounded-lg p-4">
                 <p class="text-green-400 mb-2"><?php echo htmlspecialchars($post['content']); ?></p>
                 <?php if (!empty($post['image_path'])): ?>
-                  <div class="mb-2">
-                    <img id="previewImg-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
+                  <div class="mb-2 flex items-center justify-center">
+                    <img id="previewImg-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="w-1/2 h-auto rounded cursor-pointer" />
                   </div>
                 <?php endif; ?>
                 <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
@@ -92,7 +106,7 @@
 
 
       <!-- User Management Section -->
-      <section class="border border-yellow-500 rounded-lg p-6 bg-black bg-opacity-60">
+      <section id="usermanagement" class="border border-yellow-500 rounded-lg p-6 bg-black bg-opacity-60">
         <h2 class="text-2xl font-bold text-yellow-300 mb-4 border-b border-yellow-400 pb-2">User Management</h2>
         <?php if (!empty($allUsers)): ?>
           <div class="overflow-x-auto">
@@ -189,7 +203,7 @@
       </section>
 
       <!-- All Posts Section -->
-      <section class="border border-cyan-400 rounded-lg p-6 bg-black bg-opacity-60">
+      <section id="allposts" class="border border-cyan-400 rounded-lg p-6 bg-black bg-opacity-60">
         <h2 class="text-2xl font-bold text-cyan-300 mb-4 border-b border-cyan-400 pb-2">All Posts</h2>
         <?php if (!empty($allPosts)): ?>
           <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
@@ -201,8 +215,8 @@
                 </div>
                 <p class="text-cyan-100 mb-2"><?php echo htmlspecialchars($post['content']); ?></p>
                 <?php if (!empty($post['image_path'])): ?>
-                  <div class="mb-2">
-                    <img id="previewImg-admin-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
+                  <div class="mb-2 flex items-center justify-center">
+                    <img id="previewImg-admin-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="w-1/2 h-auto rounded cursor-pointer" />
                   </div>
                 <?php endif; ?>
                 <form method="post" action="index.php?page=settings" class="mt-2">
@@ -225,7 +239,7 @@
     <div class="grid grid-cols-1 w-full max-w-3xl mx-auto">
 
       <!-- My Posts Section -->
-      <section class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60">
+      <section id="myposts" class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60">
         <h1 class="text-3xl font-bold text-white mb-4 border-b border-teal-400 pb-2">My Posts</h1>
         <p class="text-gray-200 mb-6">Manage your own posts below.</p>
 
@@ -311,9 +325,8 @@
       </section>
     </div>
     <?php endif; ?>
-
     <!-- Blocked Users Section (shown to all users) -->
-    <section class="border border-red-400 rounded-lg p-6 bg-black bg-opacity-60 mt-8">
+    <section id="blockedusers" class="border border-red-400 rounded-lg p-6 bg-black bg-opacity-60 mt-8">
       <h2 class="text-2xl font-bold text-red-400 mb-4 border-b border-red-400 pb-2">Blocked Users</h2>
       <?php 
         $blockedUsers = $userController->getBlockedUsersByUser($session->getUserId());
@@ -343,6 +356,6 @@
       <?php endif; ?>
     </section>
 
-
+    </div>
   </div>
-</div>
+    </div>
