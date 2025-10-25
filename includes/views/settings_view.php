@@ -29,11 +29,13 @@
           <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
             <?php foreach ($posts as $post): ?>
               <div class="bg-black bg-opacity-70 border border-teal-500 rounded-lg p-4">
-                <p class="text-green-400 mb-2"><?php echo htmlspecialchars($post['content']); ?></p>
+                <a href="index.php?page=post&id=<?php echo $post['id']; ?>" class="text-green-400 hover:underline mb-2 block">
+                  <?php echo htmlspecialchars($post['content']); ?>
+                </a>
                 <?php if (!empty($post['image_path'])): ?>
-                  <div class="mb-2 flex items-center justify-center">
+                  <a href="index.php?page=post&id=<?php echo $post['id']; ?>" class="block mb-2 flex items-center justify-center">
                     <img id="previewImg-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="w-1/2 h-auto rounded cursor-pointer" />
-                  </div>
+                  </a>
                 <?php endif; ?>
                 <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
                 
@@ -213,11 +215,13 @@
                   <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>" class="text-cyan-300 font-bold mr-3">@<?php echo htmlspecialchars($post['username']); ?></a>
                   <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
                 </div>
-                <p class="text-cyan-100 mb-2"><?php echo htmlspecialchars($post['content']); ?></p>
+                <a href="index.php?page=post&id=<?php echo $post['id']; ?>" class="text-cyan-300 hover:underline mb-2 block">
+                  <?php echo htmlspecialchars($post['content']); ?>
+                </a>
                 <?php if (!empty($post['image_path'])): ?>
-                  <div class="mb-2 flex items-center justify-center">
+                  <a href="index.php?page=post&id=<?php echo $post['id']; ?>" class="block mb-2 flex items-center justify-center">
                     <img id="previewImg-admin-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="w-1/2 h-auto rounded cursor-pointer" />
-                  </div>
+                  </a>
                 <?php endif; ?>
                 <form method="post" action="index.php?page=settings" class="mt-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
@@ -249,11 +253,13 @@
           <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
             <?php foreach ($posts as $post): ?>
               <div class="bg-black bg-opacity-70 border border-teal-500 rounded-lg p-4">
-                <p class="text-green-400 mb-2"><?php echo htmlspecialchars($post['content']); ?></p>
+                <a href="index.php?page=post&id=<?php echo $post['id']; ?>" class="text-green-400 hover:underline mb-2 block">
+                  <?php echo htmlspecialchars($post['content']); ?>
+                </a>
                 <?php if (!empty($post['image_path'])): ?>
-                  <div class="mb-2">
+                  <a href="index.php?page=post&id=<?php echo $post['id']; ?>" class="block mb-2 flex items-center justify-center">
                     <img id="previewImg-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
-                  </div>
+                  </a>
                 <?php endif; ?>
                 <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
                 

@@ -124,7 +124,7 @@
         <div id="hotFeed">
           <?php if (!empty($posts)): ?>
             <?php foreach ($posts as $post): ?>
-              <div id="post-<?php echo $post['id']; ?>" class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
+              <div id="post-<?php echo $post['id']; ?>" class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 mb-3">
                 <div class="flex justify-between items-center mb-3">
                   <div class="flex items-center space-x-3">
                    <?php if (!empty($post['avatar_url'])): ?>
@@ -486,4 +486,24 @@
     const form = document.getElementById(`${tab}-comment-form-${postId}`);
     if (form) form.classList.toggle("hidden");
   }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const postId = params.get('id');
+  if (!postId) return;
+
+  const scrollToPost = () => {
+    const post = document.getElementById(`post-${postId}`);
+    if (post) {
+      post.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      post.classList.add('ring', 'ring-blue-900', 'ring-offset-4');
+      setTimeout(() => post.classList.remove('ring', 'ring-blue-900', 'ring-offset-4'), 4000);
+    } else {
+      setTimeout(scrollToPost, 100);
+    }
+  };
+
+  scrollToPost();
+});
 </script>

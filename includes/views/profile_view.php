@@ -171,10 +171,14 @@
                                 </span>
                             </div>
 
-                            <p class="text-gray-200 mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                            <a href="index.php?page=post&id=<?php echo $post['id']; ?>" class="text-cyan-300 hover:underline block mb-3">
+                                <?php echo nl2br(htmlspecialchars($post['content'])); ?>
+                            </a>
 
                             <?php if (!empty($post['image_path'])): ?>
-                                <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="rounded-lg max-h-80 w-full object-cover mb-3 border border-cyan-500">
+                                <a href="index.php?page=post&id=<?php echo $post['id']; ?>" class="block mb-3">
+                                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="rounded-lg max-h-80 w-full object-cover border border-cyan-500 hover:opacity-90 transition">
+                                </a>
                             <?php endif; ?>
 
                             
