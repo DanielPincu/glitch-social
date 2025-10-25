@@ -127,4 +127,13 @@ class Profile {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+    // Delete the user's avatar
+    public function deleteAvatar($user_id) {
+        $stmt = $this->db->prepare("
+            UPDATE profiles
+            SET avatar_url = NULL
+            WHERE user_id = :user_id
+        ");
+        return $stmt->execute([':user_id' => $user_id]);
+    }
 }

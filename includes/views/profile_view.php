@@ -104,7 +104,27 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium mb-1">Avatar</label>
-                    <input type="file" name="avatar" class="block w-full text-gray-700">
+                    <input 
+                        type="file" 
+                        name="avatar" 
+                        id="avatarInput" 
+                        class="block w-full text-gray-700"
+                        onchange="previewImage(event, 'avatar')">
+                    <div id="imagePreview-avatar" class="hidden mt-3">
+                        <p class="text-gray-600 text-sm mb-1">Preview:</p>
+                        <img id="previewImg-avatar" src="" alt="Avatar Preview" class="w-32 h-32 object-cover border-2 border-gray-300 shadow-md">
+                        <p id="fileName-avatar" class="text-xs text-gray-500 mt-1"></p>
+                    </div>
+                    <div class="mt-3">
+                        <button 
+                            type="submit" 
+                            name="delete_avatar" 
+                            class="px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition"
+                            onclick="return confirm('Are you sure you want to delete your avatar? This action cannot be undone.');">
+                            Delete Avatar
+                        </button>
+                        <p class="text-xs text-gray-500 mt-1">This will remove your current avatar and reset it to default.</p>
+                    </div>
                 </div>
                 <button type="submit" name="update" class="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition">
                     Save Changes
@@ -165,4 +185,5 @@
             <p class="text-center text-gray-500 italic">This user hasn't posted anything yet.</p>
         <?php endif; ?>
     </section>
+<script src="scripts/image-previewer.js"></script>
 </div>

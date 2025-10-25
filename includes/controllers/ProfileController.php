@@ -65,6 +65,21 @@ class ProfileController {
             return;
         }
 
+        // Handle avatar deletion
+        if (isset($_POST['delete_avatar'])) {
+            $oldProfile = $this->profileModel->getByUserId($user_id);
+            if ($oldProfile && !empty($oldProfile['avatar_url'])) {
+                $oldAvatarPath = __DIR__ . '/../../' . $oldProfile['avatar_url'];
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath);
+                }
+            }
+
+            $this->profileModel->deleteAvatar($user_id);
+            header('Location: index.php?page=profile&id=' . urlencode($user_id));
+            exit;
+        }
+
         $avatarPath = null;
         if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
             require_once __DIR__ . '/../helpers/ImageResizer.php';
