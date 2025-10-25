@@ -16,17 +16,42 @@ class ImageResizer
         finfo_close($finfo);
 
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        return in_array($mimeType, $allowedTypes);
+        if (!in_array($mimeType, $allowedTypes)) return false;
+
+        // Reject overly large files by size (20 MB limit)
+        $maxFileSize = 20 * 1024 * 1024; // 20 MB
+        if (filesize($filePath) > $maxFileSize) {
+            return false;
+        }
+
+        // Get image dimensions and validate
+        $info = @getimagesize($filePath);
+        if ($info === false) return false;
+
+        $maxWidth = 5000;
+        $maxHeight = 5000;
+        if ($info[0] > $maxWidth || $info[1] > $maxHeight) {
+            return false;
+        }
+
+        return true;
     }
 
     public function load($filename)
     {
         if (!self::isValidImage($filename)) {
-            throw new Exception("Invalid or unsupported image type.");
+            $_SESSION['error'] = "Invalid or unsupported image type.";
+            return false;
         }
 
-        $info = getimagesize($filename);
+        $info = @getimagesize($filename);
+        if ($info === false) {
+            $_SESSION['error'] = "Could not read image information.";
+            return false;
+        }
+
         $this->imageType = $info[2];
+
         switch ($this->imageType) {
             case IMAGETYPE_JPEG:
                 $this->image = imagecreatefromjpeg($filename);
@@ -40,8 +65,11 @@ class ImageResizer
                 $this->image = imagecreatefromgif($filename);
                 break;
             default:
-                throw new Exception("Unsupported image type.");
+                $_SESSION['error'] = "Unsupported image type.";
+                return false;
         }
+
+        return true;
     }
 
     public function save($filename, $imageType = IMAGETYPE_JPEG, $compression = 90)
@@ -81,13 +109,40 @@ class ImageResizer
         }
     }
 
+    public function resizeToFit($filePath, $maxWidth, $maxHeight)
+    {
+        if (!$this->load($filePath)) {
+            return false;
+        }
+
+        $width = imagesx($this->image);
+        $height = imagesy($this->image);
+
+        // Only resize if the image exceeds allowed dimensions
+        if ($width > $maxWidth || $height > $maxHeight) {
+            $widthRatio = $maxWidth / $width;
+            $heightRatio = $maxHeight / $height;
+
+            // Use the smaller ratio to maintain aspect ratio and fit within limits
+            $scale = min($widthRatio, $heightRatio);
+
+            $newWidth = (int)($width * $scale);
+            $newHeight = (int)($height * $scale);
+
+            $this->resize($newWidth, $newHeight);
+            $this->save($filePath, $this->imageType);
+        }
+
+        return true;
+    }
+
     public function resizePostImage($filePath)
     {
-        $this->resizeToWidth($filePath, 800);
+        $this->resizeToFit($filePath, 800, 800);
     }
 
     public function resizeAvatarImage($filePath)
     {
-        $this->resizeToWidth($filePath, 256);
+        $this->resizeToFit($filePath, 256, 256);
     }
 }

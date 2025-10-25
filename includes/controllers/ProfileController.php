@@ -78,7 +78,7 @@ class ProfileController {
             $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
             $imageResizer = new ImageResizer();
             if (!ImageResizer::isValidImage($tmpName)) {
-                $session->setFlash('error', 'Invalid image type for avatar.');
+                $_SESSION['error'] = "Whoa! You tried to upload an image that’s too powerful for the Matrix to process. Max avatar size: 5000x5000px, 20MB. The Oracle recommends compression… or a smaller pill.";
                 header('Location: index.php?page=profile&id=' . urlencode($user_id));
                 exit;
             }

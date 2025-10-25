@@ -1,9 +1,10 @@
+<?php if (!empty($_SESSION['error'])): ?>
+  <div class="bg-red-600 text-white text-center font-bold rounded-lg p-3 mb-5 shadow-lg shadow-red-500/60">
+    <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+  </div>
+<?php endif; ?>
 <main class="container mx-auto px-4 pb-16 pt-8 relative z-10">
-  <?php if (!empty($_SESSION['upload_error'])): ?>
-    <div class="bg-red-600 text-white text-center font-bold rounded-lg p-3 mb-5 shadow-lg shadow-red-500/60">
-      <?php echo $_SESSION['upload_error']; unset($_SESSION['upload_error']); ?>
-    </div>
-  <?php endif; ?>
+  
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 
     

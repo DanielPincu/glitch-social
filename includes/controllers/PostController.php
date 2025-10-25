@@ -142,8 +142,7 @@ class PostController {
                     if (move_uploaded_file($fileTmp, $targetPath)) {
                         // Resize image and save
                         $imageResizer = new \ImageResizer();
-                        $imageResizer->load($targetPath);
-                        $imageResizer->resizeToWidth($targetPath, 800);
+                        $imageResizer->resizePostImage($targetPath);
                         // Store relative path for DB
                         $imagePath = 'uploads/posts/' . basename($targetPath);
                     } else {
@@ -152,7 +151,7 @@ class PostController {
                         exit();
                     }
                 } else {
-                    $_SESSION['error'] = "Invalid file type for image upload.";
+                    $_SESSION['error'] = "Whoa! That image upload bends the Matrix — max dimensions are 5000x5000px and 20MB. The Oracle suggests resizing before reality crashes.";
                     header("Location: index.php");
                     exit();
                 }
@@ -238,8 +237,7 @@ class PostController {
 
                         // Resize and save new image
                         $imageResizer = new \ImageResizer();
-                        $imageResizer->load($targetPath);
-                        $imageResizer->resizeToWidth($targetPath, 800);
+                        $imageResizer->resizePostImage($targetPath);
                         $new_image_path = 'uploads/posts/' . basename($targetPath);
                     } else {
                         $_SESSION['error'] = "Failed to save uploaded image.";
