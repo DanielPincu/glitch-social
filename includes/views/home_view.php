@@ -83,6 +83,7 @@
             <h3 class="text-lg font-semibold text-green-400 drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">Create Post</h3>
           </div>
           <form method="post" enctype="multipart/form-data" action="index.php?page=home">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($session->getCsrfToken(), ENT_QUOTES); ?>">
             <textarea name="content" placeholder="What's the truth, Neo?" required
               class="w-full bg-[#e8e8e8] text-black px-5 py-4 rounded border border-[#b0b0b0] resize-y focus:outline-none focus:ring-2 focus:ring-green-500 focus:shadow-[0_0_8px_rgba(0,255,0,0.7)] transition-shadow"></textarea>
             <div class="flex justify-between items-center mt-4">

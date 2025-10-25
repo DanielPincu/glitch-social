@@ -116,6 +116,10 @@ class PostController {
     // Handles new post creation, including optional image upload and validation.
     public function handleNewPost($session) {
         if (isset($_POST['post_submit'])) {
+            // CSRF validation
+            if (empty($_POST['csrf_token']) || !$session->validateCsrfToken($_POST['csrf_token'])) {
+                die('Security verification failed. Please refresh the page and try again.');
+            }
             // Check if user is logged in
             if (!$session->isLoggedIn()) {
                 header("Location: index.php");
