@@ -16,7 +16,15 @@ class ProfileController {
 
     // Get profile info and their posts
     public function showProfile($user_id) {
+        if (!is_numeric($user_id) || $user_id <= 0) {
+            header("Location: index.php?page=404");
+            exit();
+        }
         $profile = $this->profileModel->getByUserId($user_id);
+        if (!$profile) {
+            header("Location: index.php?page=404");
+            exit();
+        }
         $viewer_id = $_SESSION['user_id'] ?? null;
 
         // Prevent blocked users from viewing each other's profiles

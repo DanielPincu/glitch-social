@@ -58,6 +58,10 @@ switch ($page) {
 
         // Fetch profile data and user posts
         $data = $controller->showProfile($user_id);
+        if ($data === false || empty($data['profile'])) {
+            header("Location: index.php?page=404");
+            exit();
+        }
         $profileData = $data['profile'];
         $posts = $data['posts'];
         $canEditProfile = ($session->getUserId() == $profileData['id']);
@@ -125,8 +129,14 @@ switch ($page) {
         require __DIR__ . '/includes/views/footer.php';
         break;
 
+    case '404':
+        $title = "Page Not Found";
+        require __DIR__ . '/includes/views/header.php';
+        require __DIR__ . '/includes/views/404_view.php';
+        require __DIR__ . '/includes/views/footer.php';
+        break;
+
     case 'home':
-    default:
         if (!$session->isLoggedIn()) {
             header("Location: index.php?page=login");
             exit;
@@ -194,4 +204,8 @@ switch ($page) {
         require __DIR__ . '/includes/views/home_view.php';
         require __DIR__ . '/includes/views/footer.php';
         break;
+
+    default:
+        header("Location: index.php?page=404");
+        exit;
 }
