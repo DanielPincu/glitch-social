@@ -159,8 +159,8 @@
                 </div>
                 <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
                 <?php if (!empty($post['image_path'])): ?>
-                  <div class="mb-3 border-2 border-white">
-                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-full max-h-96 object-cover object-center">
+                  <div class="mb-3 border-2 border-white bg-black flex justify-center">
+                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-auto max-h-[600px] object-contain">
                   </div>
                 <?php endif; ?>
                 <!-- Post actions -->
@@ -304,8 +304,8 @@
                 </div>
                 <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
                 <?php if (!empty($post['image_path'])): ?>
-                  <div class="mb-3 border-2 border-white">
-                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-full max-h-96 object-cover object-center">
+                  <div class="mb-3 border-2 border-white bg-black flex justify-center">
+                    <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-auto max-h-[600px] object-contain">
                   </div>
                 <?php endif; ?>
                 <!-- Post actions -->

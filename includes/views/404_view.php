@@ -1,4 +1,5 @@
-<div class="xp-error-box">
+<div class="min-h-screen flex items-center justify-center">
+  <div class="xp-error-box">
     <div class="xp-error-header">Internet Explorer</div>
     <div class="xp-error-body flex flex-col items-center justify-center">
         <p><img src="https://media.tenor.com/IHdlTRsmcS4AAAAM/404.gif" alt="Dial-Up Modem" class=""> 
@@ -16,4 +17,5 @@
             <a href="index.php" class="xp-button inline-block text-center">OK</a>
         </div>
     </div>
+  </div>
 </div>

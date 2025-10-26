@@ -45,17 +45,7 @@
       pointer-events: none;
     }
 
-    body {
-    background-color: #003399;
-    color: #FFFFFF;
-    font-family: Tahoma, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
+  
 
 .xp-error-box {
     background-color: #ECE9D8;

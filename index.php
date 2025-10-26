@@ -72,6 +72,11 @@ switch ($page) {
         require __DIR__ . '/includes/views/footer.php';
         break;
 
+    case 'post':
+        // Redirect to home with id parameter
+        header("Location: index.php?page=home&id=" . urlencode($_GET['id'] ?? ''));
+        exit();
+
     case 'settings':
         if (!$session->isLoggedIn()) {
             header("Location: index.php?page=login");
@@ -140,6 +145,10 @@ switch ($page) {
         if (!$session->isLoggedIn()) {
             header("Location: index.php?page=login");
             exit;
+        }
+        // Validate post ID if provided
+        if (isset($_GET['id'])) {
+            $postController->validatePostId($_GET['id']);
         }
         $user_id = $session->getUserId();
         $blocked_message = '';

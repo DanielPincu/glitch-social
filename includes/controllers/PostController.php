@@ -109,8 +109,43 @@ class PostController {
         return $this->post->getCommentById($comment_id);
     }
 
-    public function getPostById($post_id) {
-        return $this->post->getPostById($post_id);
+    public function getPostById($post_id, $redirectOnFail = true) {
+        // Validate numeric
+        if (!is_numeric($post_id)) {
+            if ($redirectOnFail) {
+                header("Location: index.php?page=404");
+                exit();
+            }
+            return false;
+        }
+
+        $post = $this->post->getPostById($post_id);
+
+        // Redirect or return false if not found
+        if (!$post) {
+            if ($redirectOnFail) {
+                header("Location: index.php?page=404");
+                exit();
+            }
+            return false;
+        }
+
+        return $post;
+    }
+
+    public function validatePostId($post_id) {
+        if (empty($post_id) || !is_numeric($post_id)) {
+            header("Location: index.php?page=404");
+            exit();
+        }
+
+        $post = $this->post->getPostById($post_id);
+        if (!$post) {
+            header("Location: index.php?page=404");
+            exit();
+        }
+
+        return true;
     }
 
     // Handles new post creation, including optional image upload and validation.
