@@ -94,7 +94,7 @@ class AjaxController
             ob_start();
             ?>
             <div class="flex items-start space-x-2 mb-1" data-comment-id="<?php echo $newComment['id']; ?>">
-                <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500">
+                <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500 flex items-center justify-center bg-black">
                     <?php if (!empty($newComment['avatar_url'])): ?>
                         <img src="<?php echo htmlspecialchars($newComment['avatar_url']); ?>" class="w-full h-full object-cover">
                     <?php else: ?>
