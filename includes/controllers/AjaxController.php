@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/UserController.php';
 require_once __DIR__ . '/PostController.php';
+require_once __DIR__ . '/../models/ZionChat.php';
 
 class AjaxController
 {
@@ -17,11 +18,16 @@ class AjaxController
 
     public function handleRequest()
     {
-        if (!isset($_POST['ajax'])) {
+        $ajaxAction = null;
+        if (isset($_POST['ajax'])) {
+            $ajaxAction = $_POST['ajax'];
+        } elseif (isset($_GET['ajax'])) {
+            $ajaxAction = $_GET['ajax'];
+        } else {
             return;
         }
 
-        switch ($_POST['ajax']) {
+        switch ($ajaxAction) {
             case 'like':
                 $this->handleLike();
                 break;
@@ -37,6 +43,12 @@ class AjaxController
             case 'delete_all_notifications':
                 $this->handleDeleteAllNotifications();
                 break;
+            case 'zion_chat':
+                $this->handleZionChat();
+                break;
+            case 'fetch_chat':
+                $this->handleFetchChat();
+                break;
         }
         exit;
     }
@@ -47,13 +59,13 @@ class AjaxController
 
         if (!$this->session->isLoggedIn()) {
             echo json_encode(['success' => false, 'message' => 'Not logged in']);
-            return;
+            exit;
         }
 
         $user_id = $this->session->getUserId();
         if ($this->userController->isBlocked($user_id)) {
             echo json_encode(['success' => false, 'message' => 'User is blocked']);
-            return;
+            exit;
         }
 
         $post_id = $_POST['post_id'] ?? 0;
@@ -67,8 +79,10 @@ class AjaxController
             }
             $likeCount = $this->postController->getLikeCount($post_id);
             echo json_encode(['success' => true, 'likes' => $likeCount]);
+            exit;
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid request']);
+            exit;
         }
     }
 
@@ -78,11 +92,12 @@ class AjaxController
 
         if (!$this->session->isLoggedIn()) {
             echo json_encode(['success' => false, 'message' => 'Not logged in']);
-            return;
+            exit;
         }
 
         $post_id = $_POST['post_id'] ?? 0;
         $content = trim($_POST['content'] ?? '');
+        $content = htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
 
         if ($post_id && $content) {
             $user_id = $this->session->getUserId();
@@ -128,8 +143,10 @@ class AjaxController
             $html = ob_get_clean();
 
             echo json_encode(['success' => true, 'html' => $html]);
+            exit;
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid input']);
+            exit;
         }
     }
 
@@ -139,7 +156,7 @@ class AjaxController
 
         if (!$this->session->isLoggedIn()) {
             echo json_encode(['success' => false, 'message' => 'Not logged in']);
-            return;
+            exit;
         }
 
         $comment_id = $_POST['comment_id'] ?? 0;
@@ -149,8 +166,10 @@ class AjaxController
         if ($comment_id && $new_content) {
             $this->postController->updateComment($comment_id, $user_id, $new_content);
             echo json_encode(['success' => true]);
+            exit;
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid input']);
+            exit;
         }
     }
 
@@ -160,7 +179,7 @@ class AjaxController
 
         if (!$this->session->isLoggedIn()) {
             echo json_encode(['success' => false, 'message' => 'Not logged in']);
-            return;
+            exit;
         }
 
         $comment_id = $_POST['comment_id'] ?? 0;
@@ -184,11 +203,14 @@ class AjaxController
             if ($canDelete) {
                 $this->postController->deleteComment($comment_id, $user_id);
                 echo json_encode(['success' => true]);
+                exit;
             } else {
                 echo json_encode(['success' => false, 'message' => 'Not authorized']);
+                exit;
             }
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid input']);
+            exit;
         }
     }
 
@@ -198,7 +220,7 @@ class AjaxController
 
         if (!$this->session->isLoggedIn()) {
             echo json_encode(['success' => false, 'message' => 'Not logged in']);
-            return;
+            exit;
         }
 
         $userId = $this->session->getUserId();
@@ -206,5 +228,79 @@ class AjaxController
 
         echo json_encode(['success' => true]);
         exit;
+    }
+
+    private function handleZionChat()
+    {
+        header('Content-Type: application/json');
+
+        if (!$this->session->isLoggedIn()) {
+            echo json_encode(['success' => false, 'message' => 'Not logged in']);
+            exit;
+        }
+
+        $message = trim($_POST['message'] ?? '');
+        $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+        if ($message === '') {
+            echo json_encode(['success' => false, 'message' => 'Invalid message']);
+            exit;
+        }
+
+        $user_id = $this->session->getUserId();
+        $zionChat = new ZionChat();
+        $zionChat->insertMessage($user_id, $message);
+
+        // Fetch the most recent messages after insert
+        $messages = $zionChat->fetchRecentMessages();
+
+        // Ensure valid JSON response
+        if (is_array($messages)) {
+            $messages = array_map(function($m) {
+                return [
+                    'id' => $m['id'] ?? null,
+                    'username' => $m['username'] ?? 'Unknown',
+                    'content' => $m['content'] ?? '',
+                    'created_at' => $m['created_at'] ?? '',
+                    'avatar_url' => $m['avatar_url'] ?? '',
+                    'profile_url' => $m['profile_url'] ?? ''
+                ];
+            }, $messages);
+            echo json_encode(['success' => true, 'messages' => $messages]);
+            exit;
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to load messages']);
+            exit;
+        }
+    }
+
+    private function handleFetchChat()
+    {
+        header('Content-Type: application/json');
+
+        if (!$this->session->isLoggedIn()) {
+            echo json_encode(['success' => false, 'message' => 'Not logged in']);
+            exit;
+        }
+
+        $zionChat = new ZionChat();
+        $messages = $zionChat->fetchRecentMessages();
+
+        if (is_array($messages)) {
+            $messages = array_map(function($m) {
+                return [
+                    'id' => $m['id'] ?? null,
+                    'username' => $m['username'] ?? 'Unknown',
+                    'content' => $m['content'] ?? '',
+                    'created_at' => $m['created_at'] ?? '',
+                    'avatar_url' => $m['avatar_url'] ?? '',
+                    'profile_url' => $m['profile_url'] ?? ''
+                ];
+            }, $messages);
+            echo json_encode(['success' => true, 'messages' => $messages]);
+            exit;
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to load messages']);
+            exit;
+        }
     }
 }

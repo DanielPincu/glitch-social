@@ -9,63 +9,64 @@
 
     
 
-    <!-- Left Sidebar -->
-    <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto flex flex-col">
-      <!-- System Status -->
-      <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
-        <h3 class="font-bold mb-3">SYSTEM STATUS</h3>
-        <!-- User Search -->
-        <form method="get" action="index.php" class="mb-3">
-          <input type="hidden" name="page" value="search">
-          <input 
-            type="text" 
-            name="q" 
-            placeholder="Search for the One..." 
-            value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
-            class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none"
-          >
-          <button 
-            type="submit" 
-            class="w-full my-2 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#1E90FF] to-[#5CACEE] text-blue-900 font-bold hover:drop-shadow-[0_0_10px_rgba(30,144,255,0.5)] transition select-none"
-          >
-            Search
-          </button>
-        </form>
-       
-      </div>
-      <!-- Weather Forecast -->
-      <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
-        <h3 class="font-bold mb-0">WEATHER STATUS</h3>
-        <div class="space-y-1 text-xs font-mono matrix-text">
-          <p>Location: Zion Underground</p>
-          <p>Condition: Acid Rain ☂</p>
-          <p>Temp: 21°C</p>
-          <p>Clouds: Digital Haze</p>
-          <p>Forecast: System glitch expected...</p>
+
+    <!-- Right Sidebar -->
+    <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-4 flex flex-col">
+      <div class="flex flex-col h-full justify-between">
+        <!--  Following  -->
+        <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 h-full">
+          <h3 class="font-bold mb-3">FOLLOWING</h3>
+          <div class="space-y-2">
+            <?php
+              if (!empty($followingList)) {
+                foreach ($followingList as $followedUser) {
+                  $avatar = !empty($followedUser['avatar_url'])
+                    ? htmlspecialchars($followedUser['avatar_url'])
+                    : null;
+                  ?>
+                  <div class="flex items-center space-x-2">
+                    <a href="index.php?page=profile&id=<?php echo $followedUser['id']; ?>">
+                      <div class="w-8 h-8 bg-black border-2 border-green-500 flex items-center justify-center overflow-hidden">
+                        <?php if ($avatar): ?>
+                          <img src="<?php echo $avatar; ?>" alt="<?php echo htmlspecialchars($followedUser['username']); ?>'s avatar" class="object-cover w-full h-full">
+                        <?php else: ?>
+                          <i data-feather="user" class="text-green-500 text-xs"></i>
+                        <?php endif; ?>
+                      </div>
+                    </a>
+                    <div>
+                      <p class="text-sm font-bold text-green-200 hover:underline">
+                        <a href="index.php?page=profile&id=<?php echo $followedUser['id']; ?>">
+                          <?php echo htmlspecialchars($followedUser['username']); ?>
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                  <?php
+                }
+              } else {
+                echo '<p class="text-sm text-gray-200">You are not following anyone yet.</p>';
+              }
+            ?>
+          </div>
         </div>
-      </div>
-      <!-- Daily Quote -->
-      <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 h-96">
-        <h3 class="font-bold mb-0 matrix-text">DAILY QUOTE</h3>
-        <blockquote class="italic text-sm matrix-text">“There is no spoon.”</blockquote>
-        <p class="text-xs text-right mt-2 matrix-text">- The Matrix</p>
-      </div>
-      <!-- Glitches / Errors -->
-      <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] matrix-text p-4">
-        <h3 class="font-bold mb-3 matrix-text">GLITCHES / ERRORS</h3>
-        <div class="space-y-1 text-xs font-mono  matrix-text">
-          <p>[ERROR] Memory leak detected</p>
-          <p>[WARN] Connection unstable</p>
-          <p>[FAIL] Render pipeline crash</p>
-          <p>[INFO] Retrying...</p>
-        </div>
-      </div>
-      <!-- Terminal Console -->
-      <div class="xp-window bg-[#000] p-4">
-        <div class="space-y-1 text-xs font-mono matrix-text">
-          <p class="console-line">&gt; boot sequence initiated</p>
-          <p>&gt; decrypting Zion keys...</p>
-          <p>&gt; access granted</p>
+        <!-- System Alerts -->
+        <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 ">
+          <h3 class="font-bold mb-3">SYSTEM ALERTS</h3>
+          <div class="space-y-2">
+            <div class="bg-black bg-opacity-20 p-2">
+              <p class="text-xs matrix-text">Welcome to the Matrix </p>
+            </div>
+            <div class="bg-black bg-opacity-20 p-2">
+              <p class="text-xs matrix-text">
+                Connected as <?php echo htmlspecialchars($_SESSION['username']); ?> 
+                (Role: <?php echo !empty($_SESSION['is_admin']) && $_SESSION['is_admin'] ? 'Admin' : 'User'; ?>)
+              </p>
+            </div>
+            <div class="bg-black bg-opacity-20 p-2">
+              <p class="text-xs matrix-text"><?php echo "Session ID: " . session_id(); ?></p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -77,6 +78,24 @@
           <p class="text-red-400 font-bold text-center"><?php echo htmlspecialchars($blocked_message); ?></p>
         </div>
       <?php else: ?>
+        <!-- Center Search Field -->
+        <div class="flex justify-center mb-6">
+          <form method="get" action="index.php" class="flex gap-2 w-full max-w-lg">
+            <input type="hidden" name="page" value="search">
+            <input 
+              type="text" 
+              name="q" 
+              placeholder="🔍 Search users or posts..."
+              value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
+              class="flex-1 bg-white text-gray-800 text-sm px-4 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
+            >
+            <button 
+              type="submit"
+              class="bg-gradient-to-t from-[#5A8DEE] to-[#7AA0E0] text-white px-4 py-2 rounded font-semibold text-sm shadow hover:brightness-110 active:translate-y-0.5 transition">
+              Search
+            </button>
+          </form>
+        </div>
         <!-- Create Post -->
         <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg shadow-lg p-6 border border-[#b0b0b0] relative">
           <div class="flex items-center mb-4 space-x-2">
@@ -413,63 +432,41 @@
       <?php endif; ?>
     </div>
 
-    <!-- Right Sidebar -->
-    <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-4 flex flex-col">
-      <div class="flex flex-col h-full justify-between">
-        <!--  Following  -->
-        <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 h-full">
-          <h3 class="font-bold mb-3">FOLLOWING</h3>
-          <div class="space-y-2">
-            <?php
-              if (!empty($followingList)) {
-                foreach ($followingList as $followedUser) {
-                  $avatar = !empty($followedUser['avatar_url'])
-                    ? htmlspecialchars($followedUser['avatar_url'])
-                    : null;
-                  ?>
-                  <div class="flex items-center space-x-2">
-                    <a href="index.php?page=profile&id=<?php echo $followedUser['id']; ?>">
-                      <div class="w-8 h-8 bg-black border-2 border-green-500 flex items-center justify-center overflow-hidden">
-                        <?php if ($avatar): ?>
-                          <img src="<?php echo $avatar; ?>" alt="<?php echo htmlspecialchars($followedUser['username']); ?>'s avatar" class="object-cover w-full h-full">
-                        <?php else: ?>
-                          <i data-feather="user" class="text-green-500 text-xs"></i>
-                        <?php endif; ?>
-                      </div>
-                    </a>
-                    <div>
-                      <p class="text-sm font-bold text-green-200 hover:underline">
-                        <a href="index.php?page=profile&id=<?php echo $followedUser['id']; ?>">
-                          <?php echo htmlspecialchars($followedUser['username']); ?>
-                        </a>
-                      </p>
-                    </div>
-                  </div>
-                  <?php
-                }
-              } else {
-                echo '<p class="text-sm text-gray-200">You are not following anyone yet.</p>';
-              }
-            ?>
-          </div>
+
+    <!-- Left Sidebar -->
+    <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto flex flex-col space-y-4">
+
+      <!-- Messenger Header -->
+      <div class="bg-gradient-to-br from-[#D8E7FF] to-[#BBD0FF] border-2 border-[#7AA0E0] rounded-lg shadow-inner flex flex-col h-full">
+        <div class="flex items-center justify-between bg-[#5A8DEE] text-white px-3 py-2 rounded-t-md">
+          <h3 class="font-bold text-sm flex items-center gap-2">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/39/Yahoo_logo.svg/1200px-Yahoo_logo.svg.png" alt="Yahoo Messenger Icon" class="w-20">
+            Zion Messenger
+          </h3>
+          <span class="text-xs italic matrix-text">Online</span>
         </div>
-        <!-- System Alerts -->
-        <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 ">
-          <h3 class="font-bold mb-3">SYSTEM ALERTS</h3>
-          <div class="space-y-2">
-            <div class="bg-black bg-opacity-20 p-2">
-              <p class="text-xs matrix-text">Welcome to the Matrix </p>
-            </div>
-            <div class="bg-black bg-opacity-20 p-2">
-              <p class="text-xs matrix-text">
-                Connected as <?php echo htmlspecialchars($_SESSION['username']); ?> 
-                (Role: <?php echo !empty($_SESSION['is_admin']) && $_SESSION['is_admin'] ? 'Admin' : 'User'; ?>)
-              </p>
-            </div>
-            <div class="bg-black bg-opacity-20 p-2">
-              <p class="text-xs matrix-text"><?php echo "Session ID: " . session_id(); ?></p>
-            </div>
+
+        <!-- Zion Chat -->
+        <div class="p-3 border-t border-[#7AA0E0] bg-blue-100 flex flex-col flex-1 min-h-0">
+          <div id="chatMessages"
+            class="flex-1 overflow-y-auto bg-blue-200 text-gray-800 rounded border border-[#7AA0E0] p-3 text-sm font-sans shadow-inner mb-2"
+            style="word-break: break-word; overflow-wrap: break-word; white-space: normal;">
+            <p class="text-gray-400 italic">Connecting to Zion Messenger...</p>
           </div>
+
+          <form id="chatForm" class="flex gap-2 items-center mt-auto bg-blue-100 p-2 border-t border-[#7AA0E0] rounded-b-md">
+            <input type="text" id="chatInput" name="message" placeholder="Type your message..." 
+              class="flex-1 bg-white text-gray-900 px-3 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder-gray-400">
+            <button type="submit"
+              class="bg-gradient-to-t from-[#5A8DEE] to-[#7AA0E0] text-white px-4 py-2 rounded font-semibold text-sm shadow hover:brightness-110 active:translate-y-0.5 transition">
+              Send 💬
+            </button>
+          </form>
+        </div>
+
+        <div class="flex justify-between items-center text-xs text-gray-600 bg-blue-400 px-3 py-2 rounded-b-md">
+          <span>💫 Feeling nostalgic?</span>
+          <span class="italic text-blue-800">Zion Messenger (v1.0)</span>
         </div>
       </div>
     </div>
@@ -507,3 +504,5 @@ document.addEventListener('DOMContentLoaded', () => {
   scrollToPost();
 });
 </script>
+
+<script src="scripts/zionchat.js"></script>

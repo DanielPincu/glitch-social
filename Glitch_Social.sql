@@ -102,6 +102,17 @@ CREATE TABLE notifications (
   INDEX idx_notifications_type (type)
 );
 
+
+CREATE TABLE zion_messages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_zion_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_zion_created (created_at),
+  INDEX idx_zion_id (id)
+);
+
 -- triggers
 DELIMITER //
 CREATE TRIGGER after_post_insert_notification
