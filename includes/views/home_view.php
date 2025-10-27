@@ -445,12 +445,15 @@
 
       <!-- Messenger Header -->
       <div class="bg-gradient-to-br from-[#D8E7FF] to-[#BBD0FF] border-2 border-[#7AA0E0] rounded-lg shadow-inner flex flex-col h-full">
-        <div class="flex items-center justify-between bg-[#5A8DEE] text-white px-3 py-2 rounded-t-md">
+        <div class="flex flex-col items-start bg-[#5A8DEE] text-white px-3 py-2 rounded-t-md">
           <h3 class="font-bold text-sm flex items-center gap-2 matrix-text drop-shadow-[0_0_5px_rgba(0,255,0,0.4)]">
             <img src="./icons/z.webp" alt="Zion Messenger Icon" class="w-20">
             Zion Messenger
           </h3>
-          
+          <div>
+            <span class="text-xs italic matrix-text">Connected @</span>
+            <span class="text-xs italic matrix-text">Z-Link Dial-up 56K</span>
+          </div>
         </div>
 
         <!-- Zion Chat -->
@@ -474,7 +477,7 @@
                 class="flex-1 bg-white text-gray-900 px-3 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder-gray-400">
               <button type="submit"
                 class="bg-gradient-to-t from-[#5A8DEE] to-[#7AA0E0] text-white px-4 py-2 rounded font-semibold text-sm shadow hover:brightness-110 active:translate-y-0.5 transition">
-                Transmit
+                Send
               </button>
             </form>
           <?php endif; ?>
