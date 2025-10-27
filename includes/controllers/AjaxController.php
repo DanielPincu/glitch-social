@@ -239,6 +239,12 @@ class AjaxController
             exit;
         }
 
+        $user_id = $this->session->getUserId();
+        if ($this->userController->isBlocked($user_id)) {
+            echo json_encode(['success' => false, 'message' => 'Access denied. You are blocked from using chat.']);
+            exit;
+        }
+
         $message = trim($_POST['message'] ?? '');
         $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
         if ($message === '') {
@@ -246,7 +252,6 @@ class AjaxController
             exit;
         }
 
-        $user_id = $this->session->getUserId();
         $zionChat = new ZionChat();
         $zionChat->insertMessage($user_id, $message);
 
@@ -281,9 +286,20 @@ class AjaxController
             echo json_encode(['success' => false, 'message' => 'Not logged in']);
             exit;
         }
+        $user_id = $this->session->getUserId();
+        if ($this->userController->isBlocked($user_id)) {
+            echo json_encode(['success' => false, 'message' => 'Access denied. You are blocked from using chat.']);
+            exit;
+        }
 
         $zionChat = new ZionChat();
         $messages = $zionChat->fetchRecentMessages();
+
+        require_once __DIR__ . '/../models/User.php';
+        $userModel = new User();
+        $messages = array_filter($messages, function($msg) use ($userModel) {
+            return !$userModel->isBlocked($msg['user_id']);
+        });
 
         if (is_array($messages)) {
             $messages = array_map(function($m) {

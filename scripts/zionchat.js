@@ -14,6 +14,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return res.json();
       })
       .then(data => {
+        if (data && (data.success === false || data.error || (data.message && !Array.isArray(data.messages)))) {
+          messagesDiv.innerHTML = "";
+          const warn = document.createElement("div");
+          warn.className = "bg-red-200 text-red-800 p-2 rounded border border-red-400 shadow-md";
+          warn.textContent = data.message || "Access denied. You are blocked from using chat.";
+          messagesDiv.appendChild(warn);
+          return; // stop rendering messages
+        }
         if (!data.success || !Array.isArray(data.messages)) {
           // Clear loading message or any previous content silently
           messagesDiv.innerHTML = "";
@@ -53,7 +61,11 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(err => {
         console.error("Error loading messages:", err);
-        // Optionally show an error message in the UI
+        messagesDiv.innerHTML = "";
+        const warn = document.createElement("div");
+        warn.className = "bg-red-200 text-red-800 p-2 rounded border border-red-400 shadow-md";
+        warn.textContent = "Unable to load chat messages.";
+        messagesDiv.appendChild(warn);
       });
   }
 
@@ -72,11 +84,32 @@ document.addEventListener("DOMContentLoaded", () => {
     })
       .then(res => {
         if (!res.ok) throw new Error('Failed to send message');
+        return res.json();
+      })
+      .then(data => {
+        if (!data || data.success === false || data.error) {
+          if (data && data.message) {
+            const warn = document.createElement("div");
+            warn.className = "bg-red-200 text-red-800 p-2 rounded border border-red-400 shadow-md mb-2";
+            warn.textContent = data.message;
+            messagesDiv.prepend(warn);
+          } else {
+            const warn = document.createElement("div");
+            warn.className = "bg-red-200 text-red-800 p-2 rounded border border-red-400 shadow-md mb-2";
+            warn.textContent = "Access denied. You are blocked from using chat.";
+            messagesDiv.prepend(warn);
+          }
+          return; // do not clear input or reload messages
+        }
         input.value = "";
         loadMessages();
       })
       .catch(err => {
         console.error("Error sending message:", err);
+        const warn = document.createElement("div");
+        warn.className = "bg-yellow-200 text-yellow-800 p-2 rounded border border-yellow-400 shadow-md mb-2";
+        warn.textContent = "Unable to send message.";
+        messagesDiv.prepend(warn);
       });
   });
 

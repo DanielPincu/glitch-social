@@ -73,9 +73,16 @@
 
     <!-- Main Feed -->
     <div class="md:col-span-2 space-y-4">
-      <?php if (!empty($blocked_message)): ?>
+      <?php if (!empty($blocked_message) || !empty($chat_blocked_message)): ?>
         <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 mb-4">
-          <p class="text-red-400 font-bold text-center"><?php echo htmlspecialchars($blocked_message); ?></p>
+          <?php if (!empty($blocked_message)): ?>
+            <p class="text-red-400 font-bold text-center"><?php echo htmlspecialchars($blocked_message); ?></p>
+          <?php endif; ?>
+          <?php if (!empty($chat_blocked_message)): ?>
+            <p class="text-red-400 font-bold text-center mt-2">
+              <?php echo htmlspecialchars($chat_blocked_message); ?>
+            </p>
+          <?php endif; ?>
         </div>
       <?php else: ?>
         <!-- Center Search Field -->
@@ -85,7 +92,7 @@
             <input 
               type="text" 
               name="q" 
-              placeholder="🔍 Search users or posts..."
+              placeholder="🔍 Search for The One..."
               value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
               class="flex-1 bg-white text-gray-800 text-sm px-4 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
             >
@@ -448,20 +455,29 @@
 
         <!-- Zion Chat -->
         <div class="p-3 border-t border-[#7AA0E0] bg-blue-100 flex flex-col flex-1 min-h-0">
-          <div id="chatMessages"
-            class="flex-1 overflow-y-auto bg-blue-200 text-gray-800 rounded border border-[#7AA0E0] p-3 text-sm font-sans shadow-inner mb-2"
-            style="word-break: break-word; overflow-wrap: break-word; white-space: normal;">
-            <p class="text-gray-400 italic">Connecting to Zion Messenger...</p>
-          </div>
+          <?php if (!empty($_SESSION['is_blocked']) && $_SESSION['is_blocked'] == 1): ?>
+            <div class="flex-1 flex items-center justify-center text-center">
+              <div class="bg-red-200 text-red-800 p-3 rounded border border-red-400 shadow-md animate-pulse w-full max-w-xs mx-auto">
+                <p class="font-semibold text-center">🚫 You are blocked and cannot access Zion Messenger.</p>
+                <p class="text-xs text-center mt-1 italic">Your chat privileges have been revoked by the system administrator.</p>
+              </div>
+            </div>
+          <?php else: ?>
+            <div id="chatMessages"
+              class="flex-1 overflow-y-auto bg-blue-200 text-gray-800 rounded border border-[#7AA0E0] p-3 text-sm font-sans shadow-inner mb-2"
+              style="word-break: break-word; overflow-wrap: break-word; white-space: normal;">
+              <p class="text-gray-400 italic">Connecting to Zion Messenger...</p>
+            </div>
 
-          <form id="chatForm" class="flex gap-2 items-center mt-auto bg-blue-100 p-2 border-t border-[#7AA0E0] rounded-b-md">
-            <input type="text" id="chatInput" name="message" placeholder="Type your message..." 
-              class="flex-1 bg-white text-gray-900 px-3 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder-gray-400">
-            <button type="submit"
-              class="bg-gradient-to-t from-[#5A8DEE] to-[#7AA0E0] text-white px-4 py-2 rounded font-semibold text-sm shadow hover:brightness-110 active:translate-y-0.5 transition">
-              Send 💬
-            </button>
-          </form>
+            <form id="chatForm" class="flex gap-2 items-center mt-auto bg-blue-100 p-2 border-t border-[#7AA0E0] rounded-b-md">
+              <input type="text" id="chatInput" name="message" placeholder="Type your message..." 
+                class="flex-1 bg-white text-gray-900 px-3 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder-gray-400">
+              <button type="submit"
+                class="bg-gradient-to-t from-[#5A8DEE] to-[#7AA0E0] text-white px-4 py-2 rounded font-semibold text-sm shadow hover:brightness-110 active:translate-y-0.5 transition">
+                Send 💬
+              </button>
+            </form>
+          <?php endif; ?>
         </div>
 
         <div class="flex justify-between items-center text-xs text-gray-600 bg-blue-400 px-3 py-2 rounded-b-md">

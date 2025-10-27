@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/Database.php'; 
+require_once __DIR__ . '/User.php';
 
 class ZionChat {
     private $pdo;
@@ -65,6 +66,10 @@ class ZionChat {
             $stmt->bindValue(':lim', (int)$limit, PDO::PARAM_INT);
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $userModel = new User();
+            $rows = array_filter($rows, function($msg) use ($userModel) {
+                return !$userModel->isBlocked($msg['user_id']);
+            });
             return $rows ?: [];
         } catch (Exception $e) {
             return [];
@@ -88,6 +93,10 @@ class ZionChat {
             $stmt->bindValue(':lim', (int)$limit, PDO::PARAM_INT);
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $userModel = new User();
+            $rows = array_filter($rows, function($msg) use ($userModel) {
+                return !$userModel->isBlocked($msg['user_id']);
+            });
             return $rows ? array_reverse($rows) : [];
         } catch (Exception $e) {
             return [];
@@ -106,6 +115,10 @@ class ZionChat {
                     ORDER BY zm.id ASC";
             $stmt = $this->pdo->query($sql);
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $userModel = new User();
+            $rows = array_filter($rows, function($msg) use ($userModel) {
+                return !$userModel->isBlocked($msg['user_id']);
+            });
             return $rows ?: [];
         } catch (Exception $e) {
             return [];
