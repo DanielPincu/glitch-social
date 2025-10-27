@@ -18,6 +18,9 @@ class PostController {
 
     // Fetch all posts for displaying, with visibility based on viewer
     public function getPosts($user_id) {
+        if (isset($_SESSION['is_blocked']) && $_SESSION['is_blocked'] == 1) {
+            return []; // Blocked users see no posts at all
+        }
         return $this->post->fetchAll($user_id);
     }
     // Like a post
@@ -47,6 +50,9 @@ class PostController {
 
     // Get all posts by a specific user
     public function getPostsByUser($user_id) {
+        if (isset($_SESSION['is_blocked']) && $_SESSION['is_blocked'] == 1) {
+            return []; // Blocked users see no posts at all
+        }
         return $this->post->getPostsByUser($user_id);
     }
 
@@ -64,6 +70,9 @@ class PostController {
     }
     // Get posts from users the current user follows
     public function getPostsFromFollowing($user_id) {
+        if (isset($_SESSION['is_blocked']) && $_SESSION['is_blocked'] == 1) {
+            return []; // Blocked users see no posts at all
+        }
         return $this->post->getPostsFromFollowing($user_id, $user_id);
     }
 

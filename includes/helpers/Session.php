@@ -52,6 +52,8 @@ class Session {
         $_SESSION['username']  = $user['username'];
         $_SESSION['is_admin']  = $user['is_admin'];
         $_SESSION['email']     = $user['email'];
+        $_SESSION['is_blocked'] = $user['is_blocked'];
+        session_write_close();
         $this->generateCsrfToken();
     }
 
