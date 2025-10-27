@@ -10,11 +10,11 @@
     
 
 
-    <!-- Right Sidebar -->
-    <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-4 flex flex-col">
+    <!-- Left Sidebar -->
+    <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-4 flex flex-col rounded-lg overflow-hidden shadow-inner border-2 border-[#7AA0E0]">
       <div class="flex flex-col h-full justify-between">
         <!--  Following  -->
-        <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 h-full">
+        <div class="bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 h-full">
           <h3 class="font-bold mb-3">FOLLOWING</h3>
           <div class="space-y-2">
             <?php
@@ -51,7 +51,7 @@
           </div>
         </div>
         <!-- System Alerts -->
-        <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 ">
+        <div class="bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 ">
           <h3 class="font-bold mb-3">SYSTEM ALERTS</h3>
           <div class="space-y-2">
             <div class="bg-black bg-opacity-20 p-2">
@@ -92,7 +92,7 @@
             <input 
               type="text" 
               name="q" 
-              placeholder="🔍 Search for The One..."
+              placeholder="Search for The One..."
               value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>"
               class="flex-1 bg-white text-gray-800 text-sm px-4 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
             >
@@ -107,7 +107,7 @@
         <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg shadow-lg p-6 border border-[#b0b0b0] relative">
           <div class="flex items-center mb-4 space-x-2">
             <i data-feather="edit-2" class="text-green-400 drop-shadow-[0_0_3px_rgba(0,255,0,0.7)]"></i>
-            <h3 class="text-lg font-semibold text-green-400 drop-shadow-[0_0_5px_rgba(0,255,0,0.8)]">Create Post</h3>
+            <h3 class="text-lg font-semibold matrix-text drop-shadow-[0_0_5px_rgba(0,255,0,0.4)]">Create Post</h3>
           </div>
           <form method="post" enctype="multipart/form-data" action="index.php?page=home">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($session->getCsrfToken(), ENT_QUOTES); ?>">
@@ -440,17 +440,17 @@
     </div>
 
 
-    <!-- Left Sidebar -->
+    <!-- Right Sidebar -->
     <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto flex flex-col space-y-4">
 
       <!-- Messenger Header -->
       <div class="bg-gradient-to-br from-[#D8E7FF] to-[#BBD0FF] border-2 border-[#7AA0E0] rounded-lg shadow-inner flex flex-col h-full">
         <div class="flex items-center justify-between bg-[#5A8DEE] text-white px-3 py-2 rounded-t-md">
-          <h3 class="font-bold text-sm flex items-center gap-2">
-            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/39/Yahoo_logo.svg/1200px-Yahoo_logo.svg.png" alt="Yahoo Messenger Icon" class="w-20">
+          <h3 class="font-bold text-sm flex items-center gap-2 matrix-text drop-shadow-[0_0_5px_rgba(0,255,0,0.4)]">
+            <img src="./icons/z.webp" alt="Zion Messenger Icon" class="w-20">
             Zion Messenger
           </h3>
-          <span class="text-xs italic matrix-text">Online</span>
+          
         </div>
 
         <!-- Zion Chat -->
@@ -480,9 +480,10 @@
           <?php endif; ?>
         </div>
 
-        <div class="flex justify-between items-center text-xs text-gray-600 bg-blue-400 px-3 py-2 rounded-b-md">
+        <div class="flex flex-col justify-between items-center text-xs text-gray-600 bg-blue-400 px-3 py-2 rounded-b-md">
           <span>💫 Feeling nostalgic?</span>
-          <span class="italic text-blue-800">Zion Messenger (v1.0)</span>
+          <span class="italic text-blue-800">Was 1999 the peak of our civilization?</span>
+          <span>Let's talk about it!</span>
         </div>
       </div>
     </div>
