@@ -47,7 +47,20 @@ class UserController {
 
     // Block user
     public function blockUser($user_id) {
-        return $this->user->setBlocked($user_id, 1);
+        $result = $this->user->setBlocked($user_id, 1);
+
+        // If block successful and current user is admin, unfollow both ways
+        if ($result && $this->isAdmin()) {
+            require_once __DIR__ . '/ProfileController.php';
+            $profileController = new ProfileController();
+            $admin_id = $_SESSION['user_id'] ?? null;
+            if ($admin_id) {
+                $profileController->toggleFollow($admin_id, $user_id);
+                $profileController->toggleFollow($user_id, $admin_id);
+            }
+        }
+
+        return $result;
     }
 
     // Unblock user

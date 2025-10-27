@@ -158,8 +158,14 @@ class ProfileController {
     }
 
     public function blockUserAndUnfollow($blocker_id, $blocked_id) {
+        // 1) Create/ensure the block
         $this->userModel->blockUser($blocker_id, $blocked_id);
+
+        // 2) Unfollow in BOTH directions
+        // blocker stops following blocked
         $this->profileModel->unfollowUser($blocker_id, $blocked_id);
+        // blocked stops following blocker... peculiar. It's redundant but ensures no follow relationship remains.
+        $this->profileModel->unfollowUser($blocked_id, $blocker_id);
     }
 
     // Check if a user is following another
