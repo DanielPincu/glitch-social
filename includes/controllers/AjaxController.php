@@ -256,7 +256,7 @@ class AjaxController
         $zionChat->insertMessage($user_id, $message);
 
         // Fetch the most recent messages after insert
-        $messages = $zionChat->fetchRecentMessages();
+        $messages = $zionChat->fetchRecentMessages(50, $user_id);
 
         // Ensure valid JSON response
         if (is_array($messages)) {
@@ -293,13 +293,7 @@ class AjaxController
         }
 
         $zionChat = new ZionChat();
-        $messages = $zionChat->fetchRecentMessages();
-
-        require_once __DIR__ . '/../models/User.php';
-        $userModel = new User();
-        $messages = array_filter($messages, function($msg) use ($userModel) {
-            return !$userModel->isBlocked($msg['user_id']);
-        });
+        $messages = $zionChat->fetchRecentMessages(50, $user_id);
 
         if (is_array($messages)) {
             $messages = array_map(function($m) {

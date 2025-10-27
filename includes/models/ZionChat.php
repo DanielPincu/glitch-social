@@ -10,6 +10,21 @@ class ZionChat {
         $this->pdo = $db->connect();
     }
 
+    // Returns IDs of users the viewer blocked OR who have blocked the viewer
+    private function getPeerBlockIds(int $viewer_id): array {
+        if ($viewer_id <= 0) return [];
+        try {
+            $sql = "(SELECT blocked_id AS uid FROM blocked_users WHERE blocker_id = :v)
+                  UNION
+                  (SELECT blocker_id AS uid FROM blocked_users WHERE blocked_id = :v)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([':v' => $viewer_id]);
+            return array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
     public function insertMessage($user_id, $content) {
         if (trim($content) === '') {
             return null;
@@ -49,7 +64,7 @@ class ZionChat {
     }
 
     // fetch messages newer than since_id (long-poll friendly)
-    public function fetchSinceId($since_id = 0, $limit = 50) {
+    public function fetchSinceId($since_id = 0, $limit = 50, $viewer_id = null) {
         try {
             $sql = "SELECT zm.id, zm.user_id, zm.content, zm.created_at,
                            u.username,
@@ -70,6 +85,14 @@ class ZionChat {
             $rows = array_filter($rows, function($msg) use ($userModel) {
                 return !$userModel->isBlocked($msg['user_id']);
             });
+            if (!is_null($viewer_id)) {
+                $peerBlocked = $this->getPeerBlockIds((int)$viewer_id);
+                if (!empty($peerBlocked)) {
+                    $rows = array_filter($rows, function($msg) use ($peerBlocked) {
+                        return !in_array((int)$msg['user_id'], $peerBlocked, true);
+                    });
+                }
+            }
             return $rows ?: [];
         } catch (Exception $e) {
             return [];
@@ -77,7 +100,7 @@ class ZionChat {
     }
 
     // initial load (recent N)
-    public function fetchRecentMessages($limit = 50) {
+    public function fetchRecentMessages($limit = 50, $viewer_id = null) {
         try {
             $sql = "SELECT zm.id, zm.user_id, zm.content, zm.created_at,
                            u.username,
@@ -97,13 +120,21 @@ class ZionChat {
             $rows = array_filter($rows, function($msg) use ($userModel) {
                 return !$userModel->isBlocked($msg['user_id']);
             });
+            if (!is_null($viewer_id)) {
+                $peerBlocked = $this->getPeerBlockIds((int)$viewer_id);
+                if (!empty($peerBlocked)) {
+                    $rows = array_filter($rows, function($msg) use ($peerBlocked) {
+                        return !in_array((int)$msg['user_id'], $peerBlocked, true);
+                    });
+                }
+            }
             return $rows ? array_reverse($rows) : [];
         } catch (Exception $e) {
             return [];
         }
     }
 
-    public function fetchAllMessages() {
+    public function fetchAllMessages($viewer_id = null) {
         try {
             $sql = "SELECT zm.id, zm.user_id, zm.content, zm.created_at,
                            u.username,
@@ -119,6 +150,14 @@ class ZionChat {
             $rows = array_filter($rows, function($msg) use ($userModel) {
                 return !$userModel->isBlocked($msg['user_id']);
             });
+            if (!is_null($viewer_id)) {
+                $peerBlocked = $this->getPeerBlockIds((int)$viewer_id);
+                if (!empty($peerBlocked)) {
+                    $rows = array_filter($rows, function($msg) use ($peerBlocked) {
+                        return !in_array((int)$msg['user_id'], $peerBlocked, true);
+                    });
+                }
+            }
             return $rows ?: [];
         } catch (Exception $e) {
             return [];
