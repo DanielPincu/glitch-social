@@ -46,7 +46,7 @@ class ProfileController {
             return [
                 'profile' => [
                     'id' => $user_id,
-                    'username' => 'Blocked User',
+                    'username' => 'Not Available',
                     'bio' => 'This user has blocked you.',
                     'location' => '',
                     'website' => '',

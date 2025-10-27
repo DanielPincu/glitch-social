@@ -470,11 +470,11 @@
             </div>
 
             <form id="chatForm" class="flex gap-2 items-center mt-auto bg-blue-100 p-2 border-t border-[#7AA0E0] rounded-b-md">
-              <input type="text" id="chatInput" name="message" placeholder="Type your message..." 
+              <input type="text" id="chatInput" name="message" placeholder="Input data payload..." 
                 class="flex-1 bg-white text-gray-900 px-3 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder-gray-400">
               <button type="submit"
                 class="bg-gradient-to-t from-[#5A8DEE] to-[#7AA0E0] text-white px-4 py-2 rounded font-semibold text-sm shadow hover:brightness-110 active:translate-y-0.5 transition">
-                Send 💬
+                Transmit
               </button>
             </form>
           <?php endif; ?>

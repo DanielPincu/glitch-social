@@ -27,6 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
           messagesDiv.innerHTML = "";
           return; // Do not update DOM if data is not valid or no messages
         }
+        // Preserve countdown if it exists
+        const existingCountdown = document.querySelector(".countdown-timer");
         messagesDiv.innerHTML = "";
         data.messages.forEach(msg => {
           const div = document.createElement("div");
@@ -36,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const messageText = msg.message || msg.content || "(no text)";
           const time = msg.created_at ? new Date(msg.created_at).toLocaleTimeString() : "";
 
-          // Encode generic avatar SVG safely
           const encodedAvatar = encodeURIComponent(
             `<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg"><g><circle cx="16" cy="12" r="8" fill="#ccc"/><ellipse cx="16" cy="26" rx="12" ry="6" fill="#eee"/></g></svg>`
           );
@@ -57,6 +58,12 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
           messagesDiv.appendChild(div);
         });
+
+        // Reattach countdown if present
+        if (existingCountdown) {
+          messagesDiv.appendChild(existingCountdown);
+        }
+
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
       })
       .catch(err => {
@@ -113,7 +120,43 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // Auto-refresh every 10 seconds
-  setInterval(loadMessages, 10000);
+  // Countdown + transmission animation (stable sync)
+  const countdownDiv = document.createElement("div");
+  countdownDiv.className = "countdown-timer text-center text-gray-500 text-xs italic mt-2";
+  messagesDiv.appendChild(countdownDiv);
+
+  let countdown = 30;
+  let phase = 0; // 0 = Uploading, 1 = Downloading, 2 = countdown
+  let timer = null;
+
+  function runPhases() {
+    if (timer) clearTimeout(timer);
+
+    if (phase === 0) {
+      countdownDiv.textContent = "Uploading transmission...";
+      phase = 1;
+      timer = setTimeout(runPhases, 5000);
+    } else if (phase === 1) {
+      countdownDiv.textContent = "Downloading transmission...";
+      phase = 2;
+      timer = setTimeout(() => {
+        loadMessages(); 
+        runPhases();
+      }, 5000);
+    } else if (phase === 2) {
+      countdownDiv.textContent = `Attempting connection in ${countdown} seconds...`;
+      countdown--;
+      if (countdown < 0) {
+        countdown = 30;
+        phase = 0;
+        runPhases();
+      } else {
+        timer = setTimeout(runPhases, 1000);
+      }
+    }
+  }
+
+  // Start once and keep stable
   loadMessages();
+  runPhases();
 });
