@@ -56,6 +56,31 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
             <p class="ml-10 text-gray-800">${messageText}</p>
           `;
+          // Add delete button for message owner or admin
+          if ((typeof currentUserId !== 'undefined' && msg.user_id === currentUserId) || (typeof isAdmin !== 'undefined' && isAdmin)) {
+            const delBtn = document.createElement("button");
+            delBtn.className = "ml-auto text-xs text-red-500 hover:text-red-700 font-semibold absolute right-2 top-1";
+            delBtn.textContent = "Delete";
+            delBtn.onclick = () => {
+              fetch("index.php?ajax=delete_message", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "message_id=" + encodeURIComponent(msg.id)
+              })
+                .then(res => res.json())
+                .then(data => {
+                  if (data.success) {
+                    div.remove();
+                  } else {
+                    console.warn(data.message || "Failed to delete message.");
+                  }
+                })
+                .catch(err => console.error("Error deleting message:", err));
+            };
+            const flexContainer = div.querySelector(".flex");
+            flexContainer.classList.add("relative");
+            flexContainer.appendChild(delBtn);
+          }
           messagesDiv.appendChild(div);
         });
 

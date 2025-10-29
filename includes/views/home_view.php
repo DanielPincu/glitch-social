@@ -523,5 +523,8 @@ document.addEventListener('DOMContentLoaded', () => {
   scrollToPost();
 });
 </script>
-
+<script>
+  const currentUserId = <?php echo (int)$_SESSION['user_id']; ?>;
+  const isAdmin = <?php echo (int)$_SESSION['is_admin']; ?>;
+</script>
 <script src="scripts/zionchat.js"></script>

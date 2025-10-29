@@ -166,4 +166,33 @@ class ZionChat {
             return [];
         }
     }
+    // Deletes a message if the user owns it or is an admin
+    public function deleteMessage($message_id, $user_id) {
+        try {
+            // Get message owner
+            $msgStmt = $this->pdo->prepare("SELECT user_id FROM zion_messages WHERE id = :mid");
+            $msgStmt->execute([':mid' => $message_id]);
+            $msg = $msgStmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$msg) return false;
+
+            // Check if current user is admin
+            $adminStmt = $this->pdo->prepare("SELECT is_admin FROM users WHERE id = :uid");
+            $adminStmt->execute([':uid' => $user_id]);
+            $admin = $adminStmt->fetch(PDO::FETCH_ASSOC);
+
+            $isOwner = (int)$msg['user_id'] === (int)$user_id;
+            $isAdmin = $admin && (int)$admin['is_admin'] === 1;
+
+            if ($isOwner || $isAdmin) {
+                $delStmt = $this->pdo->prepare("DELETE FROM zion_messages WHERE id = :mid");
+                $delStmt->execute([':mid' => $message_id]);
+                return $delStmt->rowCount() > 0;
+            }
+
+            return false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 }

@@ -49,6 +49,9 @@ class AjaxController
             case 'fetch_chat':
                 $this->handleFetchChat();
                 break;
+            case 'delete_message':
+                $this->handleDeleteMessage();
+                break;
         }
         exit;
     }
@@ -263,6 +266,7 @@ class AjaxController
             $messages = array_map(function($m) {
                 return [
                     'id' => $m['id'] ?? null,
+                    'user_id' => $m['user_id'] ?? null, // Added user_id for ownership check
                     'username' => $m['username'] ?? 'Unknown',
                     'content' => $m['content'] ?? '',
                     'created_at' => $m['created_at'] ?? '',
@@ -299,6 +303,7 @@ class AjaxController
             $messages = array_map(function($m) {
                 return [
                     'id' => $m['id'] ?? null,
+                    'user_id' => $m['user_id'] ?? null, // Added user_id for ownership check
                     'username' => $m['username'] ?? 'Unknown',
                     'content' => $m['content'] ?? '',
                     'created_at' => $m['created_at'] ?? '',
@@ -312,5 +317,33 @@ class AjaxController
             echo json_encode(['success' => false, 'message' => 'Failed to load messages']);
             exit;
         }
+    }
+
+    private function handleDeleteMessage()
+    {
+        header('Content-Type: application/json');
+
+        if (!$this->session->isLoggedIn()) {
+            echo json_encode(['success' => false, 'message' => 'Not logged in']);
+            exit;
+        }
+
+        $message_id = $_POST['message_id'] ?? 0;
+        $user_id = $this->session->getUserId();
+
+        if (!$message_id) {
+            echo json_encode(['success' => false, 'message' => 'Invalid message ID']);
+            exit;
+        }
+
+        $zionChat = new ZionChat();
+        $success = $zionChat->deleteMessage($message_id, $user_id);
+
+        if ($success) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Not authorized or failed to delete message']);
+        }
+        exit;
     }
 }
