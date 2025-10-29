@@ -107,7 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const message = input.value.trim();
     if (!message) return;
 
-    const params = "message=" + encodeURIComponent(message);
+    const csrf = document.querySelector('input[name="csrf_token"]').value;
+    const params = "message=" + encodeURIComponent(message) + "&csrf_token=" + encodeURIComponent(csrf);
 
     fetch("index.php?ajax=zion_chat", {
       method: "POST",

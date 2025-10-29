@@ -241,6 +241,11 @@ class AjaxController
             echo json_encode(['success' => false, 'message' => 'Not logged in']);
             exit;
         }
+        // CSRF protection for chat message submission
+        if (empty($_POST['csrf_token']) || !$this->session->validateCsrfToken($_POST['csrf_token'])) {
+            echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
+            exit;
+        }
 
         $user_id = $this->session->getUserId();
         if ($this->userController->isBlocked($user_id)) {
