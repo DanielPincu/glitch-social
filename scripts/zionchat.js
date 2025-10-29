@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <p class="ml-10 text-gray-800">${messageText}</p>
           `;
           // Add delete button for message owner or admin
-          if ((typeof currentUserId !== 'undefined' && msg.user_id === currentUserId) || (typeof isAdmin !== 'undefined' && isAdmin)) {
+          if ((typeof currentUserId !== 'undefined' && Number(msg.user_id) === Number(currentUserId)) || (typeof isAdmin !== 'undefined' && isAdmin)) {
             const delBtn = document.createElement("button");
             delBtn.className = "ml-auto text-xs text-red-500 hover:text-red-700 font-semibold absolute right-2 top-1";
             delBtn.textContent = "Delete";
