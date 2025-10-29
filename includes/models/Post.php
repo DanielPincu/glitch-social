@@ -76,10 +76,15 @@ class Post {
                 JOIN users ON posts.user_id = users.id
                 LEFT JOIN profiles ON profiles.user_id = users.id
                 LEFT JOIN followers ON followers.user_id = posts.user_id AND followers.follower_id = :viewer_id
-                WHERE
+                LEFT JOIN blocked_users AS viewer_blocks ON viewer_blocks.blocker_id = :viewer_id AND viewer_blocks.blocked_id = posts.user_id
+                LEFT JOIN blocked_users AS author_blocks ON author_blocks.blocker_id = posts.user_id AND author_blocks.blocked_id = :viewer_id
+                WHERE (
                     posts.visibility = 'public'
                     OR (posts.visibility = 'followers' AND followers.follower_id IS NOT NULL)
                     OR (posts.visibility = 'private' AND posts.user_id = :viewer_id)
+                )
+                AND viewer_blocks.id IS NULL
+                AND author_blocks.id IS NULL
                 ORDER BY posts.created_at DESC
             ");
             $stmt->execute([':viewer_id' => $viewer_id]);
@@ -236,6 +241,8 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
         } else {
             // Viewer is someone else (apply visibility rules)
             $query .= "
+                LEFT JOIN blocked_users AS viewer_blocks ON viewer_blocks.blocker_id = :viewer_id AND viewer_blocks.blocked_id = posts.user_id
+                LEFT JOIN blocked_users AS author_blocks ON author_blocks.blocker_id = posts.user_id AND author_blocks.blocked_id = :viewer_id
                 WHERE posts.user_id = :user_id
                 AND (
                     posts.visibility = 'public'
@@ -251,17 +258,19 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
                         )
                     )
                 )
+                AND viewer_blocks.id IS NULL
+                AND author_blocks.id IS NULL
             ";
         }
 
         $query .= " ORDER BY posts.created_at DESC";
 
-        $stmt = $this->db->prepare($query);
         $params = [':user_id' => $user_id];
         if ($viewer_id !== null && $viewer_id !== $user_id) {
             $params[':viewer_id'] = $viewer_id;
         }
 
+        $stmt = $this->db->prepare($query);
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
