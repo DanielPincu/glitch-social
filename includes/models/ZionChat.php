@@ -74,6 +74,7 @@ class ZionChat {
                     JOIN users u ON u.id = zm.user_id
                     LEFT JOIN profiles p ON p.user_id = zm.user_id
                     WHERE zm.id > :sid AND TRIM(zm.content) != ''
+                    AND u.is_blocked = 0
                     ORDER BY zm.id ASC
                     LIMIT :lim";
             $stmt = $this->pdo->prepare($sql);
@@ -110,6 +111,7 @@ class ZionChat {
                     JOIN users u ON u.id = zm.user_id
                     LEFT JOIN profiles p ON p.user_id = zm.user_id
                     WHERE TRIM(zm.content) != ''
+                    AND u.is_blocked = 0
                     ORDER BY zm.id DESC
                     LIMIT :lim";
             $stmt = $this->pdo->prepare($sql);
@@ -143,6 +145,7 @@ class ZionChat {
                     FROM zion_messages zm
                     JOIN users u ON u.id = zm.user_id
                     LEFT JOIN profiles p ON p.user_id = zm.user_id
+                    WHERE u.is_blocked = 0
                     ORDER BY zm.id ASC";
             $stmt = $this->pdo->query($sql);
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
