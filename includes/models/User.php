@@ -85,10 +85,10 @@ class User {
     
     public function isBlocked($user_id) {
         $stmt = $this->db->prepare("SELECT is_blocked FROM users WHERE id = :id");
-        $stmt->bindValue(':id', $user_id);
+        $stmt->bindValue(':id', (int)$user_id, PDO::PARAM_INT);
         $stmt->execute();
-        $user = $stmt->fetch();
-        return $user && $user['is_blocked'] === 1;
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user && (int)$user['is_blocked'] === 1;
     }
 
     
