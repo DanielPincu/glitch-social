@@ -161,14 +161,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (phase === 0) {
       countdownDiv.textContent = "Uploading transmission...";
       phase = 1;
-      timer = setTimeout(runPhases, 5000);
+      timer = setTimeout(runPhases, 1000);
     } else if (phase === 1) {
       countdownDiv.textContent = "Downloading transmission...";
       phase = 2;
       timer = setTimeout(() => {
         loadMessages(); 
         runPhases();
-      }, 5000);
+      }, 1000);
     } else if (phase === 2) {
       countdownDiv.textContent = `Attempting connection in ${countdown} seconds...`;
       countdown--;

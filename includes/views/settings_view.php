@@ -1,12 +1,35 @@
+<?php if (!empty($_SESSION['error'])): ?>
+  <div class="bg-red-600 text-white text-center font-bold rounded-lg p-3 mb-5 shadow-lg shadow-red-500/60">
+    <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+  </div>
+<?php endif; ?>
 <div class="min-h-screen flex items-center justify-center p-6 w-full h-full z-10 relative">
-  <div class="bg-[#008080] rounded-lg shadow-lg w-full p-8 border border-gray-400 space-y-12">
+  <div class="bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg shadow-lg w-full p-8 border border-gray-400 space-y-12">
+
+    <div class="-mx-8 -my-8 border-b-2 border-blue-700 bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 h-9 flex items-center justify-between px-3 shadow-lg z-50">
+      <div class="text-white font-semibold text-sm tracking-wide select-none">
+        Settings.exe
+      </div>
+      <div class="flex items-center space-x-1 -mx-2">
+        <span class="pointer-events-none opacity-80 w-7 h-7 flex items-center justify-center rounded-sm border border-white bg-gradient-to-b from-blue-800 via-blue-600 to-blue-700 text-white text-sm transition-all duration-200 hover:from-blue-700 hover:via-blue-500 hover:to-blue-600">
+          —
+        </span>
+        <span class="pointer-events-none opacity-80 w-7 h-7 flex items-center justify-center rounded-sm border border-white bg-gradient-to-b from-blue-800 via-blue-600 to-blue-700 text-white text-sm transition-all duration-200 hover:from-blue-700 hover:via-blue-500 hover:to-blue-600">
+          ▣
+        </span>
+        <a href="index.php" 
+           class="w-7 h-7 flex items-center justify-center rounded-sm border border-white bg-gradient-to-b from-red-700 via-red-500 to-red-700 text-white font-bold text-sm hover:scale-110 hover:shadow-[0_0_8px_rgba(255,0,0,0.8)] transition-all duration-150 cursor-pointer">
+          ╳
+        </a>
+      </div>
+    </div>
 
     <?php if (!empty($isAdmin) && $isAdmin): ?>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
 
       <!-- My Posts Section -->
       <section class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60">
-        <h1 class="text-3xl font-bold text-white mb-4 border-b border-teal-400 pb-2">My Posts</h1>
+        <h1 class="text-2xl font-bold text-gray-300 mb-4 border-b border-teal-400 pb-2">My Posts</h1>
         <p class="text-gray-200 mb-6">Manage your own posts below.</p>
 
         <?php if (empty($posts)): ?>
@@ -82,12 +105,6 @@
             <?php endforeach; ?>
           </div>
         <?php endif; ?>
-
-        <a href="index.php" class="inline-block mt-6">
-          <button type="button" class="bg-gradient-to-b from-blue-500 to-blue-700 text-white font-semibold px-5 py-2 rounded border border-blue-800 shadow-md hover:from-blue-600 hover:to-blue-800 active:translate-y-0.5 active:shadow-none">
-            Go Back Home
-          </button>
-        </a>
       </section>
 
 
@@ -127,8 +144,7 @@
                         <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                         <input type="hidden" name="from_settings" value="1">
                         <button type="submit" name="unblock_user"
-                          class="px-2 w-20 py-1 rounded border bg-green-600 border-green-800 hover:bg-green-700 text-white font-semibold"
-                          onclick="return confirm('Unblock this user?')">
+                          class="px-2 w-20 py-1 rounded border bg-green-600 border-green-800 hover:bg-green-700 text-white font-semibold">
                           Unblock
                         </button>
                       </form>
@@ -139,8 +155,7 @@
                               <form method="post" action="index.php?page=settings" class="inline">
                                 <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                 <button type="submit" name="demote_user"
-                                  class="px-2 w-20 py-1 rounded border bg-blue-700 border-blue-900 hover:bg-blue-800 text-white font-semibold"
-                                  onclick="return confirm('Demote this admin to user?')">
+                                  class="px-2 w-20 py-1 rounded border bg-blue-700 border-blue-900 hover:bg-blue-800 text-white font-semibold">
                                   Demote
                                 </button>
                               </form>
@@ -148,8 +163,7 @@
                                 <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                 <input type="hidden" name="from_settings" value="1">
                                 <button type="submit" name="block_user"
-                                  class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold"
-                                  onclick="return confirm('Block this user? This will remove admin privileges.')">
+                                  class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold">
                                   Block
                                 </button>
                               </form>
@@ -160,8 +174,7 @@
                             <form method="post" action="index.php?page=settings" class="inline">
                               <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                               <button type="submit" name="promote_user"
-                                class="px-2 w-20 py-1 rounded border bg-yellow-700 border-yellow-900 hover:bg-yellow-800 text-white font-semibold"
-                                onclick="return confirm('Promote this user to admin?')">
+                                class="px-2 w-20 py-1 rounded border bg-yellow-700 border-yellow-900 hover:bg-yellow-800 text-white font-semibold">
                                 Promote
                               </button>
                             </form>
@@ -169,8 +182,7 @@
                               <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                               <input type="hidden" name="from_settings" value="1">
                               <button type="submit" name="block_user"
-                                class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold"
-                                onclick="return confirm('Block this user?')">
+                                class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold">
                                 Block
                               </button>
                             </form>
@@ -226,7 +238,7 @@
 
       <!-- My Posts Section -->
       <section class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60">
-        <h1 class="text-3xl font-bold text-white mb-4 border-b border-teal-400 pb-2">My Posts</h1>
+        <h1 class="text-2xl font-bold text-gray-300 mb-4 border-b border-teal-400 pb-2">My Posts</h1>
         <p class="text-gray-200 mb-6">Manage your own posts below.</p>
 
         <?php if (empty($posts)): ?>

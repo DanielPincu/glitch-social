@@ -289,7 +289,7 @@ class PostController {
                         exit();
                     }
                 } else {
-                    $_SESSION['error'] = "Invalid file type for image upload.";
+                    $_SESSION['error'] = "Whoa! That image upload bends the Matrix — max dimensions are 5000x5000px and 20MB. The Oracle suggests resizing before reality crashes.";
                     header("Location: index.php?page=settings");
                     exit();
                 }

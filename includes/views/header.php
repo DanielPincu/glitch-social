@@ -15,7 +15,7 @@
   <canvas id="matrix-rain"></canvas>
   <?php if (!empty($_SESSION['user_id'])) { ?>
   <!-- Taskbar -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-[#0078d7] h-10 flex items-center px-4 z-50">
+  <nav class="fixed bottom-0 left-0 right-0 bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 h-10 flex items-center px-4 z-50">
     <button class="xp-button px-4 py-1 rounded-sm flex items-center gap-1">
       <i data-feather="grid" class="w-4 h-4"></i>
       <span>START</span>
@@ -126,7 +126,7 @@
       }
     ?>
 
-    <div class="bg-[#0064b4] p-3 flex items-center space-x-3 border-b border-black">
+    <div class="bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 p-3 flex items-center space-x-3 border-b border-black">
       <div class="w-12 h-12 bg-black border-2 border-white flex items-center justify-center overflow-hidden">
         <?php if (!empty($user['avatar_url'])): ?>
           <img src="<?php echo htmlspecialchars($user['avatar_url']); ?>" alt="Avatar" class="w-full h-full object-cover">

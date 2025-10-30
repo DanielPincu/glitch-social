@@ -1,16 +1,37 @@
 <?php if (!empty($_SESSION['error'])): ?>
     <div class="bg-red-600 text-white font-bold text-center p-3 mb-5 rounded-md">
-        <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+        <?php echo htmlspecialchars($_SESSION['error']);
+        unset($_SESSION['error']); ?>
     </div>
 <?php endif; ?>
-<div class="p-6 w-full h-full z-10 relative flex justify-center">
-    <div class="bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg w-full max-w-7xl mx-auto p-8 border border-gray-400 space-y-12 text-white overflow-y-auto h-[90vh]">
+
+<div class="p-6 w-full h-full z-10 relative overflow-y-auto">
+    <div class="bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg w-full max-w-7xl px-5 mx-auto border border-gray-400 space-y-12 text-white min-h-[90vh]">
+
+        <div class="-mx-5 border-b-2 border-blue-700 bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 h-9 flex items-center justify-between px-3 shadow-lg z-50">
+            <div class="text-white font-semibold text-sm tracking-wide select-none">
+                Profile.exe
+            </div>
+            <div class="flex items-center space-x-1 -mx-2">
+                <span class="pointer-events-none opacity-60 w-7 h-7 flex items-center justify-center rounded-sm border border-white bg-gradient-to-b from-blue-700 via-blue-500 to-blue-700 text-white text-sm">
+                  —
+                </span>
+                <span class="pointer-events-none opacity-60 w-7 h-7 flex items-center justify-center rounded-sm border border-white bg-gradient-to-b from-blue-700 via-blue-500 to-blue-700 text-white text-sm">
+                  ▣
+                </span>
+                <a href="index.php" 
+                   class="w-7 h-7 flex items-center justify-center rounded-sm border border-white bg-gradient-to-b from-red-700 via-red-500 to-red-700 text-white font-bold text-sm hover:scale-110 hover:shadow-[0_0_8px_rgba(255,0,0,0.8)] transition-all duration-150 cursor-pointer">
+                  ╳
+                </a>
+            </div>
+        </div>
+
         <section class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60 text-center">
             <section class="text-center mb-10">
                 <?php if (!empty($profileData['avatar_url'])): ?>
                     <img src="<?php echo htmlspecialchars($profileData['avatar_url']); ?>"
-                         alt="Profile Avatar"
-                         class="w-64 h-64 mx-auto border-4 border-teal-400 object-cover shadow-md">
+                        alt="Profile Avatar"
+                        class="w-64 h-64 mx-auto border-4 border-teal-400 object-cover shadow-md">
                 <?php else: ?>
                     <div class="w-64 h-64 mx-auto flex items-center justify-center rounded-full border-4 border-teal-400 bg-black bg-opacity-50 shadow-md">
                         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user text-green-400 w-20 h-20">
@@ -34,10 +55,10 @@
 
             <?php if (!$canEditProfile): ?>
                 <?php
-                    $viewerId = $session->getUserId();
-                    $isBlocked = $userController->isUserBlockedByUser($viewerId, $profileData['id']);
-                    $isFollowing = $controller->isFollowing($session->getUserId(), $profileData['id']);
-                    $followCounts = $controller->getFollowCounts($profileData['id']);
+                $viewerId = $session->getUserId();
+                $isBlocked = $userController->isUserBlockedByUser($viewerId, $profileData['id']);
+                $isFollowing = $controller->isFollowing($session->getUserId(), $profileData['id']);
+                $followCounts = $controller->getFollowCounts($profileData['id']);
                 ?>
                 <div class="mt-4">
                     <form method="POST" action="index.php?page=profile&id=<?php echo $profileData['id']; ?>" class="inline-block ml-2">
@@ -50,13 +71,13 @@
                     </form>
 
                     <?php if (!$isBlocked): ?>
-                    <form method="POST" action="index.php?page=profile&id=<?php echo $profileData['id']; ?>" class="inline-block ml-2">
-                        <input type="hidden" name="followed_id" value="<?php echo $profileData['id']; ?>">
-                        <button type="submit" name="follow_action"
-                            class="px-4 py-2 rounded border bg-teal-700 border-teal-900 text-white font-semibold hover:bg-teal-800 active:bg-teal-900 transition">
-                            <?php echo $isFollowing ? 'Unfollow' : 'Follow'; ?>
-                        </button>
-                    </form>
+                        <form method="POST" action="index.php?page=profile&id=<?php echo $profileData['id']; ?>" class="inline-block ml-2">
+                            <input type="hidden" name="followed_id" value="<?php echo $profileData['id']; ?>">
+                            <button type="submit" name="follow_action"
+                                class="px-4 py-2 rounded border bg-teal-700 border-teal-900 text-white font-semibold hover:bg-teal-800 active:bg-teal-900 transition">
+                                <?php echo $isFollowing ? 'Unfollow' : 'Follow'; ?>
+                            </button>
+                        </form>
                     <?php endif; ?>
 
                     <div class="mt-2 text-gray-200">
@@ -66,7 +87,7 @@
                 </div>
             <?php else: ?>
                 <?php
-                    $followCounts = $controller->getFollowCounts($profileData['id']);
+                $followCounts = $controller->getFollowCounts($profileData['id']);
                 ?>
                 <div class="mt-2 text-gray-200 text-center">
                     <span class="font-semibold"><?php echo $followCounts['followers']; ?></span> Followers ·
@@ -76,14 +97,14 @@
 
             <?php if ($canEditProfile): ?>
                 <div class="flex justify-end items-center mb-6 space-x-3">
-                    <button 
+                    <button
                         id="toggleEdit"
                         class="px-4 py-2 rounded border bg-teal-700 border-teal-900 text-white font-semibold hover:bg-teal-800 active:bg-teal-900 transition">
                         Edit Profile
                     </button>
-                    <a href="index.php?page=settings" 
-                       class="px-4 py-2 rounded border bg-teal-700 border-teal-900 text-white font-semibold hover:bg-teal-800 active:bg-teal-900 transition">
-                       Manage Posts
+                    <a href="index.php?page=settings"
+                        class="px-4 py-2 rounded border bg-teal-700 border-teal-900 text-white font-semibold hover:bg-teal-800 active:bg-teal-900 transition">
+                        Manage Posts
                     </a>
                 </div>
 
@@ -104,10 +125,10 @@
                         </div>
                         <div>
                             <label class="block text-gray-200 font-medium mb-1">Avatar</label>
-                            <input 
-                                type="file" 
-                                name="avatar" 
-                                id="avatarInput" 
+                            <input
+                                type="file"
+                                name="avatar"
+                                id="avatarInput"
                                 class="block w-full text-gray-200 bg-black bg-opacity-50 border border-teal-400 rounded"
                                 onchange="previewImage(event, 'avatar')">
                             <div id="imagePreview-avatar" class="hidden mt-3">
@@ -116,9 +137,9 @@
                                 <p id="fileName-avatar" class="text-xs text-gray-500 mt-1"></p>
                             </div>
                             <div class="mt-3">
-                                <button 
-                                    type="submit" 
-                                    name="delete_avatar" 
+                                <button
+                                    type="submit"
+                                    name="delete_avatar"
                                     class="px-4 py-2 rounded border bg-red-700 border-red-900 text-white font-semibold hover:bg-red-800 active:bg-red-900 transition"
                                     onclick="return confirm('Are you sure you want to delete your avatar? This action cannot be undone.');">
                                     Delete Avatar
@@ -142,7 +163,7 @@
             <?php endif; ?>
         </section>
 
-        
+
         <!-- User Posts Section -->
         <section class="border border-cyan-400 rounded-lg p-6 bg-black bg-opacity-60 mt-10">
             <h3 class="text-2xl font-bold text-cyan-300 mb-4 border-b border-cyan-400 pb-2 text-center">Posts by <?php echo htmlspecialchars($profileData['username']); ?></h3>
@@ -181,17 +202,17 @@
                                 </a>
                             <?php endif; ?>
 
-                            
+
                             <?php if ($canEditProfile): ?>
                                 <form method="POST" action="index.php?page=profile&id=<?php echo $profileData['id']; ?>" class="mt-3 text-right">
                                     <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                                     <input type="hidden" name="is_pinned" value="<?php echo $post['is_pinned'] ? 0 : 1; ?>">
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         name="toggle_pin"
                                         class="px-3 py-1 rounded border text-sm font-semibold transition
-                                            <?php echo $post['is_pinned'] 
-                                                ? 'bg-yellow-600 border-yellow-800 text-white hover:bg-yellow-700 active:bg-yellow-800' 
+                                            <?php echo $post['is_pinned']
+                                                ? 'bg-yellow-600 border-yellow-800 text-white hover:bg-yellow-700 active:bg-yellow-800'
                                                 : 'bg-teal-700 border-teal-900 text-white hover:bg-teal-800 active:bg-teal-900'; ?>">
                                         <?php echo $post['is_pinned'] ? 'Unpin' : 'Pin'; ?>
                                     </button>
