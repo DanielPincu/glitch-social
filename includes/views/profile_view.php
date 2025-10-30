@@ -182,7 +182,21 @@
                             <?php endif; ?>
 
                             
-
+                            <?php if ($canEditProfile): ?>
+                                <form method="POST" action="index.php?page=profile&id=<?php echo $profileData['id']; ?>" class="mt-3 text-right">
+                                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                                    <input type="hidden" name="is_pinned" value="<?php echo $post['is_pinned'] ? 0 : 1; ?>">
+                                    <button 
+                                        type="submit" 
+                                        name="toggle_pin"
+                                        class="px-3 py-1 rounded border text-sm font-semibold transition
+                                            <?php echo $post['is_pinned'] 
+                                                ? 'bg-yellow-600 border-yellow-800 text-white hover:bg-yellow-700 active:bg-yellow-800' 
+                                                : 'bg-teal-700 border-teal-900 text-white hover:bg-teal-800 active:bg-teal-900'; ?>">
+                                        <?php echo $post['is_pinned'] ? 'Unpin' : 'Pin'; ?>
+                                    </button>
+                                </form>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 </div>

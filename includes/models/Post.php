@@ -57,19 +57,19 @@ class Post {
     public function fetchAll($viewer_id = null, $isAdmin = false) {
         if ($isAdmin) {
             $stmt = $this->db->prepare("
-                SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
+                SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.is_pinned, posts.created_at, 
                        users.username, profiles.avatar_url,
                        (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
                 FROM posts
                 JOIN users ON posts.user_id = users.id
                 LEFT JOIN profiles ON profiles.user_id = users.id
-                ORDER BY posts.created_at DESC
+                ORDER BY posts.is_pinned DESC, posts.created_at DESC
             ");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else {
             $stmt = $this->db->prepare("
-                SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.created_at, 
+                SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.is_pinned, posts.created_at, 
                        users.username, profiles.avatar_url,
                        (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
                 FROM posts
@@ -85,7 +85,7 @@ class Post {
                 )
                 AND viewer_blocks.id IS NULL
                 AND author_blocks.id IS NULL
-                ORDER BY posts.created_at DESC
+                ORDER BY posts.is_pinned DESC, posts.created_at DESC
             ");
             $stmt->execute([':viewer_id' => $viewer_id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -227,7 +227,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
     // Get posts by specific user
     public function getPostsByUser($user_id, $viewer_id = null) {
         $query = "
-            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.created_at,
+            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.is_pinned, posts.created_at,
                    users.username, profiles.avatar_url,
                    (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
             FROM posts
@@ -263,7 +263,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
             ";
         }
 
-        $query .= " ORDER BY posts.created_at DESC";
+        $query .= " ORDER BY posts.is_pinned DESC, posts.created_at DESC";
 
         $params = [':user_id' => $user_id];
         if ($viewer_id !== null && $viewer_id !== $user_id) {
@@ -331,7 +331,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
     // Get posts from users that the current user follows, filtered by visibility (updated to allow user to see their own followers-only posts)
     public function getPostsFromFollowing($user_id, $viewer_id) {
     $query = "
-        SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.created_at,
+        SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.is_pinned, posts.created_at,
                users.username, profiles.avatar_url,
                (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
         FROM posts
@@ -348,7 +348,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
         AND viewer_blocks.id IS NULL
         AND author_blocks.id IS NULL
         AND posts.user_id != :viewer_id
-        ORDER BY posts.created_at DESC
+        ORDER BY posts.is_pinned DESC, posts.created_at DESC
     ";
 
     $stmt = $this->db->prepare($query);
@@ -359,7 +359,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
     // Get posts filtered by visibility for a viewer
     public function getPosts($viewer_id) {
         $stmt = $this->db->prepare("
-            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.created_at, 
+            SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.is_pinned, posts.created_at, 
                    users.username, profiles.avatar_url,
                    (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
             FROM posts
@@ -374,7 +374,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
                 OR (posts.visibility = 'followers' AND (followers.follower_id IS NOT NULL OR posts.user_id = :viewer_id))
             AND viewer_blocks.id IS NULL
             AND author_blocks.id IS NULL
-            ORDER BY posts.created_at DESC
+            ORDER BY posts.is_pinned DESC, posts.created_at DESC
         ");
         $stmt->execute([':viewer_id' => $viewer_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -401,6 +401,20 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
         ");
         $stmt->execute([':post_id' => $post_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Toggle a post's pin status
+    public function togglePin($post_id, $user_id, $is_pinned) {
+        $stmt = $this->db->prepare("
+            UPDATE posts 
+            SET is_pinned = :is_pinned 
+            WHERE id = :post_id AND user_id = :user_id
+        ");
+        return $stmt->execute([
+            ':is_pinned' => $is_pinned,
+            ':post_id' => $post_id,
+            ':user_id' => $user_id
+        ]);
     }
     // Count unread notifications for a user
     public function countUnreadNotifications($user_id) {

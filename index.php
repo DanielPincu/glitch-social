@@ -50,6 +50,13 @@ switch ($page) {
         // Determine which profile to show (user’s own or another user’s)
         $user_id = $_GET['id'] ?? $session->getUserId();
 
+        // Handle pin/unpin posts before anything else
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_pin'])) {
+            $controller->showProfile($user_id);
+            header('Location: index.php?page=profile&id=' . urlencode($user_id));
+            exit;
+        }
+
         // Handle profile updates and avatar upload via controller
         $controller->handleProfileUpdate($user_id, $session);
 
@@ -60,7 +67,7 @@ switch ($page) {
         $data = $controller->showProfile($user_id);
         if ($data === false || empty($data['profile'])) {
             header("Location: index.php?page=404");
-            exit();
+            exit;
         }
         $profileData = $data['profile'];
         $posts = $data['posts'];
@@ -75,7 +82,7 @@ switch ($page) {
     case 'post':
         // Redirect to home with id parameter
         header("Location: index.php?page=home&id=" . urlencode($_GET['id'] ?? ''));
-        exit();
+        exit;
 
     case 'settings':
         if (!$session->isLoggedIn()) {

@@ -327,9 +327,33 @@ class PostController {
         }
     }
 
+    public function handlePinAction($session) {
+        if (isset($_POST['toggle_pin'])) {
+            $user_id = $session->getUserId();
+            if (!$user_id) {
+                header("Location: index.php");
+                exit();
+            }
+
+            $post_id = $_POST['post_id'] ?? null;
+            $is_pinned = isset($_POST['is_pinned']) ? (int)$_POST['is_pinned'] : 0;
+
+            if ($post_id) {
+                $this->togglePin($post_id, $user_id, $is_pinned);
+            }
+
+            header("Location: index.php?page=profile&user_id=" . $user_id);
+            exit();
+        }
+    }
+
     // Delete all notifications for a user
     public function deleteAllNotifications($user_id)
     {
         $this->post->deleteAllNotifications($user_id);
+    }
+
+    public function togglePin($post_id, $user_id, $is_pinned) {
+        return $this->post->togglePin($post_id, $user_id, $is_pinned);
     }
 }

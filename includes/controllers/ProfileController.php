@@ -16,6 +16,19 @@ class ProfileController {
 
     // Get profile info and their posts
     public function showProfile($user_id) {
+        // Handle pin/unpin actions before displaying the profile
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_pin'])) {
+            $user_id_logged = $_SESSION['user_id'] ?? null;
+            if ($user_id_logged && isset($_POST['post_id'])) {
+                $this->postModel->togglePin(
+                    $_POST['post_id'],
+                    $user_id_logged,
+                    isset($_POST['is_pinned']) ? (int)$_POST['is_pinned'] : 0
+                );
+            }
+            header('Location: index.php?page=profile&id=' . urlencode($user_id_logged));
+            exit;
+        }
         if (!is_numeric($user_id) || $user_id <= 0) {
             header("Location: index.php?page=404");
             exit();

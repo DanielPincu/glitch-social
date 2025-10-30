@@ -46,9 +46,10 @@ CREATE TABLE posts (
   content TEXT DEFAULT NULL,
   image_path VARCHAR(255) DEFAULT NULL,
   visibility ENUM('public','private','followers') NOT NULL DEFAULT 'public',
+  is_pinned TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  INDEX idx_posts_user_created_at (user_id, created_at)
+  INDEX idx_posts_user_pinned_created_at (user_id, is_pinned, created_at)
 );
 
 -- comments
