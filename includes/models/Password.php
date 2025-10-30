@@ -17,6 +17,15 @@ class PasswordModel {
         return $stmt->execute([$token, $expires, $userId]);
     }
 
+    public function hasActiveResetToken($email) {
+        $stmt = $this->pdo->prepare("SELECT reset_expires FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user) return false;
+        return !empty($user['reset_expires']) && strtotime($user['reset_expires']) > time();
+    }
+
     public function findUserByToken($token) {
         $stmt = $this->pdo->prepare("SELECT id FROM users WHERE reset_token = ? AND reset_expires > NOW()");
         $stmt->execute([$token]);

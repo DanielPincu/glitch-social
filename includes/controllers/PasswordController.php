@@ -24,7 +24,11 @@ class PasswordController {
                 return ob_get_clean();
             }
             $user = $this->model->findUserByEmail($email);
-
+            if ($user && $this->model->hasActiveResetToken($email)) {
+                $error = "A reset link has already been sent. You can send only one request per hour. Entering now Guru Meditaion..";
+                require __DIR__ . '/../views/forgot_password.php';
+                return ob_get_clean();
+            }
             if ($user) {
                 $token = bin2hex(random_bytes(32));
                 $expires = date("Y-m-d H:i:s", strtotime("+1 hour"));
