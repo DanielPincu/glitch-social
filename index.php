@@ -6,8 +6,14 @@ require_once __DIR__ . '/includes/controllers/ProfileController.php';
 require_once __DIR__ . '/includes/helpers/Session.php';
 require_once __DIR__ . '/includes/helpers/ImageResizer.php';
 require_once __DIR__ . '/includes/controllers/AjaxController.php';
+require_once __DIR__ . '/includes/controllers/PasswordController.php';
+require_once __DIR__ . '/includes/models/Database.php';
+
+$database = new Database();
+$pdo = $database->connect();
 
 $session = new Session();
+
 $userController = new UserController();
 $postController = new PostController();
 
@@ -219,6 +225,18 @@ switch ($page) {
         require __DIR__ . '/includes/views/header.php';
         require __DIR__ . '/includes/views/home_view.php';
         require __DIR__ . '/includes/views/footer.php';
+        break;
+
+    case 'forgot_password':
+        require_once __DIR__ . '/includes/controllers/PasswordController.php';
+        $passwordController = new PasswordController($pdo);
+        $passwordController->forgotPassword();
+        break;
+
+    case 'reset_password':
+        require_once __DIR__ . '/includes/controllers/PasswordController.php';
+        $passwordController = new PasswordController($pdo);
+        $passwordController->resetPassword();
         break;
 
     default:

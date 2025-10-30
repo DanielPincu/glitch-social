@@ -186,3 +186,12 @@ FROM posts p
 JOIN users u   ON u.id = p.user_id
 LEFT JOIN profiles pr ON pr.user_id = p.user_id
 ORDER BY p.created_at DESC;
+
+
+
+
+
+
+ALTER TABLE users 
+ADD COLUMN reset_token VARCHAR(255) DEFAULT NULL,
+ADD COLUMN reset_expires DATETIME DEFAULT NULL;
