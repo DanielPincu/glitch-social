@@ -230,13 +230,21 @@ switch ($page) {
     case 'forgot_password':
         require_once __DIR__ . '/includes/controllers/PasswordController.php';
         $passwordController = new PasswordController($pdo);
-        $passwordController->forgotPassword();
+        $title = "Forgot Password";
+        $content = $passwordController->forgotPassword();
+        require __DIR__ . '/includes/views/header.php';
+        echo $content;
+        require __DIR__ . '/includes/views/footer.php';
         break;
 
     case 'reset_password':
         require_once __DIR__ . '/includes/controllers/PasswordController.php';
         $passwordController = new PasswordController($pdo);
-        $passwordController->resetPassword();
+        $title = "Reset Password";
+        $content = $passwordController->resetPassword();
+        require __DIR__ . '/includes/views/header.php';
+        echo $content;
+        require __DIR__ . '/includes/views/footer.php';
         break;
 
     default:
