@@ -47,7 +47,6 @@ class UserController {
 
         // If block successful and current user is admin, unfollow both ways
         if ($result && $this->isAdmin()) {
-            require_once __DIR__ . '/ProfileController.php';
             $profileController = new ProfileController();
             $admin_id = $_SESSION['user_id'] ?? null;
             if ($admin_id) {
@@ -167,20 +166,27 @@ class UserController {
             if (!$session->validateCsrfToken($_POST['csrf_token'] ?? '')) {
                 die('CSRF validation failed.');
             }
-            $username = isset($_POST['username']) ? trim($_POST['username']) : '';
-            $email = isset($_POST['email']) ? trim($_POST['email']) : '';
-            $password = isset($_POST['password']) ? $_POST['password'] : '';
-            $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
-            if ($password !== $confirm_password) {
-                $register_error = 'Passwords do not match.';
-            } elseif (!empty($username) && !empty($email) && !empty($password)) {
-                if ($this->register($username, $email, $password)) {
-                    $register_success = 'Registration successful. You may now log in.';
-                } else {
-                    $register_error = 'Registration failed. Username or email may already be taken.';
-                }
+            if (!isset($_POST['accept_terms']) || !$_POST['accept_terms']) {
+                $register_error = 'You must accept the Terms and Regulations before registering.';
             } else {
-                $register_error = 'Please fill out all fields.';
+                $username = isset($_POST['username']) ? trim($_POST['username']) : '';
+                $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+                $password = isset($_POST['password']) ? $_POST['password'] : '';
+                $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+                if ($password !== $confirm_password) {
+                    $register_error = 'Passwords do not match.';
+                } elseif (!empty($username) && !empty($email) && !empty($password)) {
+                    $newUserId = $this->user->register($username, $email, $password);
+                    if ($newUserId) {
+                        $terms = new Terms();
+                        $terms->recordAcceptance($newUserId);
+                        $register_success = 'Registration successful. You may now log in.';
+                    } else {
+                        $register_error = 'Registration failed. Username or email may already be taken.';
+                    }
+                } else {
+                    $register_error = 'Please fill out all fields.';
+                }
             }
         }
         if (!$session->getCsrfToken()) {

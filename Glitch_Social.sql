@@ -116,6 +116,24 @@ CREATE TABLE zion_messages (
   INDEX idx_zion_id (id)
 );
 
+-- terms acceptance
+CREATE TABLE terms (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  content TEXT NOT NULL,
+  updated_by INT DEFAULT NULL,
+  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE user_terms (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  accepted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+INSERT INTO terms (content, updated_by) VALUES
+('Welcome to Glitch Social. By using this site, you agree to follow our community guidelines, respect others, and avoid harmful content. Your continued use of the platform constitutes acceptance of these terms.', NULL);
+
 -- triggers
 DELIMITER //
 CREATE TRIGGER after_post_insert_notification

@@ -240,6 +240,14 @@ switch ($page) {
         require __DIR__ . '/includes/views/footer.php';
         break;
 
+    case 'terms':
+        $title = "Terms and Regulations";
+        require __DIR__ . '/includes/views/header.php';
+        $termsController = new TermsController();
+        $termsController->showTerms();
+        require __DIR__ . '/includes/views/footer.php';
+        break;
+
     default:
         header("Location: index.php?page=404");
         exit;

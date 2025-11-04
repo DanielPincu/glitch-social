@@ -20,11 +20,15 @@ class User {
         // Insert new user
         $hashed = password_hash($password, PASSWORD_BCRYPT);
         $stmt = $this->db->prepare("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)");
-        return $stmt->execute([
+        $success = $stmt->execute([
             ':username' => $username,
             ':email'    => $email,
             ':password' => $hashed
         ]);
+        if ($success) {
+            return $this->db->lastInsertId();
+        }
+        return false;
     }
 
     
