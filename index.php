@@ -57,6 +57,7 @@ switch ($page) {
 
         // Handle profile updates and avatar upload via controller
         $controller->handleProfileUpdate($user_id, $session);
+        $controller->handleAccountDeletion($user_id, $session);
 
         // Handle user block/unblock (user-to-user) - now handled by UserController
         $userController->handleBlockActions($session);

@@ -106,6 +106,12 @@
                         class="px-4 py-2 rounded border bg-teal-700 border-teal-900 text-white font-semibold hover:bg-teal-800 active:bg-teal-900 transition">
                         Manage Posts
                     </a>
+                    <button
+                        type="button"
+                        id="toggleDelete"
+                        class="px-4 py-2 rounded border bg-red-700 border-red-900 text-white font-bold hover:bg-red-800 active:bg-red-900 transition text-lg ml-3">
+                        Delete Account
+                    </button>
                 </div>
 
                 <section id="editSection" class="hidden bg-black bg-opacity-50 rounded-lg shadow-md p-6 mb-10 border border-teal-400">
@@ -157,11 +163,47 @@
                     </form>
                 </section>
 
+                <!-- Delete Account Section -->
+                <section id="deleteAccountSection" class="hidden bg-black bg-opacity-50 rounded-lg shadow-md p-6 border border-red-500 mt-10">
+                    <h3 class="text-lg font-semibold mb-4 text-red-400">Delete Your Account</h3>
+                    <?php if (!empty($_SESSION['error'])): ?>
+                        <div class="bg-red-600 text-white font-bold text-center p-3 mb-4 rounded-md">
+                            <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+                        </div>
+                    <?php endif; ?>
+                    <form method="POST" action="index.php?page=profile&id=<?php echo $profileData['id'] ?>" class="space-y-5 text-gray-200">
+                        <div>
+                            <label for="deletePassword" class="block text-gray-200 font-medium mb-1">Password</label>
+                            <input type="password" name="password" id="deletePassword" class="w-full border border-red-400 rounded-lg p-2 bg-black bg-opacity-70 focus:ring focus:ring-red-400" required>
+                        </div>
+                        <div>
+                            <label for="deleteConfirmPassword" class="block text-gray-200 font-medium mb-1">Confirm Password</label>
+                            <input type="password" name="confirm_password" id="deleteConfirmPassword" class="w-full border border-red-400 rounded-lg p-2 bg-black bg-opacity-70 focus:ring focus:ring-red-400" required>
+                        </div>
+                        <p class="text-red-400 font-semibold mb-2">This action is permanent and cannot be undone.</p>
+                        <button
+                            type="submit"
+                            name="delete_account"
+                            class="w-full px-4 py-3 rounded-lg border-2 border-red-600 bg-red-700 text-white text-lg font-bold hover:bg-red-800 active:bg-red-900 transition"
+                            onclick="return confirm('Are you sure you want to permanently delete your account? This cannot be undone.');">
+                            Permanently Delete Account
+                        </button>
+                    </form>
+                </section>
+
                 <script>
                     document.getElementById('toggleEdit').addEventListener('click', function() {
                         const section = document.getElementById('editSection');
                         section.classList.toggle('hidden');
                         this.textContent = section.classList.contains('hidden') ? 'Edit Profile' : 'Cancel';
+                    });
+                    document.getElementById('toggleDelete').addEventListener('click', function() {
+                        const section = document.getElementById('deleteAccountSection');
+                        section.classList.toggle('hidden');
+                        this.textContent = section.classList.contains('hidden') ? 'Delete Account' : 'Cancel';
+                        if (!section.classList.contains('hidden')) {
+                            section.scrollIntoView({behavior: 'smooth'});
+                        }
                     });
                 </script>
             <?php endif; ?>

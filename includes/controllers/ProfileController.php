@@ -78,6 +78,9 @@ class ProfileController {
 
     // Handle profile update including avatar upload
     public function handleProfileUpdate($user_id, $session) {
+        if (isset($_POST['delete_account'])) {
+            return; 
+        }
         // Only allow POST and only for the logged-in user
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || $user_id != $session->getUserId()) {
             return;
@@ -159,6 +162,40 @@ class ProfileController {
             $email
         );
         header('Location: index.php?page=profile&id=' . urlencode($user_id));
+        exit;
+    }
+
+    // Handle account deletion for logged-in user
+    public function handleAccountDeletion($user_id, $session) {
+        // Only allow POST and only for the logged-in user
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || $user_id != $session->getUserId()) {
+            return;
+        }
+
+        $password = trim($_POST['password'] ?? '');
+        $confirm_password = trim($_POST['confirm_password'] ?? '');
+
+        // Validate password fields
+        if (empty($password) || empty($confirm_password) || $password !== $confirm_password) {
+            $_SESSION['error'] = "Passwords do not match.";
+            header('Location: index.php?page=profile&id=' . urlencode($user_id));
+            exit;
+        }
+
+        // Retrieve user and verify password
+        $user = $this->userModel->getUserById($user_id);
+        if (!$user || !password_verify($password, $user['password'])) {
+            $_SESSION['error'] = "Incorrect password.";
+            header('Location: index.php?page=profile&id=' . urlencode($user_id));
+            exit;
+        }
+
+        // Delete the account (model handles cascade deletes)
+        $this->userModel->deleteAccount($user_id);
+
+        // Destroy session and redirect
+        session_destroy();
+        header('Location: index.php?page=login&deleted=1');
         exit;
     }
     // Follow or unfollow another user (toggle behavior)

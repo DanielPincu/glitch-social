@@ -179,5 +179,17 @@ class User {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function verifyPassword($user_id, $password) {
+        $stmt = $this->db->prepare("SELECT password FROM users WHERE id = :id");
+        $stmt->execute([':id' => $user_id]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user && password_verify($password, $user['password']);
+    }
+
+    public function deleteAccount($user_id) {
+        $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");
+        return $stmt->execute([':id' => $user_id]);
+    }
+
     
 }
