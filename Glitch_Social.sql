@@ -12,7 +12,9 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   is_admin TINYINT(1) NOT NULL DEFAULT 0,
-  is_blocked TINYINT(1) NOT NULL DEFAULT 0
+  is_blocked TINYINT(1) NOT NULL DEFAULT 0,
+  reset_token VARCHAR(255) DEFAULT NULL,
+  reset_expires DATETIME DEFAULT NULL
 );
 
 -- profiles
@@ -186,12 +188,3 @@ FROM posts p
 JOIN users u   ON u.id = p.user_id
 LEFT JOIN profiles pr ON pr.user_id = p.user_id
 ORDER BY p.created_at DESC;
-
-
-
-
-
-
-ALTER TABLE users 
-ADD COLUMN reset_token VARCHAR(255) DEFAULT NULL,
-ADD COLUMN reset_expires DATETIME DEFAULT NULL;

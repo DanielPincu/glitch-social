@@ -1,4 +1,4 @@
-<?php include 'includes/header.php'; ?>
+<?php include 'includes/views/header.php'; ?>
 
 <div class="min-h-screen flex justify-center items-center bg-gradient-to-br from-blue-900 to-indigo-700 text-white">
   <div class="bg-black bg-opacity-60 p-8 rounded-xl border border-red-500 shadow-lg w-full max-w-md text-center">
@@ -10,4 +10,4 @@
   </div>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include 'includes/views/footer.php'; ?>
