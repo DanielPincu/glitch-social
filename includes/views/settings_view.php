@@ -355,6 +355,27 @@
       <?php endif; ?>
     </section>
 
+    <!-- Edit Terms & Conditions Section (admin only) -->
+    <?php if (!empty($isAdmin) && $isAdmin): ?>
+    <section class="border border-green-400 rounded-lg p-6 bg-black bg-opacity-60 mt-8">
+      <h2 class="text-2xl font-bold text-green-400 mb-4 border-b border-green-400 pb-2 flex justify-between items-center">
+        Edit Terms & Conditions
+        <button type="button" onclick="document.getElementById('terms-editor').classList.toggle('hidden')" class="text-sm bg-green-700 px-3 py-1 rounded hover:bg-green-800 text-white border border-green-900">
+          Show / Hide
+        </button>
+      </h2>
+      <div id="terms-editor" class="hidden">
+        <form method="POST" action="index.php?page=settings">
+          <textarea name="terms_content" rows="10" class="w-full p-3 bg-gray-800 border border-green-400 text-white rounded-md mb-4"><?php echo htmlspecialchars($termsContent['content'] ?? '', ENT_QUOTES); ?></textarea>
+          <input type="hidden" name="update_terms" value="1">
+          <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded border border-green-800">
+            Update Terms
+          </button>
+        </form>
+      </div>
+    </section>
+    <?php endif; ?>
+
 
   </div>
 </div>

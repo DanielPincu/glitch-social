@@ -28,16 +28,25 @@ class TermsController {
     }
 
     public function updateTerms($admin_id) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_terms'])) {
-            $content = trim($_POST['content'] ?? '');
-            if (!empty($content)) {
-                $this->termsModel->update($content, $admin_id);
-                header('Location: index.php?page=terms');
-                exit;
-            }
+        if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
+            header("Location: index.php?page=403");
+            exit;
         }
 
-        $terms = $this->termsModel->getCurrent();
-        require __DIR__ . '/../views/admin/terms_edit.php';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_terms'])) {
+            $content = trim($_POST['terms_content'] ?? '');
+            if (!empty($content)) {
+                if ($this->termsModel->updateTerms($content, $admin_id)) {
+                    $_SESSION['success'] = "Terms and Conditions updated successfully.";
+                } else {
+                    $_SESSION['error'] = "Database update failed.";
+                }
+            } else {
+                $_SESSION['error'] = "Content cannot be empty.";
+            }
+
+            header("Location: index.php?page=settings");
+            exit;
+        }
     }
 }

@@ -93,6 +93,12 @@ switch ($page) {
         $currentUserId = $user_id;
         $isAdmin = $session->isAdmin();
 
+        $termsController = new TermsController();
+
+        if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_terms'])) {
+            $termsController->updateTerms($user_id);
+        }
+
         if ($isAdmin) {
             $adminController = new AdminController();
         }
@@ -121,6 +127,9 @@ switch ($page) {
             $adminController = new AdminController();
             $allPosts = $adminController->listPosts(); // fetch ALL posts, bypassing visibility
         }
+
+        $termsModel = new Terms();
+        $termsContent = $termsModel->getCurrent();
 
         $title = "Settings";
         require __DIR__ . '/includes/views/header.php';

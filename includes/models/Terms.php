@@ -14,7 +14,7 @@ class Terms {
     }
 
     // Admin updates the terms text
-    public function update($content, $adminId = null) {
+    public function updateTerms($content, $adminId = null) {
         if ($adminId) {
             $stmt = $this->db->prepare("INSERT INTO terms (content, updated_by) VALUES (:content, :updated_by)");
             return $stmt->execute([':content' => $content, ':updated_by' => $adminId]);
