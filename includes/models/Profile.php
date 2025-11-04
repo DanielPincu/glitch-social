@@ -21,43 +21,65 @@ class Profile {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Create or update a profile, keeping existing avatar if not uploading a new one
-    public function save($user_id, $bio, $location, $website, $avatar_url = null) {
-        if ($avatar_url) {
-            $stmt = $this->db->prepare("
-                INSERT INTO profiles (user_id, bio, location, website, avatar_url)
-                VALUES (:user_id, :bio, :location, :website, :avatar_url)
-                ON DUPLICATE KEY UPDATE
-                    bio = VALUES(bio),
-                    location = VALUES(location),
-                    website = VALUES(website),
-                    avatar_url = VALUES(avatar_url)
-            ");
-            $params = [
-                ':user_id' => $user_id,
-                ':bio' => $bio,
-                ':location' => $location,
-                ':website' => $website,
-                ':avatar_url' => $avatar_url
-            ];
-        } else {
-            $stmt = $this->db->prepare("
-                INSERT INTO profiles (user_id, bio, location, website)
-                VALUES (:user_id, :bio, :location, :website)
-                ON DUPLICATE KEY UPDATE
-                    bio = VALUES(bio),
-                    location = VALUES(location),
-                    website = VALUES(website)
-            ");
-            $params = [
-                ':user_id' => $user_id,
-                ':bio' => $bio,
-                ':location' => $location,
-                ':website' => $website
-            ];
-        }
+    // Create or update a profile, keeping existing avatar if not uploading a new one, and update email
+    public function save($user_id, $bio, $location, $website, $avatar_url = null, $email = null) {
+        try {
+            $this->db->beginTransaction();
 
-        return $stmt->execute($params);
+            // Update the users table for email
+            if ($email !== null) {
+                $stmtUser = $this->db->prepare("
+                    UPDATE users SET email = :email WHERE id = :user_id
+                ");
+                $stmtUser->execute([
+                    ':email' => $email,
+                    ':user_id' => $user_id
+                ]);
+            }
+
+            // Update or insert into profiles table
+            if ($avatar_url) {
+                $stmtProfile = $this->db->prepare("
+                    INSERT INTO profiles (user_id, bio, location, website, avatar_url)
+                    VALUES (:user_id, :bio, :location, :website, :avatar_url)
+                    ON DUPLICATE KEY UPDATE
+                        bio = VALUES(bio),
+                        location = VALUES(location),
+                        website = VALUES(website),
+                        avatar_url = VALUES(avatar_url)
+                ");
+                $params = [
+                    ':user_id' => $user_id,
+                    ':bio' => $bio,
+                    ':location' => $location,
+                    ':website' => $website,
+                    ':avatar_url' => $avatar_url
+                ];
+            } else {
+                $stmtProfile = $this->db->prepare("
+                    INSERT INTO profiles (user_id, bio, location, website)
+                    VALUES (:user_id, :bio, :location, :website)
+                    ON DUPLICATE KEY UPDATE
+                        bio = VALUES(bio),
+                        location = VALUES(location),
+                        website = VALUES(website)
+                ");
+                $params = [
+                    ':user_id' => $user_id,
+                    ':bio' => $bio,
+                    ':location' => $location,
+                    ':website' => $website
+                ];
+            }
+
+            $stmtProfile->execute($params);
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log("Profile save error: " . $e->getMessage());
+            return false;
+        }
     }
     // Follow another user
     public function followUser($follower_id, $user_id) {

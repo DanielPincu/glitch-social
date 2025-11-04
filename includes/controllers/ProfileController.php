@@ -71,9 +71,9 @@ class ProfileController {
     }
 
     // Update profile for logged-in user
-    public function updateProfile($user_id, $bio, $location, $website, $avatarPath = null) {
-        // Always delegate saving to the model, including avatar if provided
-        return $this->profileModel->save($user_id, $bio, $location, $website, $avatarPath);
+    public function updateProfile($user_id, $bio, $location, $website, $avatarPath = null, $email = null) {
+        
+        return $this->profileModel->save($user_id, $bio, $location, $website, $avatarPath, $email);
     }
 
     // Handle profile update including avatar upload
@@ -141,12 +141,22 @@ class ProfileController {
             }
         }
 
+        $bio = $_POST['bio'] ?? '';
+        $location = $_POST['location'] ?? '';
+        $website = $_POST['website'] ?? '';
+        $email = trim($_POST['email'] ?? '');
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error'] = "Please enter a valid email address.";
+            header('Location: index.php?page=profile&id=' . urlencode($user_id));
+            exit;
+        }
         $this->updateProfile(
             $user_id,
-            $_POST['bio'] ?? '',
-            $_POST['location'] ?? '',
-            $_POST['website'] ?? '',
-            $avatarPath
+            $bio,
+            $location,
+            $website,
+            $avatarPath,
+            $email
         );
         header('Location: index.php?page=profile&id=' . urlencode($user_id));
         exit;

@@ -116,6 +116,10 @@
                             <textarea name="bio" rows="3" class="w-full border border-teal-400 rounded-lg p-2 bg-black bg-opacity-70 focus:ring focus:ring-teal-400"><?php echo htmlspecialchars($profileData['bio'] ?? '') ?></textarea>
                         </div>
                         <div>
+                            <label class="block text-gray-200 font-medium mb-1">Email</label>
+                            <input type="email" name="email" value="<?php echo htmlspecialchars($profileData['email'] ?? '') ?>" class="w-full border border-teal-400 rounded-lg p-2 bg-black bg-opacity-70 focus:ring focus:ring-teal-400">
+                        </div>
+                        <div>
                             <label class="block text-gray-200 font-medium mb-1">Location</label>
                             <input type="text" name="location" value="<?php echo htmlspecialchars($profileData['location'] ?? '') ?>" class="w-full border border-teal-400 rounded-lg p-2 bg-black bg-opacity-70 focus:ring focus:ring-teal-400">
                         </div>
