@@ -1,6 +1,4 @@
 <?php
-// includes/models/Database.php
-
 class Database {
     private $host = 'localhost';
     private $db_name = 'Glitch_Social';

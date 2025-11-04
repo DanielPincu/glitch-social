@@ -1,8 +1,4 @@
 <?php
-require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/ProfileController.php';
-require_once __DIR__ . '/../helpers/Session.php';
-
 class UserController {
     protected $user;
 

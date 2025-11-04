@@ -1,5 +1,5 @@
 <?php
-class PasswordModel {
+class Password {
     private $pdo;
 
     public function __construct($pdo) {

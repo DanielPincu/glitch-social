@@ -1,8 +1,4 @@
 <?php
-require_once __DIR__ . '/UserController.php';
-require_once __DIR__ . '/PostController.php';
-require_once __DIR__ . '/../models/ZionChat.php';
-
 class AjaxController
 {
     private $session;

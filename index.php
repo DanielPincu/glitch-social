@@ -1,13 +1,5 @@
 <?php
-require_once __DIR__ . '/includes/controllers/UserController.php';
-require_once __DIR__ . '/includes/controllers/PostController.php';
-require_once __DIR__ . '/includes/controllers/AdminController.php';
-require_once __DIR__ . '/includes/controllers/ProfileController.php';
-require_once __DIR__ . '/includes/helpers/Session.php';
-require_once __DIR__ . '/includes/helpers/ImageResizer.php';
-require_once __DIR__ . '/includes/controllers/AjaxController.php';
-require_once __DIR__ . '/includes/controllers/PasswordController.php';
-require_once __DIR__ . '/includes/models/Database.php';
+require_once __DIR__ . '/autoload.php';
 
 $database = new Database();
 $pdo = $database->connect();

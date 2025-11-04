@@ -1,7 +1,4 @@
 <?php
-require_once __DIR__ . '/../models/Profile.php';
-require_once __DIR__ . '/../models/Post.php';
-require_once __DIR__ . '/../models/User.php';
 
 class ProfileController {
     private $profileModel;

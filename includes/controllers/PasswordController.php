@@ -2,7 +2,6 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once __DIR__ . '/../models/Password.php';
 require_once __DIR__ . '/../../phpmailer/PHPMailer.php';
 require_once __DIR__ . '/../../phpmailer/SMTP.php';
 require_once __DIR__ . '/../../phpmailer/Exception.php';
@@ -11,7 +10,7 @@ class PasswordController {
     private $model;
 
     public function __construct($pdo) {
-        $this->model = new PasswordModel($pdo);
+        $this->model = new Password($pdo);
     }
 
     public function forgotPassword() {

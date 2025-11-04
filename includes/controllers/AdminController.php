@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/UserController.php';
-require_once __DIR__ . '/../models/Post.php';
 
 class AdminController extends UserController {
 
