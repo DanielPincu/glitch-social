@@ -16,10 +16,10 @@ class Terms {
     // Admin updates the terms text
     public function updateTerms($content, $adminId = null) {
         if ($adminId) {
-            $stmt = $this->db->prepare("INSERT INTO terms (content, updated_by) VALUES (:content, :updated_by)");
+            $stmt = $this->db->prepare("INSERT INTO terms (content, updated_by, updated_at) VALUES (:content, :updated_by, NOW())");
             return $stmt->execute([':content' => $content, ':updated_by' => $adminId]);
         } else {
-            $stmt = $this->db->prepare("INSERT INTO terms (content) VALUES (:content)");
+            $stmt = $this->db->prepare("INSERT INTO terms (content, updated_at) VALUES (:content, NOW())");
             return $stmt->execute([':content' => $content]);
         }
     }

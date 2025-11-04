@@ -37,7 +37,10 @@ class TermsController {
             $content = trim($_POST['terms_content'] ?? '');
             if (!empty($content)) {
                 if ($this->termsModel->updateTerms($content, $admin_id)) {
-                    $_SESSION['success'] = "Terms and Conditions updated successfully.";
+                    $latestTerms = $this->termsModel->getCurrent();
+                    $_SESSION['success'] = "Terms and Conditions updated successfully by {$_SESSION['username']} on " . date('Y-m-d H:i:s') . ".";
+                    $_SESSION['last_updated_by'] = $_SESSION['username'];
+                    $_SESSION['last_updated_at'] = $latestTerms['updated_at'] ?? null;
                 } else {
                     $_SESSION['error'] = "Database update failed.";
                 }
