@@ -1,15 +1,11 @@
 <div class="min-h-screen flex items-center justify-center p-6 z-10 relative">
   <div class="bg-[#008080] rounded-lg shadow-lg w-full max-w-md p-8 border border-gray-400">
     <h1 class="text-4xl font-bold mb-6 select-none">Register</h1>
-    <div class="text-sm mb-4 text-red-500">
+    <div class="text-sm mb-4 text-red-500 bg-red-100 text-center">
       <?php echo htmlspecialchars($register_error ?? ($message ?? ''), ENT_QUOTES); ?>
     </div>
 
-    <?php if (!empty($register_success)): ?>
-      <div class="text-green-500 text-sm mb-4">
-        Registration successful! <a href="index.php?page=login" class="underline">Login now</a>.
-      </div>
-    <?php endif; ?>
+  
     <form method="post">
       <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES); ?>">
       <input
