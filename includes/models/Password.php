@@ -7,7 +7,7 @@ class PasswordModel {
     }
 
     public function findUserByEmail($email) {
-        $stmt = $this->pdo->prepare("SELECT id, email FROM users WHERE email = ?");
+        $stmt = $this->pdo->prepare("SELECT id, email, username FROM users WHERE email = ?");
         $stmt->execute([$email]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

@@ -35,7 +35,7 @@ class PasswordController {
                 $this->model->saveResetToken($user['id'], $token, $expires);
 
                 $resetLink = "https://danielpincu.dev/index.php?page=reset_password&token=" . urlencode($token);
-                $this->sendResetEmail($user['email'], $resetLink);
+                $this->sendResetEmail($user['email'], $user['username'], $resetLink);
             }
 
             $message = "If that email exists, a password reset link has been sent.";
@@ -83,7 +83,7 @@ class PasswordController {
         return ob_get_clean();
     }
 
-    private function sendResetEmail($to, $link) {
+    private function sendResetEmail($to, $username, $link) {
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
@@ -100,6 +100,7 @@ class PasswordController {
             $mail->Subject = 'Reset your Glitch Social password';
             ob_start();
             $safeLink = htmlspecialchars($link, ENT_QUOTES);
+            $safeUser = htmlspecialchars($username, ENT_QUOTES);
             require __DIR__ . '/../views/email_view.php';
             $mail->Body = ob_get_clean();
             $mail->send();

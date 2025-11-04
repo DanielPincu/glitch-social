@@ -7,7 +7,7 @@
       <h2 style='color: #ffffff; margin: 0; font-size: 24px;'>Glitch Social</h2>
     </div>
     <div style='padding: 25px;'>
-      <p style='font-size: 16px; color: #333;'>Hi there,</p>
+      <p style='font-size: 16px; color: #333;'>Hello <?php echo htmlspecialchars($safeUser, ENT_QUOTES); ?>,</p>
       <p style='font-size: 15px; color: #555; line-height: 1.6;'>
         We received a request to reset your password. Click the button below to set a new one.
       </p>
