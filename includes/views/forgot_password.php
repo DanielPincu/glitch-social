@@ -7,6 +7,12 @@
       </div>
     <?php endif; ?>
     <form method="POST">
+      <?php
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+      ?>
+      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
       <input type="email" name="email" placeholder="Enter your email" required
         value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"
         class="w-full p-3 rounded bg-gray-800 border border-blue-400 text-white mb-4 focus:ring focus:ring-blue-300">

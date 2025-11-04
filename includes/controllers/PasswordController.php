@@ -17,6 +17,11 @@ class PasswordController {
     public function forgotPassword() {
         ob_start();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+                $error = "Invalid session token. Please try again.";
+                require __DIR__ . '/../views/forgot_password.php';
+                return ob_get_clean();
+            }
             $email = trim($_POST['email']);
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = "Please enter a valid email address.";
