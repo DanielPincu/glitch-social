@@ -1,6 +1,9 @@
 <div class="min-h-screen flex items-center justify-center p-6 z-10 relative">
     <div class="bg-[#008080] rounded-lg shadow-lg w-full max-w-md p-8 border border-gray-400">
         <h1 class="text-3xl font-bold text-gray-800 mb-6 select-none">Login</h1>
+        <?php if (!empty($_GET['success'])): ?>
+            <p class="mb-4 text-green-600 font-semibold">Registration successful. You may now log in.</p>
+        <?php endif; ?>
         <?php if (!empty($login_error)): ?>
             <p class="mb-4 text-red-600 font-semibold"><?php echo htmlspecialchars($login_error, ENT_QUOTES); ?></p>
         <?php endif; ?>

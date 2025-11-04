@@ -41,7 +41,7 @@
         class="text-black w-full px-3 py-2 mb-4 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
       <div class="flex items-center mb-4 text-white text-sm">
-        <input type="checkbox" id="accept_terms" name="accept_terms" class="mr-2">
+        <input type="checkbox" id="accept_terms" name="accept_terms" required class="mr-2">
         <label for="accept_terms">
           I have read and agree to the 
           <a href="index.php?page=terms" class="underline hover:text-blue-300">Terms and Regulations</a>.

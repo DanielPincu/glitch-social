@@ -131,6 +131,10 @@ class UserController {
     public function handleLogin() {
         $session = new Session();
         $login_error = '';
+        $login_success = '';
+        if (isset($_GET['success'])) {
+            $login_success = 'Registration successful. You may now log in.';
+        }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$session->validateCsrfToken($_POST['csrf_token'] ?? '')) {
                 die('CSRF validation failed.');
@@ -180,7 +184,8 @@ class UserController {
                     if ($newUserId) {
                         $terms = new Terms();
                         $terms->recordAcceptance($newUserId);
-                        $register_success = 'Registration successful. You may now log in.';
+                        header('Location: index.php?page=login&success=1');
+                        exit();
                     } else {
                         $register_error = 'Registration failed. Username or email may already be taken.';
                     }
