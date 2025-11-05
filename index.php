@@ -80,7 +80,7 @@ switch ($page) {
 
     case 'forgot_password':
         require_once __DIR__ . '/includes/controllers/PasswordController.php';
-        $passwordController = new PasswordController($pdo);
+        $passwordController = new PasswordController();
         $title = "Forgot Password";
         $content = $passwordController->forgotPassword();
         require __DIR__ . '/includes/views/header.php';
@@ -90,7 +90,7 @@ switch ($page) {
 
     case 'reset_password':
         require_once __DIR__ . '/includes/controllers/PasswordController.php';
-        $passwordController = new PasswordController($pdo);
+        $passwordController = new PasswordController();
         $title = "Reset Password";
         $content = $passwordController->resetPassword();
         require __DIR__ . '/includes/views/header.php';

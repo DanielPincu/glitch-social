@@ -9,7 +9,11 @@ require_once __DIR__ . '/../../phpmailer/Exception.php';
 class PasswordController {
     private $model;
 
-    public function __construct($pdo) {
+    public function __construct() {
+        require_once __DIR__ . '/../models/Database.php';
+        require_once __DIR__ . '/../models/Password.php';
+        $database = new Database();
+        $pdo = $database->connect();
         $this->model = new Password($pdo);
     }
 
