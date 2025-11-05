@@ -17,29 +17,22 @@ class TermsController {
         require __DIR__ . '/../views/terms_view.php';
     }
 
-    public function updateTerms($admin_id) {
-        if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
-            header("Location: index.php?page=403");
-            exit;
+    public function updateTerms($admin_id, $content) {
+        if (empty($content)) {
+            return ['success' => false, 'message' => 'Content cannot be empty.'];
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_terms'])) {
-            $content = trim($_POST['terms_content'] ?? '');
-            if (!empty($content)) {
-                if ($this->termsModel->updateTerms($content, $admin_id)) {
-                    $latestTerms = $this->termsModel->getCurrent();
-                    $_SESSION['success'] = "Terms and Conditions updated successfully by {$_SESSION['username']} on " . date('Y-m-d H:i:s') . ".";
-                    $_SESSION['last_updated_by'] = $_SESSION['username'];
-                    $_SESSION['last_updated_at'] = $latestTerms['updated_at'] ?? null;
-                } else {
-                    $_SESSION['error'] = "Database update failed.";
-                }
-            } else {
-                $_SESSION['error'] = "Content cannot be empty.";
-            }
+        $result = $this->termsModel->updateTerms($content, $admin_id);
 
-            header("Location: index.php?page=settings");
-            exit;
+        if ($result) {
+            $latestTerms = $this->termsModel->getCurrent();
+            return [
+                'success' => true,
+                'message' => "Terms updated successfully by {$_SESSION['username']} on " . date('Y-m-d H:i:s'),
+                'updated_at' => $latestTerms['updated_at'] ?? null,
+            ];
+        } else {
+            return ['success' => false, 'message' => 'Database update failed.'];
         }
     }
 }

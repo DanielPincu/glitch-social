@@ -84,57 +84,8 @@ switch ($page) {
         exit;
 
     case 'settings':
-        if (!$session->isLoggedIn()) {
-            header("Location: index.php?page=login");
-            exit;
-        }
-
-        $user_id = $session->getUserId();
-        $currentUserId = $user_id;
-        $isAdmin = $session->isAdmin();
-
-        $termsController = new TermsController();
-
-        if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_terms'])) {
-            $termsController->updateTerms($user_id);
-        }
-
-        if ($isAdmin) {
-            $adminController = new AdminController();
-        }
-
-        // Refactored: handle post update and delete via PostController
-        $postController->handlePostUpdate($session);
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Handle user-to-user block/unblock (from settings) - now handled by UserController
-            $userController->handleBlockActions($session);
-            $postController->handlePostDelete($session);
-            if ($isAdmin) {
-                $adminController->handleAdminActions();
-            }
-        }
-
-        // My own posts
-        $posts = $postController->getPostsByUser($user_id);
-        // Fetch user-to-user blocked list
-        $blockedUsers = $userController->getBlockedUsers($user_id);
-
-        // Admin-only
-        $allUsers = [];
-        $allPosts = [];
-        if ($isAdmin) {
-            $allUsers = $userController->getAllUsers();
-            $adminController = new AdminController();
-            $allPosts = $adminController->listPosts(); // fetch ALL posts, bypassing visibility
-        }
-
-        $termsModel = new Terms();
-        $termsContent = $termsModel->getCurrent();
-
-        $title = "Settings";
-        require __DIR__ . '/includes/views/header.php';
-        require __DIR__ . '/includes/views/settings_view.php';
-        require __DIR__ . '/includes/views/footer.php';
+        $settingsController = new SettingsController();
+        $settingsController->show();
         break;
 
     case 'search':
