@@ -240,4 +240,59 @@ class ProfileController {
     public function getFollowingList($user_id) {
     return $this->profileModel->getFollowingList($user_id);
     }
+
+    // Consolidated handler for profile page logic
+    public function handleProfile($session) {
+        // Step 1: Retrieve user ID from GET or session
+        $user_id = isset($_GET['id']) ? $_GET['id'] : $session->getUserId();
+
+        // Validate user ID
+        if (!is_numeric($user_id) || $user_id <= 0) {
+            header("Location: index.php?page=404");
+            exit();
+        }
+
+        // Step 2: Handle POST request for pin/unpin (toggle_pin)
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_pin'])) {
+            $user_id_logged = $session->getUserId();
+            if ($user_id_logged && isset($_POST['post_id'])) {
+                $this->postModel->togglePin(
+                    $_POST['post_id'],
+                    $user_id_logged,
+                    isset($_POST['is_pinned']) ? (int)$_POST['is_pinned'] : 0
+                );
+            }
+            header('Location: index.php?page=profile&id=' . urlencode($user_id_logged));
+            exit;
+        }
+
+        // Step 3: Handle profile update and account deletion
+        $this->handleProfileUpdate($user_id, $session);
+        $this->handleAccountDeletion($user_id, $session);
+
+        // Step 4: Handle user blocking/unblocking
+        require_once __DIR__ . '/UserController.php';
+        $userController = new UserController();
+        $userController->handleBlockActions($session);
+
+        // Step 5: Fetch profile and posts
+        $data = $this->showProfile($user_id);
+
+        // Step 6: Handle missing profile or invalid ID gracefully
+        if (!$data || !isset($data['profile'])) {
+            header("Location: index.php?page=404");
+            exit();
+        }
+
+        // Prepare variables for the view
+        $profileData = $data['profile'];
+        $posts = $data['posts'];
+        $canEditProfile = ($session->getUserId() == $profileData['id']);
+        $controller = $this;
+
+        // Step 7: Render header, profile view, and footer
+        require_once __DIR__ . '/../views/header.php';
+        require_once __DIR__ . '/../views/profile_view.php';
+        require_once __DIR__ . '/../views/footer.php';
+    }
 }
