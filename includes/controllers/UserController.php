@@ -182,8 +182,6 @@ class UserController {
                 } elseif (!empty($username) && !empty($email) && !empty($password)) {
                     $newUserId = $this->user->register($username, $email, $password);
                     if ($newUserId) {
-                        $terms = new Terms();
-                        $terms->recordAcceptance($newUserId);
                         header('Location: index.php?page=login&success=1');
                         exit();
                     } else {

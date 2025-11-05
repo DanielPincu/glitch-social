@@ -17,16 +17,6 @@ class TermsController {
         require __DIR__ . '/../views/terms_view.php';
     }
 
-    public function acceptTerms($user_id) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accept_terms'])) {
-            $this->termsModel->recordAcceptance($user_id);
-            header('Location: index.php?page=home');
-            exit;
-        }
-
-        $this->showTerms();
-    }
-
     public function updateTerms($admin_id) {
         if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
             header("Location: index.php?page=403");

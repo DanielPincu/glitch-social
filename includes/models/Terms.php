@@ -23,10 +23,4 @@ class Terms {
             return $stmt->execute([':content' => $content]);
         }
     }
-
-    // Record that a user accepted the latest terms
-    public function recordAcceptance($user_id) {
-        $stmt = $this->db->prepare("INSERT INTO user_terms (user_id, accepted_at) VALUES (:user_id, NOW())");
-        return $stmt->execute([':user_id' => $user_id]);
-    }
 }
