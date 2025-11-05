@@ -52,6 +52,7 @@
           </div>
         </div>
         <!-- System Alerts -->
+         <!-- Just for fun -->
         <div class="bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 ">
           <h3 class="font-bold mb-3">SYSTEM STATUS</h3>
           <div class="space-y-2">
@@ -71,9 +72,56 @@
               <p class="text-xs matrix-text">Network: Z-Link 56K Dial-up Modem</p>
             </div>
            <div class="bg-black bg-opacity-20 p-2">
-              <p class="text-xs matrix-text">System Uptime: 3.14 × 10<sup>12</sup> years</p>
-              <p class="text-xs matrix-text">Daemons: matrix_core.dll, illusion_handler.vxd</p>
-              <p class="text-xs matrix-text">Glitch Entropy: ⟴⟊⟠⟢⟡⟆∞ × 10<sup>-23</sup></p>
+              <?php
+                $startDate = new DateTime('1999-12-31');
+                $now = new DateTime();
+                $interval = $startDate->diff($now);
+              ?>
+              <p class="text-xs matrix-text">
+                System Uptime: <?php echo $interval->y; ?> years, <?php echo $interval->m; ?> months (approx.)
+              </p>
+       <?php
+         $daemons = [
+           'matrix_core.dll, illusion_handler.vxd',
+           'zion_uplink.exe, sentinel_watchdog.sys',
+           'neural_sync.sys, dreamnet.daemon',
+           'reality_bridge.dll, matrix_core.vxd',
+           'construct_loader.sys, oracle_node.dll',
+           'ghost_trace.vxd, sentinel_link.exe',
+           'architect_thread.dll, anomaly_detector.sys',
+           'zion_channel.exe, mainframe_relay.vxd',
+           'glitch_purifier.sys, source_portal.dll',
+           'source_decoder.sys, morph_relay.vxd',
+           'simulacra_engine.dll, perception_filter.sys',
+           'winxp_shell32.dll, zion_recovery.sys',
+           'bluepill_bootmgr.exe, 404_handler.vxd',
+           'msmatrix32.dll, code_red_patch.sys',
+           'agent_smith.exe, xp_restore_point.vxd',
+           'trinity_service.exe, PPOE_encrypter.dll',
+           'nt_matrix_bridge.sys, illusion_handler.vxd',
+           'zion_repair_tool.exe, matrix_dxdiag.dll',
+           'matrix_taskmgr.exe, holo_reboot.vxd'
+         ];
+         $randomDaemon = $daemons[array_rand($daemons)];
+       ?>
+       <p class="text-xs matrix-text">Daemons: <?php echo $randomDaemon; ?></p>
+              <?php
+                $entropySymbols = ['⟴', '⟊', '⟠', '⟢', '⟡', '⟆', '∞', '⟁', '⧈', '⌬', '⧋', '⧉'];
+                shuffle($entropySymbols);
+                $randomEntropy = implode('', array_slice($entropySymbols, 0, rand(7, 10)));
+              ?>
+              <p class="text-xs matrix-text">Glitch Entropy: <?php echo $randomEntropy; ?></p>
+
+              <?php
+                $stability = rand(80, 100) . '.' . rand(0, 9) . '%';
+              ?>
+              <p class="text-xs matrix-text">Core Stability: <?php echo $stability; ?></p>
+
+              <?php
+                $syncLevels = ['Strong', 'Nominal', 'Unstable', 'Critical', 'Degraded'];
+                $randomSync = $syncLevels[array_rand($syncLevels)];
+              ?>
+              <p class="text-xs matrix-text">Reality Sync: <?php echo $randomSync; ?></p>
             </div>
           </div>
         </div>
@@ -448,9 +496,10 @@
       <div class="bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 border-2 border-[#7AA0E0] rounded-lg shadow-inner flex flex-col h-full">
         <div class="flex flex-col items-start bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 text-white px-3 py-2 rounded-t-md">
           <h3 class="font-bold text-sm flex items-center gap-2 matrix-text drop-shadow-[0_0_5px_rgba(0,255,0,0.4)]">
-            <img src="./icons/z.webp" alt="Zion Messenger Icon" class="w-20">
-            Zion Messenger
+            <img src="./icons/z.webp" alt="Zahoo! Messenger Icon" class="w-20">
+            <span class="text-xl -mr-1">Zahoo<span class="text-4xl p-0 m-0 italic">!</span></span>Messenger
           </h3>
+          
         </div>
 
         <!-- Zion Chat -->
