@@ -6,6 +6,8 @@ $page = $_GET['page'] ?? 'home';
 $title = '';
 
 $userController = new UserController();
+$userController->handleFollowAction($session);
+
 $postController = new PostController();
 
 $ajaxController = new AjaxController($session, $userController, $postController);
@@ -13,8 +15,7 @@ $ajaxController->handleRequest();
 
 
 
-// Handle follow/unfollow actions (now handled by UserController)
-$userController->handleFollowAction($session);
+
 
 switch ($page) {
     case 'login':
@@ -55,22 +56,12 @@ switch ($page) {
         break;
 
     case 'search':
-        if (!$session->isLoggedIn()) {
-            header("Location: index.php?page=login");
-            exit;
-        }
-        $searchResults = $userController->handleSearch();
-        $title = "Search";
-        require __DIR__ . '/includes/views/header.php';
-        require __DIR__ . '/includes/views/search_view.php';
-        require __DIR__ . '/includes/views/footer.php';
+        $userController->showSearchPage();
         break;
 
     case '404':
-        $title = "Page Not Found";
-        require __DIR__ . '/includes/views/header.php';
-        require __DIR__ . '/includes/views/404_view.php';
-        require __DIR__ . '/includes/views/footer.php';
+        $errorController = new ErrorController();
+        $errorController->show404();
         break;
 
     case 'home':
@@ -79,31 +70,18 @@ switch ($page) {
         break;
 
     case 'forgot_password':
-        require_once __DIR__ . '/includes/controllers/PasswordController.php';
-        $passwordController = new PasswordController();
-        $title = "Forgot Password";
-        $content = $passwordController->forgotPassword();
-        require __DIR__ . '/includes/views/header.php';
-        echo $content;
-        require __DIR__ . '/includes/views/footer.php';
+        $passwordController = new PasswordController($session);
+        $passwordController->showForgotPassword();
         break;
 
     case 'reset_password':
-        require_once __DIR__ . '/includes/controllers/PasswordController.php';
-        $passwordController = new PasswordController();
-        $title = "Reset Password";
-        $content = $passwordController->resetPassword();
-        require __DIR__ . '/includes/views/header.php';
-        echo $content;
-        require __DIR__ . '/includes/views/footer.php';
+        $passwordController = new PasswordController($session);
+        $passwordController->showResetPassword();
         break;
 
     case 'terms':
-        $title = "Terms and Regulations";
-        require __DIR__ . '/includes/views/header.php';
         $termsController = new TermsController();
-        $termsController->showTerms();
-        require __DIR__ . '/includes/views/footer.php';
+        $termsController->show();
         break;
 
     default:

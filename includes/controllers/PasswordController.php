@@ -8,13 +8,33 @@ require_once __DIR__ . '/../../phpmailer/Exception.php';
 
 class PasswordController {
     private $model;
+    private $session;
 
-    public function __construct() {
+    public function __construct($session = null) {
         require_once __DIR__ . '/../models/Database.php';
         require_once __DIR__ . '/../models/Password.php';
+        if ($session === null) {
+            require_once __DIR__ . '/../models/Session.php';
+            $session = new Session();
+        }
+        $this->session = $session;
         $database = new Database();
         $pdo = $database->connect();
         $this->model = new Password($pdo);
+    }
+
+    public function showForgotPassword() {
+        $session = $this->session;
+        require __DIR__ . '/../views/header.php';
+        echo $this->forgotPassword();
+        require __DIR__ . '/../views/footer.php';
+    }
+
+    public function showResetPassword() {
+        $session = $this->session;
+        require __DIR__ . '/../views/header.php';
+        echo $this->resetPassword();
+        require __DIR__ . '/../views/footer.php';
     }
 
     public function forgotPassword() {

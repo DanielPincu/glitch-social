@@ -255,4 +255,20 @@ class UserController {
         }
         return [];
     }
+    // 6. Display search page and handle search requests
+    public function showSearchPage() {
+        $session = new Session();
+
+        if (!$session->isLoggedIn()) {
+            header("Location: index.php?page=login");
+            exit;
+        }
+
+        $searchResults = $this->handleSearch();
+        $title = "Search";
+
+        require __DIR__ . '/../views/header.php';
+        require __DIR__ . '/../views/search_view.php';
+        require __DIR__ . '/../views/footer.php';
+    }
 }

@@ -35,4 +35,13 @@ class TermsController {
             return ['success' => false, 'message' => 'Database update failed.'];
         }
     }
+
+    public function show() {
+        $title = "Terms and Regulations";
+        $session = new Session();
+
+        require __DIR__ . '/../views/header.php';
+        $this->showTerms();
+        require __DIR__ . '/../views/footer.php';
+    }
 }
