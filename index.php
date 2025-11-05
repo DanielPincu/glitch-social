@@ -108,76 +108,8 @@ switch ($page) {
         break;
 
     case 'home':
-        if (!$session->isLoggedIn()) {
-            header("Location: index.php?page=login");
-            exit;
-        }
-        // Validate post ID if provided
-        if (isset($_GET['id'])) {
-            $postController->validatePostId($_GET['id']);
-        }
-        $user_id = $session->getUserId();
-        $blocked_message = '';
-        if ($userController->isBlocked($user_id)) {
-            $blocked_message = "You are blocked. You cannot access the feed.";
-        }
-
-        // Refactored: handle comment and post actions via PostController
-        $postController->handleCommentActions($session);
-        $postController->handleNewPost($session);
-
-        $viewer_id = $session->getUserId();
-        $followingPosts = $postController->getPostsFromFollowing($user_id, $viewer_id);
-        $profileController = new ProfileController();
-        $followingList = $profileController->getFollowingList($user_id);
-        $posts = $postController->getPosts($viewer_id);
-
-        // Ensure user sees their own posts (including followers-only and private)
-        $ownPosts = $postController->getPostsByUser($viewer_id, $viewer_id);
-        $posts = array_merge($ownPosts, $posts);
-
-        // Remove duplicates and sort by newest first
-        $unique = [];
-        $posts = array_values(array_filter($posts, function ($post) use (&$unique) {
-            if (in_array($post['id'], $unique)) return false;
-            $unique[] = $post['id'];
-            return true;
-        }));
-        // Filter out posts by blocked users (extra safety layer)
-        $blockedUsersList = $userController->getBlockedUsers($viewer_id) ?? [];
-        $blockedIds = array_map(function($b) {
-            if (isset($b['blocked_id'])) {
-                return $b['blocked_id'];
-            } elseif (isset($b['id'])) {
-                return $b['id'];
-            } else {
-                return null;
-            }
-        }, $blockedUsersList);
-        $blockedIds = array_filter($blockedIds); // remove nulls
-        $posts = array_filter($posts, function($post) use ($blockedIds) {
-            return !in_array($post['user_id'], $blockedIds);
-        });
-        // Also filter out posts by users who are admin-blocked (is_blocked == 1)
-        $posts = array_filter($posts, function ($post) use ($userController) {
-            $user = $userController->getUserById($post['user_id']);
-            return !($user && isset($user['is_blocked']) && $user['is_blocked'] == 1);
-        });
-        $followingPosts = array_filter($followingPosts, function($post) use ($blockedIds) {
-            return !in_array($post['user_id'], $blockedIds);
-        });
-        // Also filter out posts by users who are admin-blocked (is_blocked == 1)
-        $followingPosts = array_filter($followingPosts, function ($post) use ($userController) {
-            $user = $userController->getUserById($post['user_id']);
-            return !($user && isset($user['is_blocked']) && $user['is_blocked'] == 1);
-        });
-        usort($posts, function($a, $b) {
-            return strtotime($b['created_at']) - strtotime($a['created_at']);
-        });
-        $title = "Home";
-        require __DIR__ . '/includes/views/header.php';
-        require __DIR__ . '/includes/views/home_view.php';
-        require __DIR__ . '/includes/views/footer.php';
+        $homeController = new HomeController();
+        $homeController->showHome();
         break;
 
     case 'forgot_password':
