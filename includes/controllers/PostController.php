@@ -205,7 +205,7 @@
             // Otherwise, check if user is admin
             $userModel = new User();
             if ($userModel->isAdmin($user_id)) {
-                return $this->post->deleteComment($comment_id, $user_id);
+                return $this->post->deleteComment($comment_id, $user_id, true);
             }
             // Not authorized
             return false;

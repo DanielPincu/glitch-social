@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
   countdownDiv.className = "countdown-timer text-center text-gray-500 text-xs italic mt-2";
   messagesDiv.appendChild(countdownDiv);
 
-  let countdown = 30;
+  let countdown = 9;
   let phase = 0; // 0 = Uploading, 1 = Downloading, 2 = countdown
   let timer = null;
 
@@ -170,10 +170,10 @@ document.addEventListener("DOMContentLoaded", () => {
         runPhases();
       }, 1000);
     } else if (phase === 2) {
-      countdownDiv.textContent = `Attempting connection in ${countdown} seconds...`;
+      countdownDiv.innerHTML = `Scanning frequencies...`;
       countdown--;
       if (countdown < 0) {
-        countdown = 30;
+        countdown = 9;
         phase = 0;
         runPhases();
       } else {

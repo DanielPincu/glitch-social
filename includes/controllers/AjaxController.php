@@ -258,6 +258,26 @@ class AjaxController
             exit;
         }
 
+        // === Rate limiting: prevent chat spam ===
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        $now = time();
+        $cooldown = 3; // seconds between messages
+        $lastSent = $_SESSION['last_chat_message_time'] ?? 0;
+
+        if ($now - $lastSent < $cooldown) {
+            echo json_encode([
+                'success' => false,
+                'message' => '🕒 Slow down, Operator...'
+            ]);
+            exit;
+        }
+
+        // Update timestamp after passing the check
+        $_SESSION['last_chat_message_time'] = $now;
+
         $zionChat = new ZionChat();
         $zionChat->insertMessage($user_id, $message);
 
