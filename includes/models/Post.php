@@ -8,35 +8,12 @@ class Post {
         $this->db = $database->connect();
     }
 
-    // Create a new post with optional image and visibility
-    public function create($user_id, $content, $file = null, $visibility = 'public') {
-        $imagePath = null;
-
-        // Handle image upload or direct image path
-        if (is_array($file) && isset($file['error']) && $file['error'] === UPLOAD_ERR_OK) {
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (in_array($file['type'], $allowedTypes) && $file['size'] <= 2 * 1024 * 1024) { // 2MB max
-                $uploadDir = __DIR__ . '/../../img/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0755, true);
-                }
-
-                $filename = time() . '_' . basename($file['name']);
-                $destination = $uploadDir . $filename;
-
-                if (move_uploaded_file($file['tmp_name'], $destination)) {
-                    $imagePath = 'img/' . $filename; // relative path for DB
-                }
-            }
-        } elseif (is_string($file)) {
-            $imagePath = $file;
-        }
-
+    // Create a new post with given image path and visibility
+    public function create($user_id, $content, $imagePath = null, $visibility = 'public') {
         $stmt = $this->db->prepare("
             INSERT INTO posts (user_id, content, image_path, visibility)
             VALUES (:user_id, :content, :image_path, :visibility)
         ");
-
         if ($stmt->execute([
             ':user_id' => $user_id,
             ':content' => $content,
@@ -45,7 +22,6 @@ class Post {
         ])) {
             return $this->db->lastInsertId(); // return the new post ID
         }
-
         return false;
     }
 
@@ -203,22 +179,8 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
         ]);
         return (int)$stmt->fetchColumn();
     }
-    // Delete a post by ID (also unlink image if exists)
+    // Delete a post by ID
     public function delete($post_id) {
-        // Fetch the post record
-        $stmt = $this->db->prepare("SELECT image_path FROM posts WHERE id = :id");
-        $stmt->execute([':id' => $post_id]);
-        $post = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // If an image exists, unlink it
-        if ($post && !empty($post['image_path'])) {
-            $filePath = __DIR__ . '/../../' . $post['image_path'];
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-        }
-
-        // Now delete the post itself
         $stmt = $this->db->prepare("DELETE FROM posts WHERE id = :id");
         return $stmt->execute([':id' => $post_id]);
     }
@@ -276,23 +238,13 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
 
     // Delete a post by ID, but only if it belongs to this user
     public function deleteByUser($post_id, $user_id) {
-        // Fetch the post record and ensure ownership
-        $stmt = $this->db->prepare("SELECT image_path FROM posts WHERE id = :id AND user_id = :user_id");
+        // Ensure ownership
+        $stmt = $this->db->prepare("SELECT id FROM posts WHERE id = :id AND user_id = :user_id");
         $stmt->execute([':id' => $post_id, ':user_id' => $user_id]);
         $post = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!$post) {
             return false; // not found or not owned
         }
-
-        // If an image exists, unlink it
-        if (!empty($post['image_path'])) {
-            $filePath = __DIR__ . '/../../' . $post['image_path'];
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-        }
-
         // Delete post
         $stmt = $this->db->prepare("DELETE FROM posts WHERE id = :id AND user_id = :user_id");
         return $stmt->execute([':id' => $post_id, ':user_id' => $user_id]);
@@ -300,29 +252,41 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
 
     // Update a post’s content, image, and optionally its visibility (only if it belongs to the user)
     public function updateContent($post_id, $new_content, $user_id, $new_image_path = null, $remove_image = false, $visibility = null) {
+        $post = $this->getPostById($post_id);
+        if ($post) {
+            // Remove old image if requested
+            if ($remove_image && !empty($post['image_path'])) {
+                $oldImagePath = __DIR__ . '/../../' . $post['image_path'];
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+            // If new image is provided, replace and delete old image
+            if ($new_image_path !== null && !empty($post['image_path'])) {
+                $oldImagePath = __DIR__ . '/../../' . $post['image_path'];
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+        }
+
         $sql = "UPDATE posts SET content = :content";
         $params = [
             ':content' => $new_content,
             ':post_id' => $post_id,
             ':user_id' => $user_id
         ];
-
-        // Handle image update or removal
-        if ($remove_image) {
-            $sql .= ", image_path = NULL";
-        } elseif (!empty($new_image_path)) {
+        if ($new_image_path !== null) {
             $sql .= ", image_path = :image_path";
             $params[':image_path'] = $new_image_path;
+        } elseif ($remove_image) {
+            $sql .= ", image_path = NULL";
         }
-
-        // Handle visibility update if provided
         if ($visibility !== null) {
             $sql .= ", visibility = :visibility";
             $params[':visibility'] = $visibility;
         }
-
         $sql .= " WHERE id = :post_id AND user_id = :user_id";
-
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
     }
