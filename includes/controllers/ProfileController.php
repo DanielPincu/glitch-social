@@ -66,6 +66,21 @@ class ProfileController {
             ];
         }
 
+        // Prevent admin-blocked users from seeing or showing posts
+        if ($this->userModel->isBlocked($user_id)) {
+            return [
+                'profile' => [
+                    'id' => $user_id,
+                    'username' => $profile['username'] ?? 'Blocked User',
+                    'bio' => 'This account has been blocked by an administrator.',
+                    'location' => '',
+                    'website' => '',
+                    'avatar_url' => null
+                ],
+                'posts' => []
+            ];
+        }
+
         $posts = $this->postModel->getPostsByUser($user_id, $viewer_id);
         return ['profile' => $profile, 'posts' => $posts];
     }
