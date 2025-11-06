@@ -497,7 +497,8 @@
         <div class="flex flex-col items-start bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 text-white px-3 py-2 rounded-t-md">
           <h3 class="font-bold text-sm flex items-center gap-2 matrix-text drop-shadow-[0_0_5px_rgba(0,255,0,0.4)]">
             <img src="./icons/z.webp" alt="Zahoo! Messenger Icon" class="w-20">
-            <span class="text-xl -mr-1">Zahoo<span class="text-4xl p-0 m-0 italic">!</span></span>Messenger
+            <span class="text-xl -mr-1">Zahoo<span class="text-4xl p-0 m-0 italic">!</span></span><span class="xl:block hidden">Messenger</span>
+            <span class="2xl:text-6xl hidden 2xl:block ml-2">📡</span>
           </h3>
           
         </div>
