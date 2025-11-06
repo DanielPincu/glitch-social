@@ -415,35 +415,4 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
             ':user_id' => $user_id
         ]);
     }
-    // Count unread notifications for a user
-    public function countUnreadNotifications($user_id) {
-        $stmt = $this->db->prepare("
-            SELECT COUNT(*) FROM notifications
-            WHERE user_id = :user_id
-        ");
-        $stmt->execute([':user_id' => $user_id]);
-        return (int) $stmt->fetchColumn();
-    }
-
-    // Fetch the 10 most recent notifications for a user
-    public function getRecentNotifications($user_id) {
-        $stmt = $this->db->prepare("
-            SELECT n.*, u.username AS actor_name, p.content AS post_content
-            FROM notifications n
-            JOIN users u ON n.actor_id = u.id
-            LEFT JOIN posts p ON n.post_id = p.id
-            WHERE n.user_id = :user_id
-            ORDER BY n.id DESC
-            LIMIT 10
-        ");
-        $stmt->execute([':user_id' => $user_id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-
-    // Delete all notifications for a user
-    public function deleteAllNotifications($user_id) {
-        $stmt = $this->db->prepare("DELETE FROM notifications WHERE user_id = :user_id");
-        return $stmt->execute([':user_id' => $user_id]);
-    }
 }

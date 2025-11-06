@@ -344,12 +344,6 @@ class PostController {
         }
     }
 
-    // Delete all notifications for a user
-    public function deleteAllNotifications($user_id)
-    {
-        $this->post->deleteAllNotifications($user_id);
-    }
-
     public function togglePin($post_id, $user_id, $is_pinned) {
         return $this->post->togglePin($post_id, $user_id, $is_pinned);
     }

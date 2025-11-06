@@ -47,9 +47,8 @@
         <button id="notif-button" class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm flex items-center relative">
           <i data-feather="bell" class="w-4 h-4"></i>
           <?php
-            require_once __DIR__ . '/../models/Post.php';
-            $notif = new Post();
-            $notifCount = $notif->countUnreadNotifications($session->getUserId());
+            $notificationController = new NotificationController();
+            $notifCount = $notificationController->countUnreadNotifications($session->getUserId());
             if ($notifCount > 0): ?>
               <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1"><?php echo $notifCount; ?></span>
           <?php endif; ?>
@@ -58,7 +57,7 @@
         <!-- Notification Dropdown -->
         <div id="notif-dropdown" class="hidden absolute bottom-10 right-0 w-64 bg-[#222] border border-gray-600 rounded shadow-lg z-50">
 <?php
-  $notifs = $notif->getRecentNotifications($session->getUserId());
+  $notifs = $notificationController->getRecentNotifications($session->getUserId());
 ?>
 <div class="p-2 text-sm text-gray-300 flex justify-between items-center">
   <strong>Notifications</strong>

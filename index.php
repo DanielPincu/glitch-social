@@ -84,6 +84,11 @@ switch ($page) {
         $termsController->show();
         break;
 
+    case 'notifications':
+        $notificationController = new NotificationController();
+        $notificationController->handleActions();
+        break;
+
     default:
         header("Location: index.php?page=404");
         exit;

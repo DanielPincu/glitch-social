@@ -223,7 +223,9 @@ class AjaxController
         }
 
         $userId = $this->session->getUserId();
-        $this->postController->deleteAllNotifications($userId);
+        
+        $notificationController = new NotificationController();
+        $notificationController->deleteAllNotifications($userId);
 
         echo json_encode(['success' => true]);
         exit;
