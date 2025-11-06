@@ -108,7 +108,7 @@ class Post {
         ]);
     }
 
-    // Fetch all comments for a specific post
+    // Fetch all comments for a specific post, excluding comments by admin-blocked users
     public function getComments($post_id) {
         $stmt = $this->db->prepare("
             SELECT comments.id, comments.user_id, comments.content, comments.created_at,
@@ -117,6 +117,7 @@ class Post {
             JOIN users ON comments.user_id = users.id
             LEFT JOIN profiles ON profiles.user_id = users.id
             WHERE comments.post_id = :post_id
+              AND users.is_blocked = 0
             ORDER BY comments.created_at ASC
         ");
         $stmt->execute([':post_id' => $post_id]);
