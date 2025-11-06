@@ -142,15 +142,43 @@ BEGIN
     WHERE f.user_id = NEW.user_id;
   END IF;
 END //
-DELIMITER ;
 
-DELIMITER //
 CREATE TRIGGER after_follow_insert_notification
 AFTER INSERT ON followers
 FOR EACH ROW
 BEGIN
   INSERT INTO notifications (user_id, actor_id, post_id, type)
   VALUES (NEW.user_id, NEW.follower_id, NULL, 'follow');
+END //
+
+CREATE TRIGGER after_blocked_users_insert_delete_likes
+AFTER INSERT ON blocked_users
+FOR EACH ROW
+BEGIN
+  -- Delete any likes made by the blocker on the blocked user's posts
+  DELETE FROM likes 
+  WHERE user_id = NEW.blocker_id 
+    AND post_id IN (SELECT id FROM posts WHERE user_id = NEW.blocked_id);
+
+  -- Delete any likes made by the blocked user on the blocker's posts
+  DELETE FROM likes 
+  WHERE user_id = NEW.blocked_id 
+    AND post_id IN (SELECT id FROM posts WHERE user_id = NEW.blocker_id);
+END //
+
+CREATE TRIGGER after_blocked_users_insert_delete_comments
+AFTER INSERT ON blocked_users
+FOR EACH ROW
+BEGIN
+  -- Delete comments made by the blocker on the blocked user's posts
+  DELETE FROM comments 
+  WHERE user_id = NEW.blocker_id 
+    AND post_id IN (SELECT id FROM posts WHERE user_id = NEW.blocked_id);
+
+  -- Delete comments made by the blocked user on the blocker's posts
+  DELETE FROM comments 
+  WHERE user_id = NEW.blocked_id 
+    AND post_id IN (SELECT id FROM posts WHERE user_id = NEW.blocker_id);
 END //
 DELIMITER ;
 
@@ -200,3 +228,17 @@ FROM posts p
 JOIN users u   ON u.id = p.user_id
 LEFT JOIN profiles pr ON pr.user_id = p.user_id
 ORDER BY p.created_at DESC;
+
+CREATE OR REPLACE VIEW view_all_comments AS
+SELECT 
+  c.id AS comment_id,
+  c.content AS comment_content,
+  c.created_at AS comment_created_at,
+  commenter.username AS commenter_username,
+  recipient.username AS recipient_username,
+  c.post_id
+FROM comments c
+JOIN users commenter ON c.user_id = commenter.id
+JOIN posts p ON c.post_id = p.id
+JOIN users recipient ON p.user_id = recipient.id
+ORDER BY c.created_at DESC;
