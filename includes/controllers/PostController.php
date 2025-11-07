@@ -195,18 +195,23 @@
                 return false;
             }
 
-            // Load post to check if user is post owner
+            // Fetch post to validate relationship
             $post = $this->post->getPostById($comment['post_id']);
             if (!$post) {
                 return false;
             }
 
-            // Check ownership or admin privileges
+            // Determine if user is admin
             $userModel = new User($this->pdo);
-            $isAdmin = $userModel->isAdmin($user_id);
+            $isAdmin = $userModel->isAdmin($user_id) || (!empty($_SESSION['is_admin']) && $_SESSION['is_admin'] == true);
 
-            if ($comment['user_id'] == $user_id || $post['user_id'] == $user_id || $isAdmin) {
-                return $this->post->deleteCommentById($comment_id);
+            // Perform authorization check
+            if (
+                $comment['user_id'] == $user_id ||
+                $post['user_id'] == $user_id ||
+                $isAdmin
+            ) {
+                return $this->post->deleteComment($comment_id, $user_id, $isAdmin);
             }
 
             return false; // Not authorized
