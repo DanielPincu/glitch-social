@@ -38,8 +38,8 @@ class AdminController extends UserController {
 
     // Delete a post by ID
     public function deletePost($post_id) {
-        $post = new Post($this->pdo);
-        return $post->delete($post_id);
+        $postController = new PostController($this->pdo);
+        return $postController->deletePost($post_id);
     }
 
     public function handleAdminActions() {
