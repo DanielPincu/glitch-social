@@ -140,37 +140,13 @@ public function updateComment($comment_id, $user_id, $new_content) {
 }
 
 
-// Delete a comment if authorized: comment owner, post owner, or admin
-public function deleteComment($comment_id, $user_id, $isAdmin = false) {
-    // Fetch the comment
-    $comment = $this->getCommentById($comment_id);
-    if (!$comment) {
-        return false; // Comment not found
-    }
-
-    // Fetch the post
-    $post = $this->getPostById($comment['post_id']);
-    if (!$post) {
-        return false; // Post not found
-    }
-
-    // Check authorization
-    if (
-        $comment['user_id'] == $user_id ||
-        $post['user_id'] == $user_id ||
-        $isAdmin
-    ) {
-        $stmt = $this->pdo->prepare("
-            DELETE FROM comments
-            WHERE id = :comment_id
-        ");
-        return $stmt->execute([
-            ':comment_id' => $comment_id
-        ]);
-    }
-
-    // Not authorized
-    return false;
+// Delete a comment by its ID — assumes authorization handled in controller
+public function deleteComment($comment_id) {
+    $stmt = $this->pdo->prepare("
+        DELETE FROM comments
+        WHERE id = :comment_id
+    ");
+    return $stmt->execute([':comment_id' => $comment_id]);
 }
 
 

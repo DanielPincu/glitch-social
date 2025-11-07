@@ -192,26 +192,22 @@
         public function deleteComment($comment_id, $user_id) {
             $comment = $this->post->getCommentById($comment_id);
             if (!$comment) {
-                return false;
+                return false; // Comment not found
             }
 
-            // Fetch post to validate relationship
+            // Fetch the post related to the comment
             $post = $this->post->getPostById($comment['post_id']);
             if (!$post) {
-                return false;
+                return false; // Post not found
             }
 
-            // Determine if user is admin
+            // Check admin status safely
             $userModel = new User($this->pdo);
-            $isAdmin = $userModel->isAdmin($user_id) || (!empty($_SESSION['is_admin']) && $_SESSION['is_admin'] == true);
+            $isAdmin = $userModel->isAdmin($user_id) || (!empty($_SESSION['is_admin']) && $_SESSION['is_admin']);
 
-            // Perform authorization check
-            if (
-                $comment['user_id'] == $user_id ||
-                $post['user_id'] == $user_id ||
-                $isAdmin
-            ) {
-                return $this->post->deleteComment($comment_id, $user_id, $isAdmin);
+            // Authorization: comment owner, post owner, or admin
+            if ($comment['user_id'] == $user_id || $post['user_id'] == $user_id || $isAdmin) {
+                return $this->post->deleteComment($comment_id);
             }
 
             return false; // Not authorized
