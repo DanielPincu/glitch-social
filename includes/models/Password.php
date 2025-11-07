@@ -13,8 +13,9 @@ class Password {
     }
 
     public function saveResetToken($userId, $token, $expires) {
+        $hashedToken = password_hash($token, PASSWORD_BCRYPT);
         $stmt = $this->pdo->prepare("UPDATE users SET reset_token = ?, reset_expires = ? WHERE id = ?");
-        return $stmt->execute([$token, $expires, $userId]);
+        return $stmt->execute([$hashedToken, $expires, $userId]);
     }
 
     public function hasActiveResetToken($email) {
@@ -27,9 +28,15 @@ class Password {
     }
 
     public function findUserByToken($token) {
-        $stmt = $this->pdo->prepare("SELECT id FROM users WHERE reset_token = ? AND reset_expires > NOW()");
-        $stmt->execute([$token]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT id, reset_token FROM users WHERE reset_expires > NOW()");
+        $stmt->execute();
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($users as $user) {
+            if (password_verify($token, $user['reset_token'])) {
+                return ['id' => $user['id']];
+            }
+        }
+        return false;
     }
 
     public function updatePassword($userId, $password) {

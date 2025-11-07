@@ -1,6 +1,3 @@
-<?php
-/** @var string $link — The password reset link */
-?>
 <div style='font-family: Arial, sans-serif; color: #222; background-color: #f4f6fa; padding: 30px;'>
   <div style='max-width: 600px; margin: auto; background: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden;'>
     <div style='background: linear-gradient(135deg, #3A6EA5, #5CACEE); padding: 20px; text-align: center;'>
@@ -12,7 +9,7 @@
         We received a request to reset your password. Click the button below to set a new one.
       </p>
       <div style='text-align: center; margin: 25px 0;'>
-        <a href="<?php echo $link; ?>" style='background-color: #2563eb; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;'>Reset Password</a>
+        <a href="<?php echo htmlspecialchars($link, ENT_QUOTES); ?>" style='background-color: #2563eb; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;'>Reset Password</a>
       </div>
       <p style='font-size: 14px; color: #555;'>
         If the button doesn't work, copy and paste this link into your browser:
