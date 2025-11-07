@@ -78,12 +78,12 @@ switch ($page) {
         break;
 
     case 'forgot_password':
-        $passwordController = new PasswordController($session);
+        $passwordController = new PasswordController($pdo, $session);
         $passwordController->showForgotPassword();
         break;
 
     case 'reset_password':
-        $passwordController = new PasswordController($session);
+        $passwordController = new PasswordController($pdo, $session);
         $passwordController->showResetPassword();
         break;
 
