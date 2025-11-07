@@ -1,16 +1,24 @@
 <?php
 require_once __DIR__ . '/autoload.php';
 
+// 1. Start session early
 $session = new Session();
+
+// 2. Initialize database connection early
+$database = new Database();
+$pdo = $database->connect();
+
+// 3. Resolve page and title
 $page = $_GET['page'] ?? 'home';
 $title = '';
 
-$userController = new UserController();
+// 4. Instantiate controllers
+$userController = new UserController($pdo);
 $userController->handleFollowAction($session);
 
-$postController = new PostController();
+$postController = new PostController($pdo);
 
-$ajaxController = new AjaxController($session, $userController, $postController);
+$ajaxController = new AjaxController($session, $userController, $postController, $pdo);
 $ajaxController->handleRequest();
 
 
@@ -41,7 +49,7 @@ switch ($page) {
             header("Location: index.php?page=login");
             exit;
         }
-        $controller = new ProfileController();
+        $controller = new ProfileController($pdo);
         $controller->handleProfile($session);
         break;
 
@@ -51,7 +59,7 @@ switch ($page) {
         exit;
 
     case 'settings':
-        $settingsController = new SettingsController();
+        $settingsController = new SettingsController($pdo);
         $settingsController->show();
         break;
 
@@ -65,7 +73,7 @@ switch ($page) {
         break;
 
     case 'home':
-        $homeController = new HomeController();
+        $homeController = new HomeController($pdo);
         $homeController->showHome();
         break;
 
@@ -80,12 +88,12 @@ switch ($page) {
         break;
 
     case 'terms':
-        $termsController = new TermsController();
+        $termsController = new TermsController($pdo);
         $termsController->show();
         break;
 
     case 'notifications':
-        $notificationController = new NotificationController();
+        $notificationController = new NotificationController($pdo);
         $notificationController->handleActions();
         break;
 

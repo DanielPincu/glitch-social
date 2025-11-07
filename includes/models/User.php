@@ -3,9 +3,8 @@
 class User {
     private $db;
 
-    public function __construct() {
-        $database = new Database();
-        $this->db = $database->connect();
+    public function __construct($db) {
+        $this->db = $db;
     }
 
     

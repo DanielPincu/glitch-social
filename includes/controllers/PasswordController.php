@@ -9,15 +9,15 @@ require_once __DIR__ . '/../../phpmailer/Exception.php';
 class PasswordController {
     private $model;
     private $session;
+    private $pdo;
 
-    public function __construct($session = null) {
+    public function __construct($pdo, $session = null) {
+        $this->pdo = $pdo;
         if ($session === null) {
             $session = new Session();
         }
         $this->session = $session;
-        $database = new Database();
-        $pdo = $database->connect();
-        $this->model = new Password($pdo);
+        $this->model = new Password($this->pdo);
     }
 
     public function showForgotPassword() {

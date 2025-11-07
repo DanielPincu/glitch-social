@@ -4,9 +4,8 @@
 class ZionChat {
     private $pdo;
 
-    public function __construct() {
-        $db = new Database();
-        $this->pdo = $db->connect();
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
     }
 
     // Returns IDs of users the viewer blocked OR who have blocked the viewer
@@ -81,7 +80,7 @@ class ZionChat {
             $stmt->bindValue(':lim', (int)$limit, PDO::PARAM_INT);
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $userModel = new User();
+            $userModel = new User($this->pdo);
             $rows = array_filter($rows, function($msg) use ($userModel) {
                 return !$userModel->isBlocked($msg['user_id']);
             });
@@ -117,7 +116,7 @@ class ZionChat {
             $stmt->bindValue(':lim', (int)$limit, PDO::PARAM_INT);
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $userModel = new User();
+            $userModel = new User($this->pdo);
             $rows = array_filter($rows, function($msg) use ($userModel) {
                 return !$userModel->isBlocked($msg['user_id']);
             });
@@ -148,7 +147,7 @@ class ZionChat {
                     ORDER BY zm.id ASC";
             $stmt = $this->pdo->query($sql);
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $userModel = new User();
+            $userModel = new User($this->pdo);
             $rows = array_filter($rows, function($msg) use ($userModel) {
                 return !$userModel->isBlocked($msg['user_id']);
             });

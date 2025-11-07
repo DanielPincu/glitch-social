@@ -48,7 +48,7 @@
           <i data-feather="bell" class="w-4 h-4"></i>
           <?php
             $userId = isset($session) && method_exists($session, 'getUserId') ? $session->getUserId() : ($_SESSION['user_id'] ?? null);
-            $notificationController = new NotificationController();
+            $notificationController = new NotificationController($pdo);
             $notifCount = $userId ? $notificationController->countUnreadNotifications($userId) : 0;
             if ($notifCount > 0): ?>
               <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1"><?php echo $notifCount; ?></span>
@@ -116,7 +116,7 @@
 
       if (!isset($profile)) {
         require_once __DIR__ . '/../models/Profile.php';
-        $profile = new Profile();
+        $profile = new Profile($pdo);
       }
 
       // Get current user info only if logged in

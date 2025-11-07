@@ -1,16 +1,15 @@
 <?php
 
 class Post {
-    private $db;
+    private $pdo;
 
-    public function __construct() {
-        $database = new Database();
-        $this->db = $database->connect();
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
     }
 
     // Create a new post with given image path and visibility
     public function create($user_id, $content, $imagePath = null, $visibility = 'public') {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             INSERT INTO posts (user_id, content, image_path, visibility)
             VALUES (:user_id, :content, :image_path, :visibility)
         ");
@@ -20,7 +19,7 @@ class Post {
             ':image_path' => $imagePath,
             ':visibility' => $visibility
         ])) {
-            return $this->db->lastInsertId(); // return the new post ID
+            return $this->pdo->lastInsertId(); // return the new post ID
         }
         return false;
     }
@@ -31,7 +30,7 @@ class Post {
     // Otherwise, filter by visibility for the viewer.
     public function fetchAll($viewer_id = null, $isAdmin = false) {
         if ($isAdmin) {
-            $stmt = $this->db->prepare("
+            $stmt = $this->pdo->prepare("
                 SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.is_pinned, posts.created_at, 
                        users.username, profiles.avatar_url,
                        (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
@@ -43,7 +42,7 @@ class Post {
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else {
-            $stmt = $this->db->prepare("
+            $stmt = $this->pdo->prepare("
                 SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.is_pinned, posts.created_at, 
                        users.username, profiles.avatar_url,
                        (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
@@ -69,7 +68,7 @@ class Post {
 
     // Like a post
     public function like($post_id, $user_id) {
-        $stmt = $this->db->prepare("INSERT IGNORE INTO likes (post_id, user_id) VALUES (:post_id, :user_id)");
+        $stmt = $this->pdo->prepare("INSERT IGNORE INTO likes (post_id, user_id) VALUES (:post_id, :user_id)");
         return $stmt->execute([
             ':post_id' => $post_id,
             ':user_id' => $user_id
@@ -78,7 +77,7 @@ class Post {
 
     // Unlike a post
     public function unlike($post_id, $user_id) {
-        $stmt = $this->db->prepare("DELETE FROM likes WHERE post_id = :post_id AND user_id = :user_id");
+        $stmt = $this->pdo->prepare("DELETE FROM likes WHERE post_id = :post_id AND user_id = :user_id");
         return $stmt->execute([
             ':post_id' => $post_id,
             ':user_id' => $user_id
@@ -87,7 +86,7 @@ class Post {
 
     // Check if user has liked a post
     public function hasLiked($post_id, $user_id) {
-        $stmt = $this->db->prepare("SELECT 1 FROM likes WHERE post_id = :post_id AND user_id = :user_id LIMIT 1");
+        $stmt = $this->pdo->prepare("SELECT 1 FROM likes WHERE post_id = :post_id AND user_id = :user_id LIMIT 1");
         $stmt->execute([
             ':post_id' => $post_id,
             ':user_id' => $user_id
@@ -97,7 +96,7 @@ class Post {
 
     // Add a new comment to a post
     public function addComment($post_id, $user_id, $content) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             INSERT INTO comments (post_id, user_id, content)
             VALUES (:post_id, :user_id, :content)
         ");
@@ -110,7 +109,7 @@ class Post {
 
     // Fetch all comments for a specific post, excluding comments by admin-blocked users
     public function getComments($post_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT comments.id, comments.user_id, comments.content, comments.created_at,
                    users.username, profiles.avatar_url
             FROM comments
@@ -128,7 +127,7 @@ class Post {
 
     // Update an existing comment (only if owned by the user)
 public function updateComment($comment_id, $user_id, $new_content) {
-    $stmt = $this->db->prepare("
+    $stmt = $this->pdo->prepare("
         UPDATE comments 
         SET content = :content 
         WHERE id = :comment_id AND user_id = :user_id
@@ -158,7 +157,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
         $post['user_id'] == $user_id ||
         $isAdmin
     ) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             DELETE FROM comments
             WHERE id = :comment_id
         ");
@@ -174,7 +173,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
 
     // Get like count for a post
     public function getLikeCount($post_id) {
-        $stmt = $this->db->prepare("SELECT COUNT(*) FROM likes WHERE post_id = :post_id");
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM likes WHERE post_id = :post_id");
         $stmt->execute([
             ':post_id' => $post_id
         ]);
@@ -182,7 +181,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
     }
     // Delete a post by ID
     public function delete($post_id) {
-        $stmt = $this->db->prepare("DELETE FROM posts WHERE id = :id");
+        $stmt = $this->pdo->prepare("DELETE FROM posts WHERE id = :id");
         return $stmt->execute([':id' => $post_id]);
     }
 
@@ -232,7 +231,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
             $params[':viewer_id'] = $viewer_id;
         }
 
-        $stmt = $this->db->prepare($query);
+        $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -240,14 +239,14 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
     // Delete a post by ID, but only if it belongs to this user
     public function deleteByUser($post_id, $user_id) {
         // Ensure ownership
-        $stmt = $this->db->prepare("SELECT id FROM posts WHERE id = :id AND user_id = :user_id");
+        $stmt = $this->pdo->prepare("SELECT id FROM posts WHERE id = :id AND user_id = :user_id");
         $stmt->execute([':id' => $post_id, ':user_id' => $user_id]);
         $post = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$post) {
             return false; // not found or not owned
         }
         // Delete post
-        $stmt = $this->db->prepare("DELETE FROM posts WHERE id = :id AND user_id = :user_id");
+        $stmt = $this->pdo->prepare("DELETE FROM posts WHERE id = :id AND user_id = :user_id");
         return $stmt->execute([':id' => $post_id, ':user_id' => $user_id]);
     }
 
@@ -288,7 +287,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
             $params[':visibility'] = $visibility;
         }
         $sql .= " WHERE id = :post_id AND user_id = :user_id";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         return $stmt->execute($params);
     }
 
@@ -315,14 +314,14 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
         ORDER BY posts.is_pinned DESC, posts.created_at DESC
     ";
 
-    $stmt = $this->db->prepare($query);
+    $stmt = $this->pdo->prepare($query);
     $stmt->execute([':user_id' => $user_id, ':viewer_id' => $viewer_id]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
     // Get posts filtered by visibility for a viewer
     public function getPosts($viewer_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT posts.id, posts.user_id, posts.content, posts.image_path, posts.visibility, posts.is_pinned, posts.created_at, 
                    users.username, profiles.avatar_url,
                    (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count
@@ -345,7 +344,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
     }
     // Fetch a single comment by its ID
     public function getCommentById($comment_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT id, post_id, user_id, content, created_at
             FROM comments
             WHERE id = :comment_id
@@ -357,7 +356,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
 
     // Fetch a single post by its ID
     public function getPostById($post_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT id, user_id, content, created_at, image_path, visibility
             FROM posts
             WHERE id = :post_id
@@ -369,7 +368,7 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
 
     // Toggle a post's pin status
     public function togglePin($post_id, $user_id, $is_pinned) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             UPDATE posts 
             SET is_pinned = :is_pinned 
             WHERE id = :post_id AND user_id = :user_id

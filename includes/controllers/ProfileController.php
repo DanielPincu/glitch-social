@@ -4,11 +4,13 @@ class ProfileController {
     private $profileModel;
     private $postModel;
     private $userModel;
+    private $pdo;
 
-    public function __construct() {
-        $this->profileModel = new Profile();
-        $this->postModel = new Post();
-        $this->userModel = new User();
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+        $this->profileModel = new Profile($this->pdo);
+        $this->postModel = new Post($this->pdo);
+        $this->userModel = new User($this->pdo);
     }
 
     // Get profile info and their posts
@@ -287,7 +289,7 @@ class ProfileController {
 
         // Step 4: Handle user blocking/unblocking
         require_once __DIR__ . '/UserController.php';
-        $userController = new UserController();
+        $userController = new UserController($this->pdo);
         $userController->handleBlockActions($session);
 
         // Step 5: Fetch profile and posts
@@ -306,6 +308,7 @@ class ProfileController {
         $controller = $this;
 
         // Step 7: Render header, profile view, and footer
+        $pdo = $this->pdo;
         require_once __DIR__ . '/../views/header.php';
         require_once __DIR__ . '/../views/profile_view.php';
         require_once __DIR__ . '/../views/footer.php';

@@ -1,16 +1,18 @@
 <?php
 
 class SettingsController {
+    private $pdo;
     private $session;
     private $userController;
     private $postController;
     private $adminController;
 
-    public function __construct() {
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
         $this->session = new Session();
-        $this->userController = new UserController();
-        $this->postController = new PostController();
-        $this->adminController = new AdminController();
+        $this->userController = new UserController($this->pdo);
+        $this->postController = new PostController($this->pdo);
+        $this->adminController = new AdminController($this->pdo);
     }
 
     public function show() {
@@ -26,7 +28,7 @@ class SettingsController {
         // Handle POST requests (profile actions, blocking, posts)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($isAdmin && isset($_POST['update_terms'])) {
-                $termsController = new TermsController();
+                $termsController = new TermsController($this->pdo);
                 $content = trim($_POST['terms_content'] ?? '');
                 $updateResult = $termsController->updateTerms($user_id, $content);
 
@@ -53,8 +55,15 @@ class SettingsController {
         // Load user data
         $posts = $this->postController->getPostsByUser($user_id);
         $blockedUsers = $this->userController->getBlockedUsers($user_id);
-        $termsModel = new Terms();
+        $termsModel = new Terms($this->pdo);
         $termsContent = $termsModel->getCurrent();
+
+        $updaterUsername = null;
+        if (!empty($termsContent['updated_by'])) {
+            $userModel = new User($this->pdo);
+            $updater = $userModel->getUserById($termsContent['updated_by']);
+            $updaterUsername = $updater['username'] ?? ('User ID: ' . $termsContent['updated_by']);
+        }
 
         // Admin-only data
         $allUsers = [];
@@ -67,8 +76,10 @@ class SettingsController {
         $title = "Settings";
         $session = $this->session;
         $userController = $this->userController;
-        $currentUserId = $user_id; 
+        $currentUserId = $user_id;
+        $pdo = $this->pdo;
         require __DIR__ . '/../views/header.php';
+        $updaterUsername = $updaterUsername; // for clarity of availability
         require __DIR__ . '/../views/settings_view.php';
         require __DIR__ . '/../views/footer.php';
     }

@@ -2,11 +2,13 @@
 
 class NotificationController
 {
-    protected $notificationModel;
+    private $pdo;
+    private $notificationModel;
 
-    public function __construct()
+    public function __construct($pdo)
     {
-        $this->notificationModel = new Notification();
+        $this->pdo = $pdo;
+        $this->notificationModel = new Notification($this->pdo);
     }
 
     public function countUnreadNotifications($userId)

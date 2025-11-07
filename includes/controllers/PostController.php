@@ -1,9 +1,11 @@
 <?php
     class PostController {
         private $post;
+        private $pdo;
 
-        public function __construct() {
-            $this->post = new Post();
+        public function __construct($pdo) {
+            $this->pdo = $pdo;
+            $this->post = new Post($this->pdo);
         }
 
         // Create a new post with optional image file and visibility
@@ -203,7 +205,7 @@
                 return $this->post->deleteComment($comment_id, $user_id);
             }
             // Otherwise, check if user is admin
-            $userModel = new User();
+            $userModel = new User($this->pdo);
             if ($userModel->isAdmin($user_id)) {
                 return $this->post->deleteComment($comment_id, $user_id, true);
             }

@@ -4,12 +4,16 @@ class AjaxController
     private $session;
     private $userController;
     private $postController;
+    private $zionChat;
+    private $pdo;
 
-    public function __construct($session, $userController, $postController)
+    public function __construct($session, $userController, $postController, $pdo)
     {
         $this->session = $session;
         $this->userController = $userController;
         $this->postController = $postController;
+        $this->zionChat = new ZionChat($pdo);
+        $this->pdo = $pdo;
     }
 
     public function handleRequest()
@@ -223,8 +227,7 @@ class AjaxController
         }
 
         $userId = $this->session->getUserId();
-        
-        $notificationController = new NotificationController();
+        $notificationController = new NotificationController($this->pdo);
         $notificationController->deleteAllNotifications($userId);
 
         echo json_encode(['success' => true]);
@@ -278,7 +281,7 @@ class AjaxController
         // Update timestamp after passing the check
         $_SESSION['last_chat_message_time'] = $now;
 
-        $zionChat = new ZionChat();
+        $zionChat = $this->zionChat;
         $zionChat->insertMessage($user_id, $message);
 
         // Fetch the most recent messages after insert
@@ -319,7 +322,7 @@ class AjaxController
             exit;
         }
 
-        $zionChat = new ZionChat();
+        $zionChat = $this->zionChat;
         $messages = $zionChat->fetchRecentMessages(50, $user_id);
 
         if (is_array($messages)) {
@@ -359,7 +362,7 @@ class AjaxController
             exit;
         }
 
-        $zionChat = new ZionChat();
+        $zionChat = $this->zionChat;
         $success = $zionChat->deleteMessage($message_id, $user_id);
 
         if ($success) {

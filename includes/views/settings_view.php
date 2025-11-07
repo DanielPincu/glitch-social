@@ -365,13 +365,8 @@
         </button>
       </h2>
       <?php if (!empty($termsContent['updated_by'])): ?>
-        <?php
-          $userModel = new User();
-          $updater = $userModel->getUserById($termsContent['updated_by']);
-          $username = $updater['username'] ?? ('User ID: ' . $termsContent['updated_by']);
-        ?>
         <p class="text-sm text-gray-400 mb-2">
-          Last updated by: <?php echo htmlspecialchars($username); ?>
+          Last updated by: <?php echo htmlspecialchars($updaterUsername ?? ('User ID: ' . $termsContent['updated_by'])); ?>
           <?php if (!empty($termsContent['updated_at'])): ?>
             on <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($termsContent['updated_at']))); ?>
           <?php endif; ?>

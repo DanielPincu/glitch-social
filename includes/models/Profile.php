@@ -1,16 +1,15 @@
 <?php
 
 class Profile {
-    private $db;
+    private $pdo;
 
-    public function __construct() {
-        $database = new Database();
-        $this->db = $database->connect();
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
     }
 
     // Fetch profile and user info by user_id
     public function getByUserId($user_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT users.id, users.username, users.email,
                    profiles.bio, profiles.avatar_url, profiles.location, profiles.website
             FROM users
@@ -24,11 +23,11 @@ class Profile {
     // Create or update a profile, keeping existing avatar if not uploading a new one, and update email
     public function save($user_id, $bio, $location, $website, $avatar_url = null, $email = null) {
         try {
-            $this->db->beginTransaction();
+            $this->pdo->beginTransaction();
 
             // Update the users table for email
             if ($email !== null) {
-                $stmtUser = $this->db->prepare("
+                $stmtUser = $this->pdo->prepare("
                     UPDATE users SET email = :email WHERE id = :user_id
                 ");
                 $stmtUser->execute([
@@ -39,7 +38,7 @@ class Profile {
 
             // Update or insert into profiles table
             if ($avatar_url) {
-                $stmtProfile = $this->db->prepare("
+                $stmtProfile = $this->pdo->prepare("
                     INSERT INTO profiles (user_id, bio, location, website, avatar_url)
                     VALUES (:user_id, :bio, :location, :website, :avatar_url)
                     ON DUPLICATE KEY UPDATE
@@ -56,7 +55,7 @@ class Profile {
                     ':avatar_url' => $avatar_url
                 ];
             } else {
-                $stmtProfile = $this->db->prepare("
+                $stmtProfile = $this->pdo->prepare("
                     INSERT INTO profiles (user_id, bio, location, website)
                     VALUES (:user_id, :bio, :location, :website)
                     ON DUPLICATE KEY UPDATE
@@ -73,17 +72,17 @@ class Profile {
             }
 
             $stmtProfile->execute($params);
-            $this->db->commit();
+            $this->pdo->commit();
             return true;
         } catch (Exception $e) {
-            $this->db->rollBack();
+            $this->pdo->rollBack();
             error_log("Profile save error: " . $e->getMessage());
             return false;
         }
     }
     // Follow another user
     public function followUser($follower_id, $user_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             INSERT IGNORE INTO followers (user_id, follower_id)
             VALUES (:user_id, :follower_id)
         ");
@@ -95,7 +94,7 @@ class Profile {
 
     // Unfollow a user
     public function unfollowUser($follower_id, $user_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             DELETE FROM followers
             WHERE user_id = :user_id AND follower_id = :follower_id
         ");
@@ -107,7 +106,7 @@ class Profile {
 
     // Check if a user is following another user
     public function isFollowing($follower_id, $user_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT COUNT(*) FROM followers
             WHERE user_id = :user_id AND follower_id = :follower_id
         ");
@@ -120,7 +119,7 @@ class Profile {
 
     // Count how many followers a user has
     public function countFollowers($user_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT COUNT(*) FROM followers WHERE user_id = :user_id
         ");
         $stmt->execute([':user_id' => $user_id]);
@@ -129,7 +128,7 @@ class Profile {
 
     // Count how many users a person follows
     public function countFollowing($follower_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             SELECT COUNT(*) FROM followers WHERE follower_id = :follower_id
         ");
         $stmt->execute([':follower_id' => $follower_id]);
@@ -137,7 +136,7 @@ class Profile {
     }
 
     public function getFollowingList($user_id) {
-    $stmt = $this->db->prepare("
+    $stmt = $this->pdo->prepare("
         SELECT users.id, users.username, profiles.avatar_url
         FROM followers
         JOIN users ON followers.user_id = users.id
@@ -150,7 +149,7 @@ class Profile {
 
     // Delete the user's avatar
     public function deleteAvatar($user_id) {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             UPDATE profiles
             SET avatar_url = NULL
             WHERE user_id = :user_id

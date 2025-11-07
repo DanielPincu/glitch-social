@@ -2,6 +2,8 @@
 
 class AdminController extends UserController {
 
+    
+
     // Fetch all users (inherited already, but we can alias it for clarity)
     public function listUsers() {
         return $this->getAllUsers();
@@ -30,13 +32,13 @@ class AdminController extends UserController {
     }
     // Fetch all posts
     public function listPosts() {
-        $post = new Post();
+        $post = new Post($this->pdo);
         return $post->fetchAll(null, true);
     }
 
     // Delete a post by ID
     public function deletePost($post_id) {
-        $post = new Post();
+        $post = new Post($this->pdo);
         return $post->delete($post_id);
     }
 

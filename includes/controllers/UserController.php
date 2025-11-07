@@ -1,9 +1,11 @@
 <?php
 class UserController {
+    protected $pdo;
     protected $user;
 
-    public function __construct() {
-        $this->user = new User();
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+        $this->user = new User($this->pdo);
     }
 
     // Login user
@@ -47,7 +49,7 @@ class UserController {
 
         // If block successful and current user is admin, unfollow both ways
         if ($result && $this->isAdmin()) {
-            $profileController = new ProfileController();
+            $profileController = new ProfileController($this->pdo);
             $admin_id = $_SESSION['user_id'] ?? null;
             if ($admin_id) {
                 $profileController->toggleFollow($admin_id, $user_id);
@@ -113,7 +115,7 @@ class UserController {
     }
     // New method to get all users blocked by a given user ID
     public function getBlockedUsers($user_id) {
-        $userModel = new User();
+        $userModel = new User($this->pdo);
         return $userModel->getBlockedUsers($user_id);
     }
     // Search users by username
@@ -206,7 +208,7 @@ class UserController {
             $follower_id = $session->getUserId();
             $followed_id = $_POST['followed_id'];
             if ($follower_id && $followed_id) {
-                $profileController = new ProfileController();
+                $profileController = new ProfileController($this->pdo);
                 $profileController->toggleFollow($follower_id, $followed_id);
             }
             header('Location: index.php?page=profile&id=' . urlencode($followed_id));
@@ -222,7 +224,7 @@ class UserController {
             if (isset($_POST['block_user']) && isset($_POST['blocked_id'])) {
                 $blocked_id = $_POST['blocked_id'];
                 if ($blocker_id && $blocked_id) {
-                    $profileController = new ProfileController();
+                    $profileController = new ProfileController($this->pdo);
                     $profileController->blockUserAndUnfollow($blocker_id, $blocked_id);
                 }
                 // Determine redirect: if in settings, go to settings, else profile
@@ -267,6 +269,8 @@ class UserController {
         $searchResults = $this->handleSearch();
         $title = "Search";
 
+        
+        $pdo = $this->pdo;
         require __DIR__ . '/../views/header.php';
         require __DIR__ . '/../views/search_view.php';
         require __DIR__ . '/../views/footer.php';

@@ -1,10 +1,12 @@
 <?php
 
 class TermsController {
+    private $pdo;
     private $termsModel;
 
-    public function __construct() {
-        $this->termsModel = new Terms();
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+        $this->termsModel = new Terms($this->pdo);
     }
 
     public function showTerms() {

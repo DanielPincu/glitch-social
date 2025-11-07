@@ -1,16 +1,18 @@
 <?php
 
 class HomeController {
+    private $pdo;
     private $session;
     private $userController;
     private $postController;
     private $profileController;
 
-    public function __construct() {
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
         $this->session = new Session();
-        $this->userController = new UserController();
-        $this->postController = new PostController();
-        $this->profileController = new ProfileController();
+        $this->userController = new UserController($this->pdo);
+        $this->postController = new PostController($this->pdo);
+        $this->profileController = new ProfileController($this->pdo);
     }
 
     public function showHome() {
@@ -74,7 +76,7 @@ class HomeController {
 
         // Filter out posts by admin-blocked users
         $posts = array_filter($posts, function ($post) {
-            $userController = new UserController();
+            $userController = new UserController($this->pdo);
             $user = $userController->getUserById($post['user_id']);
             return !($user && isset($user['is_blocked']) && $user['is_blocked'] == 1);
         });
@@ -84,7 +86,7 @@ class HomeController {
         });
 
         $followingPosts = array_filter($followingPosts, function ($post) {
-            $userController = new UserController();
+            $userController = new UserController($this->pdo);
             $user = $userController->getUserById($post['user_id']);
             return !($user && isset($user['is_blocked']) && $user['is_blocked'] == 1);
         });
@@ -107,6 +109,7 @@ class HomeController {
         $posts = $posts ?? [];
 
         // Render views
+        $pdo = $this->pdo;
         require __DIR__ . '/../views/header.php';
         require __DIR__ . '/../views/home_view.php';
         require __DIR__ . '/../views/footer.php';

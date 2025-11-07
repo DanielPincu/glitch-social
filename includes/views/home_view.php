@@ -113,11 +113,6 @@
               <p class="text-xs matrix-text">Glitch Entropy: <?php echo $randomEntropy; ?></p>
 
               <?php
-                $stability = rand(80, 100) . '.' . rand(0, 9) . '%';
-              ?>
-              <p class="text-xs matrix-text">Core Stability: <?php echo $stability; ?></p>
-
-              <?php
                 $syncLevels = ['Strong', 'Nominal', 'Unstable', 'Critical', 'Degraded'];
                 $randomSync = $syncLevels[array_rand($syncLevels)];
               ?>
