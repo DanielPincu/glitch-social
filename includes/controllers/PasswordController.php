@@ -11,10 +11,7 @@ class PasswordController {
     private $session;
 
     public function __construct($session = null) {
-        require_once __DIR__ . '/../models/Database.php';
-        require_once __DIR__ . '/../models/Password.php';
         if ($session === null) {
-            require_once __DIR__ . '/../models/Session.php';
             $session = new Session();
         }
         $this->session = $session;
