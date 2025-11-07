@@ -36,10 +36,24 @@ class AdminController extends UserController {
         return $post->fetchAll(null, true);
     }
 
-    // Delete a post by ID
+    // Delete a post by ID (with image cleanup)
     public function deletePost($post_id) {
-        $postController = new PostController($this->pdo);
-        return $postController->deletePost($post_id);
+        $post = new Post($this->pdo);
+        $postData = $post->getPostById($post_id);
+
+        if ($postData && !empty($postData['image_path'])) {
+            $this->deleteImageFile($postData['image_path']);
+        }
+
+        return $post->deletePostById($post_id);
+    }
+
+    // Delete an image file safely
+    private function deleteImageFile($relativePath) {
+        $fullPath = __DIR__ . '/../../' . ltrim($relativePath, '/');
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
+        }
     }
 
     public function handleAdminActions() {

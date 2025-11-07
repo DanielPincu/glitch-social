@@ -125,7 +125,7 @@ class Post {
 
 
 
-    // Update an existing comment (only if owned by the user)
+    // Update an existing comment 
 public function updateComment($comment_id, $user_id, $new_content) {
     $stmt = $this->pdo->prepare("
         UPDATE comments 
@@ -139,34 +139,10 @@ public function updateComment($comment_id, $user_id, $new_content) {
     ]);
 }
 
-// Delete a comment if authorized: comment owner, post owner, or admin
-public function deleteComment($comment_id, $user_id, $isAdmin = false) {
-    // Fetch the comment
-    $comment = $this->getCommentById($comment_id);
-    if (!$comment) {
-        return false; // Comment not found
-    }
-    // Fetch the post
-    $post = $this->getPostById($comment['post_id']);
-    if (!$post) {
-        return false; // Post not found
-    }
-    // Check authorization
-    if (
-        $comment['user_id'] == $user_id ||
-        $post['user_id'] == $user_id ||
-        $isAdmin
-    ) {
-        $stmt = $this->pdo->prepare("
-            DELETE FROM comments
-            WHERE id = :comment_id
-        ");
-        return $stmt->execute([
-            ':comment_id' => $comment_id
-        ]);
-    }
-    // Not authorized
-    return false;
+// Delete a comment by its ID (authorization handled in controller)
+public function deleteCommentById($comment_id) {
+    $stmt = $this->pdo->prepare("DELETE FROM comments WHERE id = :comment_id");
+    return $stmt->execute([':comment_id' => $comment_id]);
 }
 
 
@@ -236,57 +212,28 @@ public function deleteComment($comment_id, $user_id, $isAdmin = false) {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Delete a post by ID, but only if it belongs to this user
-    public function deleteByUser($post_id, $user_id) {
-        // Ensure ownership
-        $stmt = $this->pdo->prepare("SELECT id FROM posts WHERE id = :id AND user_id = :user_id");
-        $stmt->execute([':id' => $post_id, ':user_id' => $user_id]);
-        $post = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$post) {
-            return false; // not found or not owned
-        }
-        // Delete post
-        $stmt = $this->pdo->prepare("DELETE FROM posts WHERE id = :id AND user_id = :user_id");
-        return $stmt->execute([':id' => $post_id, ':user_id' => $user_id]);
+    // Delete a post by its ID (authorization handled in controller)
+    public function deletePostById($post_id) {
+        $stmt = $this->pdo->prepare("DELETE FROM posts WHERE id = :id");
+        return $stmt->execute([':id' => $post_id]);
     }
 
-    // Update a post’s content, image, and optionally its visibility (only if it belongs to the user)
-    public function updateContent($post_id, $new_content, $user_id, $new_image_path = null, $remove_image = false, $visibility = null) {
-        $post = $this->getPostById($post_id);
-        if ($post) {
-            // Remove old image if requested
-            if ($remove_image && !empty($post['image_path'])) {
-                $oldImagePath = __DIR__ . '/../../' . $post['image_path'];
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
-                }
-            }
-            // If new image is provided, replace and delete old image
-            if ($new_image_path !== null && !empty($post['image_path'])) {
-                $oldImagePath = __DIR__ . '/../../' . $post['image_path'];
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
-                }
-            }
+    // Update specific fields for a post (controller decides what fields to send)
+    public function updateFields($post_id, array $fields) {
+        if (empty($fields)) {
+            return false;
         }
 
-        $sql = "UPDATE posts SET content = :content";
-        $params = [
-            ':content' => $new_content,
-            ':post_id' => $post_id,
-            ':user_id' => $user_id
-        ];
-        if ($new_image_path !== null) {
-            $sql .= ", image_path = :image_path";
-            $params[':image_path'] = $new_image_path;
-        } elseif ($remove_image) {
-            $sql .= ", image_path = NULL";
+        $setParts = [];
+        $params = [':post_id' => $post_id];
+
+        foreach ($fields as $column => $value) {
+            $placeholder = ':' . $column;
+            $setParts[] = "$column = $placeholder";
+            $params[$placeholder] = $value;
         }
-        if ($visibility !== null) {
-            $sql .= ", visibility = :visibility";
-            $params[':visibility'] = $visibility;
-        }
-        $sql .= " WHERE id = :post_id AND user_id = :user_id";
+
+        $sql = "UPDATE posts SET " . implode(', ', $setParts) . " WHERE id = :post_id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute($params);
     }

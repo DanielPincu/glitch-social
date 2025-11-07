@@ -48,7 +48,8 @@ class SettingsController {
             $this->postController->handlePostDelete($this->session);
 
             if ($isAdmin) {
-                $this->adminController->handleAdminActions();
+                // Ensure admin actions use updated deletion logic
+                $this->adminController->handleAdminActions($this->pdo);
             }
         }
 

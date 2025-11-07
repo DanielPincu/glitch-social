@@ -76,12 +76,9 @@
         public function deletePost($post_id) {
             $post = $this->post->getPostById($post_id);
             if ($post && !empty($post['image_path'])) {
-                $oldImagePath = __DIR__ . '/../../' . $post['image_path'];
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
-                }
+                $this->deleteImageFile($post['image_path']);
             }
-            return $this->post->delete($post_id);
+            return $this->post->deletePostById($post_id);
         }
 
         // Get all posts by a specific user
@@ -95,13 +92,13 @@
         // Delete a post by a specific user
         public function deletePostByUser($post_id, $user_id) {
             $post = $this->post->getPostById($post_id);
-            if ($post && $post['user_id'] == $user_id && !empty($post['image_path'])) {
-                $oldImagePath = __DIR__ . '/../../' . $post['image_path'];
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
-                }
+            if (!$post || $post['user_id'] != $user_id) {
+                return false;
             }
-            return $this->post->deleteByUser($post_id, $user_id);
+            if (!empty($post['image_path'])) {
+                $this->deleteImageFile($post['image_path']);
+            }
+            return $this->post->deletePostById($post_id);
         }
         // Get all posts (alias for admin use)
         public function getAllPosts() {
@@ -139,10 +136,7 @@
                 if (move_uploaded_file($fileTmp, $targetPath)) {
                     // Delete old image if exists
                     if (!empty($oldPost['image_path'])) {
-                        $oldImagePath = __DIR__ . '/../../' . $oldPost['image_path'];
-                        if (file_exists($oldImagePath)) {
-                            unlink($oldImagePath);
-                        }
+                        $this->deleteImageFile($oldPost['image_path']);
                     }
                     $imageResizer = new \ImageResizer();
                     $imageResizer->resizePostImage($targetPath);
@@ -154,10 +148,7 @@
             } elseif ($remove_image) {
                 // Remove old image if requested
                 if (!empty($oldPost['image_path'])) {
-                    $oldImagePath = __DIR__ . '/../../' . $oldPost['image_path'];
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
-                    }
+                    $this->deleteImageFile($oldPost['image_path']);
                 }
                 $new_image_path = null;
             } else {
@@ -165,7 +156,16 @@
                 $new_image_path = null;
             }
 
-            return $this->post->updateContent($post_id, $new_content, $user_id, $new_image_path, $remove_image, $visibility);
+            $fields = ['content' => $new_content];
+            if ($visibility !== null) {
+                $fields['visibility'] = $visibility;
+            }
+            if ($new_image_path !== null) {
+                $fields['image_path'] = $new_image_path;
+            } elseif ($remove_image) {
+                $fields['image_path'] = null;
+            }
+            return $this->post->updateFields($post_id, $fields);
         }
         // Get posts from users the current user follows
         public function getPostsFromFollowing($user_id) {
@@ -190,27 +190,26 @@
         }
 
         public function deleteComment($comment_id, $user_id) {
-            // Load the comment
             $comment = $this->post->getCommentById($comment_id);
             if (!$comment) {
                 return false;
             }
-            // If user is the comment owner, allow
-            if ($comment['user_id'] == $user_id) {
-                return $this->post->deleteComment($comment_id, $user_id);
-            }
-            // Otherwise, check if user is the post owner
+
+            // Load post to check if user is post owner
             $post = $this->post->getPostById($comment['post_id']);
-            if ($post && $post['user_id'] == $user_id) {
-                return $this->post->deleteComment($comment_id, $user_id);
+            if (!$post) {
+                return false;
             }
-            // Otherwise, check if user is admin
+
+            // Check ownership or admin privileges
             $userModel = new User($this->pdo);
-            if ($userModel->isAdmin($user_id)) {
-                return $this->post->deleteComment($comment_id, $user_id, true);
+            $isAdmin = $userModel->isAdmin($user_id);
+
+            if ($comment['user_id'] == $user_id || $post['user_id'] == $user_id || $isAdmin) {
+                return $this->post->deleteCommentById($comment_id);
             }
-            // Not authorized
-            return false;
+
+            return false; // Not authorized
         }
 
         public function getCommentById($comment_id) {
@@ -385,4 +384,12 @@
         public function togglePin($post_id, $user_id, $is_pinned) {
             return $this->post->togglePin($post_id, $user_id, $is_pinned);
         }
-    }
+
+        // Helper function to delete image file from server
+        private function deleteImageFile($relativePath) {
+            $fullPath = __DIR__ . '/../../' . $relativePath;
+            if ($relativePath && file_exists($fullPath)) {
+                unlink($fullPath);
+            }
+        }
+}
