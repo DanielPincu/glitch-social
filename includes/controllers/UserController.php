@@ -142,7 +142,7 @@ class UserController {
                 die('CSRF validation failed.');
             }
             $username = isset($_POST['username']) ? trim($_POST['username']) : '';
-            $password = isset($_POST['password']) ? $_POST['password'] : '';
+            $password = isset($_POST['password']) ? trim($_POST['password']) : '';
             if (!empty($username) && !empty($password)) {
                 if ($this->login($username, $password)) {
                     header('Location: index.php');
@@ -177,9 +177,11 @@ class UserController {
             } else {
                 $username = isset($_POST['username']) ? trim($_POST['username']) : '';
                 $email = isset($_POST['email']) ? trim($_POST['email']) : '';
-                $password = isset($_POST['password']) ? $_POST['password'] : '';
-                $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
-                if ($password !== $confirm_password) {
+                $password = isset($_POST['password']) ? trim($_POST['password']) : '';
+                $confirm_password = isset($_POST['confirm_password']) ? trim($_POST['confirm_password']) : '';
+                if (strlen($password) < 6) {
+                    $register_error = 'Password must be at least 6 characters long.';
+                } elseif ($password !== $confirm_password) {
                     $register_error = 'Passwords do not match.';
                 } elseif (!empty($username) && !empty($email) && !empty($password)) {
                     $newUserId = $this->user->register($username, $email, $password);
