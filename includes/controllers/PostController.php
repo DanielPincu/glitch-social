@@ -256,7 +256,7 @@
             return true;
         }
 
-        // Handles new post creation, including optional image upload and validation.
+        // Handles new post creation, including optional image upload and validation, with rate limiting.
         public function handleNewPost($session) {
             if (isset($_POST['post_submit'])) {
                 // CSRF validation
@@ -269,11 +269,23 @@
                     header("Location: index.php");
                     exit();
                 }
+                // Session-based rate limiting: 5 minutes between posts
+                if (!isset($_SESSION)) { session_start(); }
+                $now = time();
+                $cooldown = 300; // 5 minutes
+                if (isset($_SESSION['last_post_time']) && ($now - $_SESSION['last_post_time']) < $cooldown) {
+                    $_SESSION['error'] = "🕒 Slow down, Operator... You can only post once every 5 minutes.";
+                    $session->generateCsrfToken();
+                    header("Location: index.php");
+                    exit();
+                }
                 $user_id = $session->getUserId();
                 $content = isset($_POST['content']) ? trim($_POST['content']) : '';
                 $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
                 $imageFile = $_FILES['imageFile'] ?? null;
                 $post_id = $this->createPost($user_id, $content, $imageFile, $visibility);
+                // Always update last_post_time after a successful or failed submission (after cooldown passes)
+                $_SESSION['last_post_time'] = $now;
                 if ($post_id === false) {
                     $session->generateCsrfToken();
                     header("Location: index.php");
