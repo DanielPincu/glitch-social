@@ -179,8 +179,14 @@ class UserController {
                 $email = isset($_POST['email']) ? trim($_POST['email']) : '';
                 $password = isset($_POST['password']) ? trim($_POST['password']) : '';
                 $confirm_password = isset($_POST['confirm_password']) ? trim($_POST['confirm_password']) : '';
-                if (strlen($password) < 6) {
+                if (empty($username)) {
+                    $register_error = 'Username cannot be empty.';
+                } elseif (strlen($username) < 3) {
+                    $register_error = 'Username must be at least 3 characters long.';
+                } elseif (strlen($password) < 6) {
                     $register_error = 'Password must be at least 6 characters long.';
+                } elseif (!preg_match('/[A-Z]/', $password) || !preg_match('/[^a-zA-Z0-9]/', $password)) {
+                    $register_error = 'Password must contain at least one uppercase letter and one symbol.';
                 } elseif ($password !== $confirm_password) {
                     $register_error = 'Passwords do not match.';
                 } elseif (!empty($username) && !empty($email) && !empty($password)) {
@@ -199,6 +205,9 @@ class UserController {
         if (!$session->getCsrfToken()) {
             $session->generateCsrfToken();
         }
+        // Preserve user input on validation errors (even if early return)
+        $old_username = $_POST['username'] ?? '';
+        $old_email = $_POST['email'] ?? '';
         require_once __DIR__ . '/../views/header.php';
         require_once __DIR__ . '/../views/register_view.php';
         require_once __DIR__ . '/../views/footer.php';

@@ -92,8 +92,15 @@ class PasswordController {
             $password = trim($_POST['password']);
             $confirmPassword = trim($_POST['confirm_password']);
 
-            if (empty($password) || empty($confirmPassword) || $password !== $confirmPassword) {
+            if (strlen($password) < 6) {
+                $error = "Password must be at least 6 characters long.";
+            } elseif (!preg_match('/[A-Z]/', $password) || !preg_match('/[^a-zA-Z0-9]/', $password)) {
+                $error = "Password must contain at least one uppercase letter and one symbol.";
+            } elseif (empty($password) || empty($confirmPassword) || $password !== $confirmPassword) {
                 $error = "Passwords do not match.";
+            }
+
+            if (isset($error)) {
                 require __DIR__ . '/../views/reset_password.php';
                 return ob_get_clean();
             }

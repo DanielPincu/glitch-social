@@ -13,6 +13,7 @@
         name="username"
         placeholder="Username"
         required
+        value="<?php echo htmlspecialchars($old_username ?? '', ENT_QUOTES); ?>"
         class="text-black w-full px-3 py-2 mb-4 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
       <input
@@ -20,6 +21,7 @@
         name="email"
         placeholder="Email"
         required
+        value="<?php echo htmlspecialchars($old_email ?? '', ENT_QUOTES); ?>"
         class="text-black w-full px-3 py-2 mb-4 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
       <input
