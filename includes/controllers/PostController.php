@@ -265,6 +265,7 @@
                 }
                 // Check if user is logged in
                 if (!$session->isLoggedIn()) {
+                    $session->generateCsrfToken();
                     header("Location: index.php");
                     exit();
                 }
@@ -274,9 +275,11 @@
                 $imageFile = $_FILES['imageFile'] ?? null;
                 $post_id = $this->createPost($user_id, $content, $imageFile, $visibility);
                 if ($post_id === false) {
+                    $session->generateCsrfToken();
                     header("Location: index.php");
                     exit();
                 }
+                $session->generateCsrfToken();
                 header("Location: index.php");
                 exit();
             }
