@@ -268,6 +268,7 @@
                 <div class="mt-4 border-t border-gray-400 pt-2">
                   <div class="comment-form hidden" id="hot-comment-form-<?php echo $post['id']; ?>">
                     <form method="POST" action="index.php?page=home" class="flex items-center space-x-2 mb-2">
+                      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($session->getCsrfToken(), ENT_QUOTES); ?>">
                       <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                       <input type="text" name="comment_content" placeholder="Add a comment..."
                         class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">
@@ -408,6 +409,7 @@
                 <div class="mt-4 border-t border-gray-400 pt-2">
                   <div class="comment-form hidden" id="following-comment-form-<?php echo $post['id']; ?>">
                     <form method="POST" action="index.php?page=home" class="flex items-center space-x-2 mb-2">
+                      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($session->getCsrfToken(), ENT_QUOTES); ?>">
                       <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                       <input type="text" name="comment_content" placeholder="Add a comment..."
                         class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">

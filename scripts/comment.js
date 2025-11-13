@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
+  function getFormCsrf(form) {
+    const hidden = form.querySelector("input[name='csrf_token']");
+    return hidden ? hidden.value : "";
+  }
   // ===== Helpers =====
   function findCommentItem(target) {
     return target.closest("[data-comment], .comment-item, .flex.items-start");
@@ -53,16 +57,39 @@ document.addEventListener("DOMContentLoaded", () => {
       fetch("index.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `ajax=comment&post_id=${encodeURIComponent(postId)}&content=${encodeURIComponent(content)}`
+        body: `ajax=comment&post_id=${encodeURIComponent(postId)}&content=${encodeURIComponent(content)}&csrf_token=${encodeURIComponent(getFormCsrf(this))}`
       })
       .then(res => res.json())
       .then(data => {
+        // Show warning on failure (CSRF, cooldown, etc.)
+        if (data && data.success === false) {
+          const warn = document.createElement("div");
+          warn.className = "bg-red-200 text-red-800 p-2 rounded border border-red-400 shadow-md mb-2";
+          warn.textContent = data.message || "Something went wrong.";
+
+          const postContainer = this.closest(".xp-window") || document;
+          const commentSection = postContainer.querySelector(".mt-4") || document.querySelector(".mt-4");
+
+          commentSection.prepend(warn);
+
+          // Auto-remove after 2 seconds
+          setTimeout(() => warn.remove(), 5000);
+          return;
+        }
         if (data && data.success) {
           const postContainer = this.closest(".xp-window") || document;
           const commentSection = postContainer.querySelector(".mt-4") || document.querySelector(".mt-4");
 
           // Insert server-rendered HTML for the new comment
           commentSection.insertAdjacentHTML("beforeend", data.html);
+
+          // Auto-remove cooldown message inserted as HTML
+          const cd = commentSection.querySelector(".cooldown-message");
+          if (cd) {
+            setTimeout(() => {
+              if (cd) cd.remove();
+            }, 5000);
+          }
 
           // Reset and hide composer
           contentInput.value = "";
@@ -138,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
       fetch("index.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `ajax=update_comment&comment_id=${encodeURIComponent(cid)}&new_content=${encodeURIComponent(newContent)}`
+        body: `ajax=update_comment&comment_id=${encodeURIComponent(cid)}&new_content=${encodeURIComponent(newContent)}&csrf_token=${encodeURIComponent(getFormCsrf(commentItem))}`
       })
       .then(res => res.json())
       .then(data => {
@@ -167,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch("index.php", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `ajax=delete_comment&comment_id=${encodeURIComponent(commentId)}`
+      body: `ajax=delete_comment&comment_id=${encodeURIComponent(commentId)}&csrf_token=${encodeURIComponent(getFormCsrf(form))}`
     })
     .then(res => res.json())
     .then(data => {

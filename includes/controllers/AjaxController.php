@@ -92,8 +92,13 @@ class AjaxController
     private function handleComment()
     {
         header('Content-Type: application/json');
-
         if (!isset($_SESSION)) { session_start(); }
+
+        // CSRF protection for comment submission
+        if (empty($_POST['csrf_token']) || !$this->session->validateCsrfToken($_POST['csrf_token'])) {
+            echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
+            exit;
+        }
 
         $now = time();
         $cooldown = 10;
@@ -102,17 +107,9 @@ class AjaxController
         if ($now - $lastSent < $cooldown) {
             $remaining = $cooldown - ($now - $lastSent);
 
-            ob_start();
-            ?>
-            <div class="text-red-400 mb-2 font-semibold">
-                Slow down, Operator... Wait <?php echo $remaining; ?>s.
-            </div>
-            <?php
-            $html = ob_get_clean();
-
             echo json_encode([
-                'success' => true,
-                'html'    => $html
+                'success' => false,
+                'message' => "Slow down, Operator... Wait {$remaining}s."
             ]);
             exit;
         }
