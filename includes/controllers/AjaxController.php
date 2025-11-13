@@ -93,6 +93,30 @@ class AjaxController
     {
         header('Content-Type: application/json');
 
+        if (!isset($_SESSION)) { session_start(); }
+
+        $now = time();
+        $cooldown = 10;
+        $lastSent = $_SESSION['last_comment_time'] ?? 0;
+
+        if ($now - $lastSent < $cooldown) {
+            $remaining = $cooldown - ($now - $lastSent);
+
+            ob_start();
+            ?>
+            <div class="text-red-400 mb-2 font-semibold">
+                Slow down, Operator... Wait <?php echo $remaining; ?>s.
+            </div>
+            <?php
+            $html = ob_get_clean();
+
+            echo json_encode([
+                'success' => true,
+                'html'    => $html
+            ]);
+            exit;
+        }
+
         if (!$this->session->isLoggedIn()) {
             echo json_encode(['success' => false, 'message' => 'Not logged in']);
             exit;
@@ -105,6 +129,7 @@ class AjaxController
         if ($post_id && $content) {
             $user_id = $this->session->getUserId();
             $this->postController->addComment($post_id, $user_id, $content);
+            $_SESSION['last_comment_time'] = $now;
 
             $comments = $this->postController->getComments($post_id);
             $newComment = end($comments); // latest comment
