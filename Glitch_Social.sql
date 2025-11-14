@@ -182,22 +182,25 @@ BEGIN
 END //
 DELIMITER ;
 
--- views
---Count of total users and total posts
+-- VIEWS
+-- Count of total users and total posts
+
 CREATE OR REPLACE VIEW view_total_users_posts AS
 SELECT
   (SELECT COUNT(*) FROM users) AS total_users,
   (SELECT COUNT(*) FROM posts) AS total_posts;
 
 
---Count of total likes and total comments
+-- Count of total likes and total comments
+
 CREATE OR REPLACE VIEW view_total_likes_comments AS
 SELECT
   (SELECT COUNT(*) FROM likes) AS total_likes,
   (SELECT COUNT(*) FROM comments) AS total_comments;
 
 
---Top 3 most active users based on posts, comments, and likes given
+-- Top 3 most active users based on posts, comments, and likes given
+
   CREATE OR REPLACE VIEW view_top3_active_users AS
 SELECT
     u.id AS user_id,
