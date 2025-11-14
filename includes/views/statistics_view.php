@@ -17,14 +17,17 @@
 
         <div class="w-full mx-auto mt-10 px-4">
 
-    <h2 class="text-3xl font-semibold mb-3 text-center text-white">Glitch Social Analytics</h2>
-    <h3 class="text-center mb-2">Powered by Matrix Quantized</h3>
+    <h2 class="text-3xl font-semibold mb-10 text-center text-white">Glιτch Sσcιαl Bεнανισυя</h2>
+
+        <div id="matrix-container" class="my-[1px] bg-black h-20 rounded-t-lg">
+                <canvas id="matrix-canvas"></canvas>
+        </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
 
             <!-- Users & Posts Wheel -->
-            <div class="bg-gray-800 bg-opacity-40 p-6 rounded-lg shadow-lg backdrop-blur flex flex-col items-center gap-6">
+            <div class="bg-gray-800 bg-opacity-40 p-6 rounded-b-lg shadow-lg backdrop-blur flex flex-col items-center gap-6">
 
                 <h3 class="text-xl font-semibold text-white">Users and Posts</h3>
 
@@ -61,7 +64,7 @@
         </div>
         <div>
             <!-- Likes & Comments Wheel -->
-            <div class="bg-gray-800 bg-opacity-40 p-6 rounded-lg shadow-lg backdrop-blur flex flex-col items-center gap-6">
+            <div class="bg-gray-800 bg-opacity-40 p-6 rounded-b-lg shadow-lg backdrop-blur flex flex-col items-center gap-6">
 
                 <h3 class="text-xl font-semibold text-white">Likes and Comments</h3>
 
@@ -95,8 +98,8 @@
             </div>
         </div>
         <div class="h-full">
-            <div class="bg-gray-800 bg-opacity-40 p-6 rounded-lg shadow-lg backdrop-blur h-full flex flex-col">
-                <h3 class="text-2xl font-semibold text-white mb-2 text-center">Top 3 Most Active Users</h3>
+            <div class="bg-gray-800 bg-opacity-40 p-6 rounded-b-lg shadow-lg backdrop-blur h-full flex flex-col">
+                <h3 class="text-xl font-semibold text-white mb-2 text-center">Top 3 Most Active Users</h3>
                 <p class="text-gray-300 text-sm mb-1 text-center opacity-80">
                     Activity Score: Posts = 2 points, Comments = 1 point, Likes Given = 0.5 point
                 </p>
@@ -161,3 +164,4 @@
         </div>
     </div>
 </div>
+<script src="scripts/matrix-cipher.js"></script>

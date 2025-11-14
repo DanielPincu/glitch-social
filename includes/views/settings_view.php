@@ -24,6 +24,9 @@
       </div>
     </div>
 
+    <h1 class="text-3xl pt-4 font-semibold text-center text-white">Glιτch Sσcιαl Cσnτrσl Dєck</h1>
+    
+
     <?php if (!empty($isAdmin) && $isAdmin): ?>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
 

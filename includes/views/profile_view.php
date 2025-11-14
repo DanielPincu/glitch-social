@@ -26,6 +26,8 @@
             </div>
         </div>
 
+        <h2 class="text-3xl font-semibold mb-4 mt-4 text-center text-white">Glιτch Sσcιαl PЯ0F1LΞ</h2>
+
         <section class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60 text-center">
             <section class="text-center mb-10">
                 <?php if (!empty($profileData['avatar_url'])): ?>
