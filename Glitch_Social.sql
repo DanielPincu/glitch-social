@@ -201,10 +201,11 @@ SELECT
 
 -- Top 3 most active users based on posts, comments, and likes given
 
-  CREATE OR REPLACE VIEW view_top3_active_users AS
+CREATE OR REPLACE VIEW view_top3_active_users AS
 SELECT
     u.id AS user_id,
     u.username,
+    pr.avatar_url,
     COUNT(DISTINCT p.id) AS posts,
     COUNT(DISTINCT c.id) AS comments,
     COUNT(DISTINCT l.id) AS likes_given,
@@ -214,9 +215,10 @@ SELECT
         COUNT(DISTINCT l.id) * 0.5
     ) AS activity_score
 FROM users u
+LEFT JOIN profiles pr ON pr.user_id = u.id
 LEFT JOIN posts p ON p.user_id = u.id
 LEFT JOIN comments c ON c.user_id = u.id
 LEFT JOIN likes l ON l.user_id = u.id
-GROUP BY u.id
+GROUP BY u.id, pr.avatar_url
 ORDER BY activity_score DESC
 LIMIT 3;

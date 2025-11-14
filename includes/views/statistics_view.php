@@ -1,8 +1,26 @@
-<div class="w-full mx-auto mt-10 px-4">
+<div class="p-6 w-full h-full z-10 relative overflow-y-auto">
+    <div class="bg-gradient-to-br from-[#3A6EA5]/70 to-[#5CACEE]/70 rounded-lg w-full px-5 mx-auto border border-gray-400 text-white min-h-[90vh] backdrop-blur-sm">
 
-    <h2 class="text-3xl font-semibold mb-8 text-center text-white">Site Statistics</h2>
+        <div class="-mx-5 mb-6 border-b-2 border-blue-700 bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 h-9 flex items-center justify-between px-3 shadow-lg">
+            <div class="text-white font-semibold text-sm tracking-wide select-none">
+                Statistics.exe
+            </div>
+            <div class="flex items-center space-x-1 -mx-2">
+                <span class="pointer-events-none opacity-60 w-7 h-7 flex items-center justify-center rounded-sm border border-white bg-gradient-to-b from-blue-700 via-blue-500 to-blue-700 text-white text-sm">—</span>
+                <span class="pointer-events-none opacity-60 w-7 h-7 flex items-center justify-center rounded-sm border border-white bg-gradient-to-b from-blue-700 via-blue-500 to-blue-700 text-white text-sm">▣</span>
+                <a href="index.php"
+                   class="w-7 h-7 flex items-center justify-center rounded-sm border border-white bg-gradient-to-b from-red-700 via-red-500 to-red-700 text-white font-bold text-sm hover:scale-110 hover:shadow-[0_0_8px_rgba(255,0,0,0.8)] transition-all duration-150 cursor-pointer">
+                  ╳
+                </a>
+            </div>
+        </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="w-full mx-auto mt-10 px-4">
+
+    <h2 class="text-3xl font-semibold mb-3 text-center text-white">Glitch Social Analytics</h2>
+    <h3 class="text-center mb-2">Powered by Matrix Quantized</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
 
             <!-- Users & Posts Wheel -->
@@ -78,8 +96,8 @@
         </div>
         <div class="h-full">
             <div class="bg-gray-800 bg-opacity-40 p-6 rounded-lg shadow-lg backdrop-blur h-full flex flex-col">
-                <h3 class="text-2xl font-semibold text-white mb-6 text-center">Top 3 Most Active Users</h3>
-                <p class="text-gray-300 text-sm mb-6 text-center opacity-80">
+                <h3 class="text-2xl font-semibold text-white mb-2 text-center">Top 3 Most Active Users</h3>
+                <p class="text-gray-300 text-sm mb-1 text-center opacity-80">
                     Activity Score: Posts = 2 points, Comments = 1 point, Likes Given = 0.5 point
                 </p>
 
@@ -89,9 +107,9 @@
                     $color = $index === 0 ? 'from-blue-300 to-blue-500' :
                              ($index === 1 ? 'from-gray-200 to-gray-400' :
                                              'from-green-300 to-green-500');
-                    $title = $index === 0 ? 'Luna Matrix Champion' :
-                             ($index === 1 ? 'Silver System Operator' :
-                                             'Olive Code Sentinel');
+                    $title = $index === 0 ? 'Ctrl+Z Historian' :
+                             ($index === 1 ? 'Alt+F4 Strategist' :
+                                             'Shift+Delete Diplomat');
                 ?>
                     <a href="index.php?page=profile&id=<?php echo $user['user_id']; ?>" class="block">
                         <div class="relative overflow-hidden rounded-lg mb-4 p-4 bg-gradient-to-r <?php echo $color; ?> shadow-md transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 hover:shadow-2xl">
@@ -99,17 +117,36 @@
                             <div class="absolute inset-0 opacity-20 pointer-events-none"></div>
 
                             <div class="relative flex items-center justify-between">
-                                <div>
-                                    <span class="text-black text-xl font-semibold flex items-center gap-2">
-                                        <span class="text-4xl leading-none">
-                                            <?php echo $index === 0 ? "🥇" : ($index === 1 ? "🥈" : "🥉"); ?>
-                                        </span>
-                                        <?php echo $user['username']; ?>
-                                    </span>
-                                    <p class="text-black text-sm italic opacity-80"><?php echo $title; ?></p>
-                                </div>
+                                <div class="relative flex items-center gap-3">
+    <?php if (!empty($user['avatar_url'])): ?>
+        <div class="relative">
+            <img src="<?php echo $user['avatar_url']; ?>"
+                 alt="avatar"
+                 class="w-16 h-16 rounded-full border border-black/20 object-cover shadow-md">
+        </div>
+    <?php else: ?>
+        <div class="relative w-16 h-16 rounded-full border border-black/20 bg-black bg-opacity-40 flex items-center justify-center shadow-md">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
+    <?php endif; ?>
 
-                                <p class="text-black text-sm -mr-32 mt-1">Activity Score</p>
+    </div>
+    <span class="text-5xl drop-shadow ml-2">
+        <?php echo $index === 0 ? "🥇" : ($index === 1 ? "🥈" : "🥉"); ?>
+    </span>
+    <div class="flex flex-col w-32 overflow-hidden">
+        <span class="text-black text-xl font-semibold truncate">
+            <?php echo $user['username']; ?>
+        </span>
+        <p class="text-black text-[10px] italic opacity-80 -mt-1 truncate">
+            <?php echo $title; ?>
+        </p>
+    </div>
+
+                                <p class="text-black text-sm mt-1">Activity Score</p>
                                 <span class="text-black font-bold text-3xl drop-shadow">
                                     <?php echo $user['activity_score']; ?>
                                 </span>
@@ -119,6 +156,8 @@
                 <?php endforeach; ?>
                 </div>
             </div>
+        </div>
+    </div>
         </div>
     </div>
 </div>

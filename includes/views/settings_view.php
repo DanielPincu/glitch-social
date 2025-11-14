@@ -4,7 +4,7 @@
   </div>
 <?php endif; ?>
 <div class="min-h-screen flex items-center justify-center p-6 w-full h-full z-10 relative">
-  <div class="bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg shadow-lg w-full p-8 border border-gray-400 space-y-12">
+  <div class="bg-gradient-to-br from-[#3A6EA5]/70 to-[#5CACEE]/70 rounded-lg shadow-lg w-full p-8 border border-gray-400 space-y-16 backdrop-blur-sm">
 
     <div class="-mx-8 -my-8 border-b-2 border-blue-700 bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 h-9 flex items-center justify-between px-3 shadow-lg z-50">
       <div class="text-white font-semibold text-sm tracking-wide select-none">

@@ -6,7 +6,7 @@
 <?php endif; ?>
 
 <div class="p-6 w-full h-full z-10 relative overflow-y-auto">
-    <div class="bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg w-full max-w-7xl px-5 mx-auto border border-gray-400 space-y-12 text-white min-h-[90vh]">
+    <div class="bg-gradient-to-br from-[#3A6EA5]/70 to-[#5CACEE]/70 rounded-lg w-full px-5 mx-auto border border-gray-400 space-y-10 text-white min-h-[90vh] backdrop-blur-sm">
 
         <div class="-mx-5 border-b-2 border-blue-700 bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 h-9 flex items-center justify-between px-3 shadow-lg z-50">
             <div class="text-white font-semibold text-sm tracking-wide select-none">

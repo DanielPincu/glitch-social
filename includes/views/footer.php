@@ -23,7 +23,7 @@
         <span class="mt-2 text-red-600 font-bold text-sm font-mono select-none">Turn Off</span>
       </button>
       <!-- Restart -->
-      <button onclick="alert('Restart not implemented')" class="flex flex-col items-center focus:outline-none hover:brightness-110">
+      <button onclick="alert('This little maneuver is going to cost us 51 years....Don\'t do it!')" class="flex flex-col items-center focus:outline-none hover:brightness-110">
         <div class="w-20 h-20 rounded-full bg-gradient-to-b from-green-500 to-green-700 shadow-inner shadow-green-900 flex items-center justify-center cursor-pointer">
           <i data-feather='refresh-ccw' class="w-10 h-10 text-white drop-shadow"></i>
         </div>

@@ -16,26 +16,23 @@
   <?php if (!empty($_SESSION['user_id'])) { ?>
   <!-- Taskbar -->
   <nav class="fixed bottom-0 left-0 right-0 bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 h-10 flex items-center px-4 z-50">
-    <button class="xp-button px-4 py-1 rounded-sm flex items-center gap-1">
+    <button id="start-button" class="xp-button px-4 py-1 rounded-sm flex items-center gap-1 bg-gradient-to-b from-[#6aa8f7] to-[#3b6db3] border border-[#3a6ea5] shadow-[inset_1px_1px_0px_#ffffff,inset_-1px_-1px_0px_#2d4c75] active:translate-y-[2px] active:shadow-inner active:bg-blue-700">
       <i data-feather="grid" class="w-4 h-4"></i>
       <span>START</span>
     </button>
 
     <div class="flex ml-4 space-x-1">
       <?php $page = $_GET['page'] ?? ''; ?>
-      <a href="index.php?page=home" class="<?= ($page === 'home' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+      <a href="index.php?page=home" class="px-10 py-2 min-w-[140px] text-sm flex items-center justify-center rounded-sm border border-[#3a6ea5] shadow-[inset_1px_1px_0px_#ffffff,inset_-1px_-1px_0px_#2d4c75] active:translate-y-[2px] active:shadow-inner active:bg-blue-700 <?php echo ($page === 'home' || $page === '' ? 'bg-gradient-to-b from-[#5e9af5] to-[#2f5fa3]' : 'bg-gradient-to-b from-[#aecdff] to-[#6693d1] hover:from-[#9bc2ff] hover:to-[#5a86c4]'); ?>">
         <i data-feather="home" class="w-4 h-4"></i>
       </a>
-      <a href="index.php?page=settings" class="<?= ($page === 'settings' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+      <a href="index.php?page=settings" class="px-10 py-2 min-w-[140px] text-sm flex items-center justify-center rounded-sm border border-[#3a6ea5] shadow-[inset_1px_1px_0px_#ffffff,inset_-1px_-1px_0px_#2d4c75] active:translate-y-[2px] active:shadow-inner active:bg-blue-700 <?php echo ($page === 'settings' ? 'bg-gradient-to-b from-[#5e9af5] to-[#2f5fa3]' : 'bg-gradient-to-b from-[#aecdff] to-[#6693d1] hover:from-[#9bc2ff] hover:to-[#5a86c4]'); ?>">
         <i data-feather="settings" class="w-4 h-4"></i>
       </a>
-      <!-- <a href="index.php?page=messages" class="<?= ($page === 'messages' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
-        <i data-feather="message-square" class="w-4 h-4"></i>
-      </a> -->
-      <a href="index.php?page=profile" class="<?= ($page === 'profile' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+      <a href="index.php?page=profile" class="px-10 py-2 min-w-[140px] text-sm flex items-center justify-center rounded-sm border border-[#3a6ea5] shadow-[inset_1px_1px_0px_#ffffff,inset_-1px_-1px_0px_#2d4c75] active:translate-y-[2px] active:shadow-inner active:bg-blue-700 <?php echo ($page === 'profile' ? 'bg-gradient-to-b from-[#5e9af5] to-[#2f5fa3]' : 'bg-gradient-to-b from-[#aecdff] to-[#6693d1] hover:from-[#9bc2ff] hover:to-[#5a86c4]'); ?>">
         <i data-feather="user" class="w-4 h-4"></i>
       </a>
-      <a href="index.php?page=statistics" class="<?= ($page === 'statistics' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+      <a href="index.php?page=statistics" class="px-10 py-2 min-w-[140px] text-sm flex items-center justify-center rounded-sm border border-[#3a6ea5] shadow-[inset_1px_1px_0px_#ffffff,inset_-1px_-1px_0px_#2d4c75] active:translate-y-[2px] active:shadow-inner active:bg-blue-700 <?php echo ($page === 'statistics' ? 'bg-gradient-to-b from-[#5e9af5] to-[#2f5fa3]' : 'bg-gradient-to-b from-[#aecdff] to-[#6693d1] hover:from-[#9bc2ff] hover:to-[#5a86c4]'); ?>">
         <i data-feather="bar-chart-2" class="w-4 h-4"></i>
       </a>
     </div>
@@ -47,14 +44,14 @@
         ONLINE
       </div>
       <div class="relative">
-        <button id="notif-button" class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm flex items-center relative">
+        <button id="notif-button" class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm flex items-center relative active:translate-y-[2px] active:shadow-inner active:bg-blue-700">
           <i data-feather="bell" class="w-4 h-4"></i>
           <?php
             $userId = isset($session) && method_exists($session, 'getUserId') ? $session->getUserId() : ($_SESSION['user_id'] ?? null);
             $notificationController = new NotificationController($pdo);
             $notifCount = $userId ? $notificationController->countUnreadNotifications($userId) : 0;
             if ($notifCount > 0): ?>
-              <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1"><?php echo $notifCount; ?></span>
+              <span class="absolute -top-2 -right-2 bg-red-600 text-white text-sm rounded-full px-2 py-[1px] font-bold"><?php echo $notifCount; ?></span>
           <?php endif; ?>
         </button>
 
@@ -113,12 +110,10 @@
     <?php
       // Use existing Session/Profile objects if available
       if (!isset($session)) {
-        require_once __DIR__ . '/../helpers/Session.php';
         $session = new Session();
       }
 
       if (!isset($profile)) {
-        require_once __DIR__ . '/../models/Profile.php';
         $profile = new Profile($pdo);
       }
 
