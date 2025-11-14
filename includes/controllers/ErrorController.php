@@ -2,8 +2,11 @@
 
 class ErrorController {
     private $session;
+    private PDO $pdo;
+    
 
-    public function __construct($session = null) {
+    public function __construct(PDO $pdo, $session = null) {
+        $this->pdo = $pdo;
         $this->session = $session;
     }
 
@@ -15,6 +18,8 @@ class ErrorController {
         if (!$session) {
             $session = new Session();
         }
+
+        $pdo = $this->pdo;
 
         require __DIR__ . '/../views/header.php';
         require __DIR__ . '/../views/404_view.php';

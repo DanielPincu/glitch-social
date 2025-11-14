@@ -35,6 +35,9 @@
       <a href="index.php?page=profile" class="<?= ($page === 'profile' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
         <i data-feather="user" class="w-4 h-4"></i>
       </a>
+      <a href="index.php?page=statistics" class="<?= ($page === 'statistics' ? 'bg-green-500' : 'bg-gray-200 bg-opacity-20 hover:bg-opacity-30') ?> px-3 py-1 rounded-sm flex items-center">
+        <i data-feather="bar-chart-2" class="w-4 h-4"></i>
+      </a>
     </div>
 
     <!-- Notification Bell moved to taskbar right side -->
@@ -157,6 +160,11 @@
       <a href="index.php?page=profile" class="block">
         <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
           <i data-feather="user" class="w-4 h-4"></i> Profile
+        </button>
+      </a>
+      <a href="index.php?page=statistics" class="block">
+        <button class="w-full text-left px-4 py-2 hover:bg-[#0078d7] hover:text-white flex items-center gap-2">
+          <i data-feather="bar-chart-2" class="w-4 h-4"></i> Statistics
         </button>
       </a>
       <?php if (!empty($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>

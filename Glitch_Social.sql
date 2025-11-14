@@ -183,62 +183,37 @@ END //
 DELIMITER ;
 
 -- views
-CREATE OR REPLACE VIEW view_post_notifications AS
-SELECT 
-  n.id            AS notification_id,
-  u.username      AS recipient,
-  a.username      AS actor,
-  n.type,
-  p.content       AS post_content,
-  p.visibility    AS post_visibility,
-  n.post_id,
-  n.user_id,
-  n.actor_id
-FROM notifications n
-JOIN users u ON n.user_id = u.id
-JOIN users a ON n.actor_id = a.id
-LEFT JOIN posts p ON n.post_id = p.id
-WHERE n.type = 'post'
-ORDER BY n.id DESC;
+--Count of total users and total posts
+CREATE OR REPLACE VIEW view_total_users_posts AS
+SELECT
+  (SELECT COUNT(*) FROM users) AS total_users,
+  (SELECT COUNT(*) FROM posts) AS total_posts;
 
-CREATE OR REPLACE VIEW view_follow_notifications AS
-SELECT 
-  n.id       AS notification_id,
-  u.username AS recipient,
-  a.username AS actor,
-  n.type,
-  n.user_id,
-  n.actor_id
-FROM notifications n
-JOIN users u ON n.user_id = u.id
-JOIN users a ON n.actor_id = a.id
-WHERE n.type = 'follow'
-ORDER BY n.id DESC;
 
-CREATE OR REPLACE VIEW view_all_posts AS
-SELECT 
-  p.id          AS post_id,
-  p.user_id,
-  u.username,
-  p.content,
-  p.image_path,
-  p.visibility,
-  p.created_at
-FROM posts p
-JOIN users u   ON u.id = p.user_id
-LEFT JOIN profiles pr ON pr.user_id = p.user_id
-ORDER BY p.created_at DESC;
+--Count of total likes and total comments
+CREATE OR REPLACE VIEW view_total_likes_comments AS
+SELECT
+  (SELECT COUNT(*) FROM likes) AS total_likes,
+  (SELECT COUNT(*) FROM comments) AS total_comments;
 
-CREATE OR REPLACE VIEW view_all_comments AS
-SELECT 
-  c.id AS comment_id,
-  c.content AS comment_content,
-  c.created_at AS comment_created_at,
-  commenter.username AS commenter_username,
-  recipient.username AS recipient_username,
-  c.post_id
-FROM comments c
-JOIN users commenter ON c.user_id = commenter.id
-JOIN posts p ON c.post_id = p.id
-JOIN users recipient ON p.user_id = recipient.id
-ORDER BY c.created_at DESC;
+
+--Top 3 most active users based on posts, comments, and likes given
+  CREATE OR REPLACE VIEW view_top3_active_users AS
+SELECT
+    u.id AS user_id,
+    u.username,
+    COUNT(DISTINCT p.id) AS posts,
+    COUNT(DISTINCT c.id) AS comments,
+    COUNT(DISTINCT l.id) AS likes_given,
+    (
+        COUNT(DISTINCT p.id) * 2 +
+        COUNT(DISTINCT c.id) +
+        COUNT(DISTINCT l.id) * 0.5
+    ) AS activity_score
+FROM users u
+LEFT JOIN posts p ON p.user_id = u.id
+LEFT JOIN comments c ON c.user_id = u.id
+LEFT JOIN likes l ON l.user_id = u.id
+GROUP BY u.id
+ORDER BY activity_score DESC
+LIMIT 3;

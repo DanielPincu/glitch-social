@@ -68,7 +68,7 @@ switch ($page) {
         break;
 
     case '404':
-        $errorController = new ErrorController();
+        $errorController = new ErrorController($pdo, $session);
         $errorController->show404();
         break;
 
@@ -95,6 +95,11 @@ switch ($page) {
     case 'notifications':
         $notificationController = new NotificationController($pdo);
         $notificationController->handleActions();
+        break;
+
+    case 'statistics':
+        $controller = new StatisticsController($pdo);
+        $controller->index();
         break;
 
     default:

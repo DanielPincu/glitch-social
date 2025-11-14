@@ -14,7 +14,7 @@
             <li>Click <a href="index.php" class="text-[#000080] underline">Home</a> to return to the main page.</li>
         </ul>
         <div class="text-right mt-5">
-            <a href="index.php" class="xp-button inline-block text-center">OK</a>
+            <a href="index.php" class="xp-button inline-block text-center">Click OK to ignore the reality</a>
         </div>
     </div>
   </div>
