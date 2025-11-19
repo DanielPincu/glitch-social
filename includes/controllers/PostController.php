@@ -283,7 +283,7 @@
                     exit();
                 }
                 $user_id = $session->getUserId();
-                $allowed = '<p><br><div><strong><em><u><span><h1><h2><h3><blockquote><code><ul><ol><li>>';
+                $allowed = '<strong><em><u><span>';
                 $content = isset($_POST['content']) ? strip_tags($_POST['content'], $allowed) : '';
                 $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
                 $imageFile = $_FILES['imageFile'] ?? null;
