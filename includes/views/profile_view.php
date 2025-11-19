@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <h2 class="text-3xl font-semibold mb-4 mt-4 text-center text-white">Glιτch Sσcιαl PЯ0F1LΞ</h2>
+        <h2 class="text-3xl font-semibold mb-4 mt-4 text-center text-white">Glιτch PЯ0F1LΞ</h2>
 
         <section class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60 text-center">
             <section class="text-center mb-10">
@@ -219,7 +219,7 @@
             <?php if (!empty($posts)): ?>
                 <div class="space-y-6">
                     <?php foreach ($posts as $post): ?>
-                        <div class="bg-black bg-opacity-70 border border-cyan-500 rounded-lg p-4">
+                        <div class="bg-slate-700 bg-opacity-70 border border-cyan-500 rounded-lg p-4">
                             <div class="flex items-center mb-3">
                                 <div class="w-10 h-10 rounded-full overflow-hidden mr-3 border-2 border-green-400">
                                     <?php if (!empty($post['avatar_url'])): ?>
@@ -241,7 +241,7 @@
                             </div>
 
                             <a href="index.php?page=post&id=<?php echo $post['id']; ?>" class="text-cyan-300 hover:underline block mb-3">
-                                <?php echo nl2br(htmlspecialchars($post['content'])); ?>
+                                <?php echo $post['content']; ?>
                             </a>
 
                             <?php if (!empty($post['image_path'])): ?>

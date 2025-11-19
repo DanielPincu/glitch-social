@@ -345,7 +345,8 @@
                     exit();
                 }
                 $post_id = $_POST['post_id'] ?? null;
-                $new_content = trim($_POST['new_content'] ?? '');
+                $allowed = '<strong><em><u><span>';
+                $new_content = isset($_POST['new_content']) ? strip_tags($_POST['new_content'], $allowed) : '';
                 $remove_image = !empty($_POST['remove_image']);
                 // Ignore remove checkbox if a new image is being uploaded
                 $new_image_file = $_FILES['new_image'] ?? null;

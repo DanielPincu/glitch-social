@@ -1,4 +1,3 @@
-
     @font-face {
       font-family: 'Windows Regular';
       src: url('https://www.dafontfree.io/data/30/b/8801/WindowsRegular.ttf') format('truetype');
@@ -153,3 +152,18 @@
   .ql-toolbar .ql-active .ql-fill {
     fill: #ffffff !important;
   }
+
+/* Replace Quill color-picker A icon with gradient square */
+.ql-color .ql-picker-label svg {
+    display: none !important;
+}
+
+.ql-color .ql-picker-label::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(45deg, red, yellow, green, cyan, blue,  magenta, red);
+    border-radius: 2px;
+    display: inline-block;
+    margin-top: 2px;
+}

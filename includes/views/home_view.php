@@ -166,7 +166,7 @@
           </div>
           <form id="create-post-form" method="post" enctype="multipart/form-data" action="index.php?page=home">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($session->getCsrfToken(), ENT_QUOTES); ?>">
-            <div id="quill-editor" class="w-full bg-slate-300 text-black px-5 py-4 rounded border border-[#b0b0b0] focus:outline-none"></div>
+            <div id="quill-editor" class="w-full bg-slate-300 text-black px-5 py-4 border border-[#b0b0b0] focus:outline-none"></div>
             <input type="hidden" name="content" id="post-content">
             <div class="flex justify-between items-center mt-4">
               <div class="flex items-center gap-2">

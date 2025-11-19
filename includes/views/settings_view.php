@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <h1 class="text-3xl pt-4 font-semibold text-center text-white">Glιτch Sσcιαl Cσnτrσl Dєck</h1>
+    <h1 class="text-3xl pt-4 font-semibold text-center text-white">Glιτch Cσnτrσl Dєck</h1>
     
 
     <?php if (!empty($isAdmin) && $isAdmin): ?>
@@ -41,7 +41,7 @@
           <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
             <?php foreach ($posts as $post): ?>
               <div class="bg-black bg-opacity-70 border border-teal-500 rounded-lg p-4">
-                <p class="text-green-400 mb-2"><?php echo htmlspecialchars($post['content']); ?></p>
+                <p class="text-green-400 mb-2"><?php echo $post['content']; ?></p>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-2">
                     <img id="previewImg-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
@@ -72,7 +72,10 @@
                 <!-- Hidden edit form -->
                 <form id="edit-form-<?php echo $post['id']; ?>" method="post" action="index.php?page=settings" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                  <textarea name="new_content" rows="3" class="w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2"><?php echo htmlspecialchars($post['content']); ?></textarea>
+                  <div id="quill-edit-<?php echo $post['id']; ?>" 
+                       class="quill-edit w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2"
+                       data-initial="<?php echo htmlspecialchars($post['content'], ENT_QUOTES); ?>"></div>
+                  <input type="hidden" name="new_content" id="quill-edit-input-<?php echo $post['id']; ?>">
 
                   <?php if (!empty($post['image_path'])): ?>
                     <div class="mt-2">
@@ -214,7 +217,7 @@
                   <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>" class="text-cyan-300 font-bold mr-3">@<?php echo htmlspecialchars($post['username']); ?></a>
                   <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
                 </div>
-                <p class="text-cyan-100 mb-2"><?php echo htmlspecialchars($post['content']); ?></p>
+                <p class="text-cyan-100 mb-2"><?php echo $post['content']; ?></p>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-2">
                     <img id="previewImg-admin-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
@@ -249,8 +252,8 @@
         <?php else: ?>
           <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
             <?php foreach ($posts as $post): ?>
-              <div class="bg-black bg-opacity-70 border border-teal-500 rounded-lg p-4">
-                <p class="text-green-400 mb-2"><?php echo htmlspecialchars($post['content']); ?></p>
+              <div class="bg-slate-700 bg-opacity-70 border border-teal-500 rounded-lg p-4">
+                <p class="text-green-400 mb-2"><?php echo $post['content']; ?></p>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-2">
                     <img id="previewImg-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
@@ -281,7 +284,10 @@
                 <!-- Hidden edit form -->
                 <form id="edit-form-<?php echo $post['id']; ?>" method="post" action="index.php?page=settings" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                  <textarea name="new_content" rows="3" class="w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2"><?php echo htmlspecialchars($post['content']); ?></textarea>
+                  <div id="quill-edit-<?php echo $post['id']; ?>" 
+                       class="quill-edit w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2"
+                       data-initial="<?php echo htmlspecialchars($post['content'], ENT_QUOTES); ?>"></div>
+                  <input type="hidden" name="new_content" id="quill-edit-input-<?php echo $post['id']; ?>">
 
                   <?php if (!empty($post['image_path'])): ?>
                     <div class="mt-2">
@@ -386,7 +392,7 @@
       </div>
     </section>
     <?php endif; ?>
-
-
   </div>
 </div>
+
+<script src="scripts/quill.js"></script>
