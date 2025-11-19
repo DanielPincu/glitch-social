@@ -15,12 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2) hidden inputs
     const hidden = root.querySelector("input[name='comment_id'], input[name='commentId']");
     if (hidden) return hidden.value;
-    // 3) element ids with patterns
-    const hint = root.querySelector("[id*='edit-form-'], [id*='comment-text-']");
-    if (hint && hint.id) {
-      const m = hint.id.match(/(\d+)/);
-      if (m) return m[1];
-    }
     return null;
   }
   function findCommentText(root, id) {
@@ -35,12 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2) explicit data attr
     const explicit = root.querySelector("[data-comment-text]");
     if (explicit) return explicit;
-    // 3) heuristic candidates
-    const candidates = root.querySelectorAll(".comment-text, .whitespace-pre-wrap, p, .text-sm, .text-base");
-    for (const el of candidates) {
-      if (el.closest("form, button, .actions")) continue;
-      if (el.textContent && el.textContent.trim().length) return el;
-    }
     return null;
   }
 
@@ -50,8 +38,8 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
 
       const postId = this.querySelector("input[name='post_id']").value;
-      const contentInput = this.querySelector("input[name='comment_content'], textarea[name='comment_content']");
-      const content = contentInput.value.trim();
+      const contentInput = this.querySelector(".comment-hidden-input");
+      const content = contentInput ? contentInput.value.trim() : "";
       if (!content) return;
 
       fetch("index.php", {
@@ -92,7 +80,11 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
           // Reset and hide composer
-          contentInput.value = "";
+          if (contentInput) contentInput.value = "";
+          const editorEl = this.querySelector("[data-comment-editor]");
+          if (editorEl && editorEl._quill) {
+            editorEl._quill.root.innerHTML = "";
+          }
           const cf = this.closest(".comment-form");
           if (cf) cf.classList.add("hidden");
 
@@ -119,34 +111,55 @@ document.addEventListener("DOMContentLoaded", () => {
     // If already editing, ignore
     if (commentItem.querySelector(".inline-editor")) return;
 
-    const originalText = textElem.textContent.trim().replace(/\s+/g, " ");
+    const originalHtml = textElem.innerHTML;
 
-    // Build inline editor (textarea + buttons)
     const editorWrap = document.createElement("div");
-    editorWrap.className = "inline-editor flex items-center w-full";
+    editorWrap.className = "inline-editor w-full";
 
-    const textarea = document.createElement("textarea");
-    textarea.className = "w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none";
-    textarea.value = originalText;
+    const quillContainer = document.createElement("div");
+    quillContainer.className = "quill-inline-editor bg-slate-300 text-black border border-gray-600 p-2";
+    quillContainer.style.minHeight = "80px";
 
     const saveBtn = document.createElement("button");
     saveBtn.type = "button";
-    saveBtn.className = "ml-2 px-3 py-1 text-sm bg-blue-600 text-white rounded";
+    saveBtn.className = "mt-2 px-3 py-1 text-sm bg-blue-600 text-white rounded";
     saveBtn.textContent = "Save";
 
     const cancelBtn = document.createElement("button");
     cancelBtn.type = "button";
-    cancelBtn.className = "ml-2 px-3 py-1 text-sm bg-gray-500 text-white rounded";
+    cancelBtn.className = "ml-2 mt-2 px-3 py-1 text-sm bg-gray-500 text-white rounded";
     cancelBtn.textContent = "Cancel";
 
-    editorWrap.appendChild(textarea);
+    editorWrap.appendChild(quillContainer);
     editorWrap.appendChild(saveBtn);
     editorWrap.appendChild(cancelBtn);
 
-    // Swap into DOM
     textElem.classList.add("hidden");
     textElem.insertAdjacentElement("afterend", editorWrap);
-    textarea.focus();
+
+
+    // I wish I could move this in quill.js but oh well... it needs to be here forever. 
+    const quillEdit = new Quill(quillContainer, {
+      theme: "snow",
+      modules: {
+        toolbar: {
+          container: [
+            ["bold", "italic", "underline"],
+            [{ 'color': ['#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'] }],
+            ["gif"]
+          ],
+          handlers: {
+            gif: function () {
+              if (window.openGifPanelForQuill) {
+                window.openGifPanelForQuill(quillEdit);
+              }
+            }
+          }
+        }
+      }
+    });
+
+    quillEdit.root.innerHTML = originalHtml;
 
     const restore = () => {
       editorWrap.remove();
@@ -156,8 +169,8 @@ document.addEventListener("DOMContentLoaded", () => {
     cancelBtn.addEventListener("click", restore);
 
     saveBtn.addEventListener("click", () => {
-      const newContent = textarea.value.trim();
-      if (!newContent || newContent === originalText) { restore(); return; }
+      const newContent = quillEdit.root.innerHTML.trim();
+      if (!newContent || newContent === originalHtml) { restore(); return; }
 
       const cid = commentId || extractCommentId(commentItem);
       if (!cid) { restore(); return; }
@@ -170,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(res => res.json())
       .then(data => {
         if (data && data.success) {
-          textElem.textContent = newContent;
+          textElem.innerHTML = newContent;
         }
         restore();
       })

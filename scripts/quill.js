@@ -150,3 +150,4 @@ document.querySelectorAll('.quill-edit').forEach(function(editorDiv) {
         hiddenInput.value = quillEdit.root.innerHTML;
     });
 });
+

@@ -270,8 +270,8 @@
                     <form method="POST" action="index.php?page=home" class="flex items-center space-x-2 mb-2">
                       <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($session->getCsrfToken(), ENT_QUOTES); ?>">
                       <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                      <input type="text" name="comment_content" placeholder="Add a comment..."
-                        class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">
+                      <div class="comment-quill-editor w-full bg-slate-300 text-black px-3 py-2 border border-gray-600 rounded" data-comment-editor></div>
+                      <input type="hidden" name="comment_content" class="comment-hidden-input">
                       <button type="submit" name="add_comment"
                         class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
                         Post
@@ -327,7 +327,7 @@
                               </div>
                             <?php endif; ?>
                           </div>
-                          <p id="hot-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300" data-comment-text><?php echo htmlspecialchars($comment['content']); ?></p>
+                          <div id="hot-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300" data-comment-text><?php echo $comment['content']; ?></div>
                         </div>
                       </div>
                   <?php endforeach;
@@ -411,8 +411,8 @@
                     <form method="POST" action="index.php?page=home" class="flex items-center space-x-2 mb-2">
                       <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($session->getCsrfToken(), ENT_QUOTES); ?>">
                       <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                      <input type="text" name="comment_content" placeholder="Add a comment..."
-                        class="w-full bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 focus:outline-none">
+                      <div class="comment-quill-editor w-full bg-slate-300 text-black px-3 py-2 border border-gray-600 rounded" data-comment-editor></div>
+                      <input type="hidden" name="comment_content" class="comment-hidden-input">
                       <button type="submit" name="add_comment"
                         class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
                         Post
@@ -468,7 +468,7 @@
                               </div>
                             <?php endif; ?>
                           </div>
-                          <p id="following-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300" data-comment-text><?php echo htmlspecialchars($comment['content']); ?></p>
+                          <div id="following-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300" data-comment-text><?php echo $comment['content']; ?></div>
                         </div>
                       </div>
                   <?php endforeach;

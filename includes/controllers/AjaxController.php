@@ -120,8 +120,7 @@ class AjaxController
         }
 
         $post_id = $_POST['post_id'] ?? 0;
-        $content = trim($_POST['content'] ?? '');
-        $content = htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
+        $content = $_POST['content'] ?? '';
 
         if ($post_id && $content) {
             $user_id = $this->session->getUserId();
@@ -159,9 +158,9 @@ class AjaxController
                             </div>
                         <?php endif; ?>
                     </div>
-                    <p id="comment-text-<?php echo $newComment['id']; ?>" class="text-gray-300" data-comment-text>
-                        <?php echo htmlspecialchars($newComment['content']); ?>
-                    </p>
+                    <div id="comment-text-<?php echo $newComment['id']; ?>" class="text-gray-300" data-comment-text>
+                        <?php echo $newComment['content']; ?>
+                    </div>
                 </div>
             </div>
             <?php
