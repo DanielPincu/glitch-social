@@ -151,3 +151,37 @@ document.querySelectorAll('.quill-edit').forEach(function(editorDiv) {
     });
 });
 
+/* ===== Quill for COMMENTS ===== */
+
+document.querySelectorAll("[data-comment-editor]").forEach(function(el) {
+
+    var hiddenInput = el.parentElement.querySelector(".comment-hidden-input");
+
+    var toolbar = [
+        ["bold", "italic", "underline"], 
+        [{ 'color': ['#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'] }],
+        ["gif"]
+    ];
+
+    var q = new Quill(el, {
+        theme: "snow",
+        modules: {
+            toolbar: {
+                container: toolbar,
+                handlers: {
+                    gif: function () {
+                        if (window.openGifPanelForQuill) {
+                            window.openGifPanelForQuill(q);
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    q.on("text-change", function () {
+        if (hiddenInput) {
+            hiddenInput.value = q.root.innerHTML;
+        }
+    });
+});

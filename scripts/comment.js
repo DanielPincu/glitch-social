@@ -8,28 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return target.closest("[data-comment], .comment-item, .flex.items-start");
   }
   function extractCommentId(root) {
-    if (!root) return null;
-    // 1) data-comment-id attribute
-    let id = root.getAttribute("data-comment-id");
-    if (id) return id;
-    // 2) hidden inputs
-    const hidden = root.querySelector("input[name='comment_id'], input[name='commentId']");
-    if (hidden) return hidden.value;
-    return null;
+    return root ? root.getAttribute("data-comment-id") : null;
   }
-  function findCommentText(root, id) {
-    if (!root) return null;
-    // 1) by id patterns
-    if (id) {
-      const byId = root.querySelector(`#hot-comment-text-${id}`)
-        || root.querySelector(`#following-comment-text-${id}`)
-        || document.getElementById(`comment-text-${id}`);
-      if (byId) return byId;
-    }
-    // 2) explicit data attr
-    const explicit = root.querySelector("[data-comment-text]");
-    if (explicit) return explicit;
-    return null;
+  function findCommentText(root) {
+    return root.querySelector("[data-comment-text]");
   }
 
   // ===== New Comment Submission =====
@@ -105,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const commentItem = findCommentItem(editBtn);
     if (!commentItem) return;
     const commentId = extractCommentId(commentItem);
-    const textElem = findCommentText(commentItem, commentId);
+    const textElem = findCommentText(commentItem);
     if (!textElem) return; // nothing to edit
 
     // If already editing, ignore
@@ -138,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     textElem.insertAdjacentElement("afterend", editorWrap);
 
 
-    // I wish I could move this in quill.js but oh well... it needs to be here forever. 
+    // I wish I could move this in quill.js but oh well... it needs to be here forever.
     const quillEdit = new Quill(quillContainer, {
       theme: "snow",
       modules: {
