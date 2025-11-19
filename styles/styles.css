@@ -95,3 +95,61 @@
     vertical-align: middle;
     margin-right: 10px;
 }
+
+
+/* Quill toolbar background */
+  .ql-toolbar.ql-snow {
+    background: #3A6EA5; /* darker blue */
+    border-color: #1f4d78;
+  }
+
+  /* Toolbar buttons color */
+  .ql-toolbar.ql-snow .ql-picker-label,
+  .ql-toolbar.ql-snow .ql-stroke,
+  .ql-toolbar.ql-snow .ql-fill {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+  }
+
+  /* Active button color */
+  .ql-toolbar .ql-active .ql-stroke {
+    stroke: #ffea00 !important;
+  }
+
+  /* Dropdown menu background */
+  .ql-picker-options {
+    background: #3A6EA5 !important;
+    border-color: #1f4d78 !important;
+  }
+
+  /* Color picker squares border fix */
+  .ql-color-picker .ql-picker-options span {
+    border: solid 1px #ffffff !important;
+  }
+
+  /* Hover scale effect on toolbar buttons */
+  .ql-toolbar .ql-formats button:hover,
+  .ql-toolbar .ql-picker:hover {
+    transform: scale(1.15);
+    transition: transform 0.15s ease-in-out;
+    position: relative;
+    z-index: 5000;
+  }
+
+  /* Selected (active) button styling */
+  .ql-toolbar .ql-formats .ql-active {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 4px;
+    position: relative;
+    z-index: 6000;
+  }
+
+  /* Selected stroke color (override yellow) */
+  .ql-toolbar .ql-active .ql-stroke {
+    stroke: #ffffff !important;
+  }
+
+  /* Selected fill color */
+  .ql-toolbar .ql-active .ql-fill {
+    fill: #ffffff !important;
+  }

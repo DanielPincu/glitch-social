@@ -272,7 +272,7 @@
                 // Session-based rate limiting: 5 minutes between posts
                 if (!isset($_SESSION)) { session_start(); }
                 $now = time();
-                $cooldown = 300; // 5 minutes
+                $cooldown = 5; 
                 if (isset($_SESSION['last_post_time']) && ($now - $_SESSION['last_post_time']) < $cooldown) {
                     $remaining = $cooldown - ($now - $_SESSION['last_post_time']);
                     $minutes = floor($remaining / 60);
@@ -283,7 +283,8 @@
                     exit();
                 }
                 $user_id = $session->getUserId();
-                $content = isset($_POST['content']) ? trim($_POST['content']) : '';
+                $allowed = '<p><br><div><strong><em><u><span><h1><h2><h3><blockquote><code><ul><ol><li>>';
+                $content = isset($_POST['content']) ? strip_tags($_POST['content'], $allowed) : '';
                 $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
                 $imageFile = $_FILES['imageFile'] ?? null;
                 $post_id = $this->createPost($user_id, $content, $imageFile, $visibility);

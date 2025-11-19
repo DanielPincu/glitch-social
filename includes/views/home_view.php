@@ -164,10 +164,10 @@
             <i data-feather="edit-2" class="text-green-400 drop-shadow-[0_0_3px_rgba(0,255,0,0.7)]"></i>
             <h3 class="text-lg font-semibold matrix-text drop-shadow-[0_0_5px_rgba(0,255,0,0.4)]">Create Post</h3>
           </div>
-          <form method="post" enctype="multipart/form-data" action="index.php?page=home">
+          <form id="create-post-form" method="post" enctype="multipart/form-data" action="index.php?page=home">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($session->getCsrfToken(), ENT_QUOTES); ?>">
-            <textarea name="content" placeholder="What's the truth, Neo?" required
-              class="w-full bg-[#e8e8e8] text-black px-5 py-4 rounded border border-[#b0b0b0] resize-y focus:outline-none focus:ring-2 focus:ring-green-500 focus:shadow-[0_0_8px_rgba(0,255,0,0.7)] transition-shadow"></textarea>
+            <div id="quill-editor" class="w-full bg-slate-300 text-black px-5 py-4 rounded border border-[#b0b0b0] focus:outline-none"></div>
+            <input type="hidden" name="content" id="post-content">
             <div class="flex justify-between items-center mt-4">
               <div class="flex items-center gap-2">
                 <label for="imageFile" class="cursor-pointer inline-flex items-center px-3 py-1 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#3A6EA5] to-[#5CACEE] text-blue-900 text-xs font-semibold shadow-inner hover:brightness-110 active:brightness-90 transition select-none">
@@ -235,7 +235,7 @@
                     </div>
                   </div>
                 </div>
-                <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                <div class="mb-3"><?php echo $post['content']; ?></div>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-3 border-2 border-white bg-black flex justify-center">
                     <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-auto max-h-[600px] object-contain">
@@ -377,7 +377,7 @@
                     </div>
                   </div>
                 </div>
-                <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                <div class="mb-3"><?php echo $post['content']; ?></div>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-3 border-2 border-white bg-black flex justify-center">
                     <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-auto max-h-[600px] object-contain">
@@ -538,6 +538,8 @@
 
   </div>
 </main>
+
+<script src="scripts/quill.js"></script>
 <script src="scripts/tab-switcher.js"></script>
 <script src="scripts/image-previewer.js"></script>
 <script src="scripts/like.js"></script>

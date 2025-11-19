@@ -7,7 +7,9 @@
   <title>MatrixConnect - Social Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/feather-icons"></script>
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
   <link rel="stylesheet" href="styles/styles.css">
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
 
 <body class="matrix-bg font-[Windows Regular] text-white z-10 relative">
