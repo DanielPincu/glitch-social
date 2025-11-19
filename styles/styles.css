@@ -167,3 +167,14 @@
     display: inline-block;
     margin-top: 2px;
 }
+
+/* Quill GIF toolbar button */
+.ql-toolbar .ql-gif::before {
+    content: "GIF";
+    background: #1a1a1a;
+    padding: 2px 4px;
+    border-radius: 3px;
+    border: 1px solid #7AA0E0;
+    font-size: 14px;
+    color: #7AA0E0;
+}

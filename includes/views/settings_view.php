@@ -394,5 +394,24 @@
     <?php endif; ?>
   </div>
 </div>
+<!-- GIF SEARCH PANEL -->
+<div id="gif-panel" class="fixed inset-0 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+  <div class="bg-gray-900 border border-blue-500 rounded-xl p-4 w-full max-w-3xl shadow-2xl relative">
+    <button id="gif-close-btn"
+            class="absolute top-2 right-2 text-white bg-red-600 hover:bg-red-700 px-2 py-1 rounded">
+      X
+    </button>
 
+    <form id="gif-search-form" class="flex gap-2 mb-4">
+      <input id="gif-search-input" type="text" placeholder="Search GIFs..."
+             class="flex-1 p-2 rounded bg-gray-800 text-white border border-blue-500 outline-none">
+      <button type="submit"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
+        Search
+      </button>
+    </form>
+
+    <div id="gif-results" class="grid grid-cols-3 md:grid-cols-4 gap-3 max-h-[400px] overflow-y-auto"></div>
+  </div>
+</div>
 <script src="scripts/quill.js"></script>

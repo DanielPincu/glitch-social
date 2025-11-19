@@ -272,7 +272,7 @@
                 // Session-based rate limiting: 5 minutes between posts
                 if (!isset($_SESSION)) { session_start(); }
                 $now = time();
-                $cooldown = 300; 
+                $cooldown = 5; 
                 if (isset($_SESSION['last_post_time']) && ($now - $_SESSION['last_post_time']) < $cooldown) {
                     $remaining = $cooldown - ($now - $_SESSION['last_post_time']);
                     $minutes = floor($remaining / 60);
@@ -283,7 +283,7 @@
                     exit();
                 }
                 $user_id = $session->getUserId();
-                $allowed = '<strong><em><u><span>';
+                $allowed = '<strong><em><u><span><img>';
                 $content = isset($_POST['content']) ? strip_tags($_POST['content'], $allowed) : '';
                 $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
                 $imageFile = $_FILES['imageFile'] ?? null;
@@ -345,7 +345,7 @@
                     exit();
                 }
                 $post_id = $_POST['post_id'] ?? null;
-                $allowed = '<strong><em><u><span>';
+                $allowed = '<strong><em><u><span><img>';
                 $new_content = isset($_POST['new_content']) ? strip_tags($_POST['new_content'], $allowed) : '';
                 $remove_image = !empty($_POST['remove_image']);
                 // Ignore remove checkbox if a new image is being uploaded

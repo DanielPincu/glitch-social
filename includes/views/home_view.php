@@ -235,7 +235,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="mb-3"><?php echo $post['content']; ?></div>
+                <div class="mb-3 post-content prose prose-invert max-w-none text-left [&>img]:mx-auto [&>img]:my-3"><?php echo $post['content']; ?></div>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-3 border-2 border-white bg-black flex justify-center">
                     <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-auto max-h-[600px] object-contain">
@@ -377,7 +377,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="mb-3"><?php echo $post['content']; ?></div>
+                <div class="mb-3 post-content prose prose-invert max-w-none text-left [&>img]:mx-auto [&>img]:my-3"><?php echo $post['content']; ?></div>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-3 border-2 border-white bg-black flex justify-center">
                     <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-auto max-h-[600px] object-contain">
@@ -537,7 +537,34 @@
     </div>
 
   </div>
+<!-- GIF Search Panel -->
+<div id="gif-panel" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
+  <div class="bg-slate-900 border border-[#7AA0E0] rounded-lg shadow-xl w-full max-w-xl p-4">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-green-200 font-bold text-sm">Add GIF</h3>
+      <button id="gif-close-btn" type="button" class="text-gray-300 hover:text-white text-sm px-2">✕</button>
+    </div>
+    <form id="gif-search-form" class="flex gap-2 mb-3">
+      <input
+        id="gif-search-input"
+        type="text"
+        placeholder="Search GIFs..."
+        class="flex-1 bg-slate-800 text-gray-100 text-sm px-3 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400">
+      <button
+        type="submit"
+        class="bg-gradient-to-t from-[#5A8DEE] to-[#7AA0E0] text-white px-4 py-2 rounded font-semibold text-sm shadow hover:brightness-110 active:translate-y-0.5 transition">
+        Search
+      </button>
+    </form>
+    <div
+      id="gif-results"
+      class="grid grid-cols-3 gap-2 max-h-72 overflow-y-auto text-xs text-gray-300">
+      <p class="col-span-3 text-center text-gray-400 italic">Type a keyword and press Search.</p>
+    </div>
+  </div>
+</div>
 </main>
+
 
 <script src="scripts/quill.js"></script>
 <script src="scripts/tab-switcher.js"></script>
