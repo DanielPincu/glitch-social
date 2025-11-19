@@ -1,11 +1,3 @@
-<?php
-$error = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['password'], $_POST['confirm_password']) || $_POST['password'] !== $_POST['confirm_password']) {
-        $error = "Passwords do not match.";
-    }
-}
-?>
 <div class="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-900 to-indigo-700 text-white px-4">
   <div class="bg-black bg-opacity-60 p-8 rounded-xl border border-blue-500 shadow-lg w-full max-w-md">
     <h2 class="text-3xl font-extrabold mb-6 text-center">Reset Password</h2>
