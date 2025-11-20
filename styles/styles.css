@@ -178,3 +178,13 @@
     font-size: 14px;
     color: #7AA0E0;
 }
+
+/* Align GIF button with other toolbar icons */
+.ql-toolbar .ql-gif {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 24px !important;
+    padding: 0 4px !important;
+    margin-top: 2px !important;
+}
