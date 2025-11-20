@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <h2 class="text-3xl font-semibold mb-4 mt-4 text-center text-white">Glιτch PЯ0F1LΞ</h2>
+        <h2 class="text-3xl font-semibold mb-4 mt-4 text-center text-white glitch-text"><span>Glιτch PЯ0F1LΞ</span></h2>
 
         <section class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60 text-center">
             <section class="text-center mb-10">

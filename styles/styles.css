@@ -215,3 +215,27 @@
 .ql-toolbar .ql-youtube svg {
     display: none !important;
 }
+
+
+.glitch-text {
+  position: relative;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  animation: glitch-jerkwhole 5s infinite;
+}
+
+.glitch-text span {
+  filter: blur(2px);
+  animation: glitch-blur 30ms infinite, glitch-jerk 50ms infinite;
+}
+
+
+@keyframes glitch-blur {
+  0%, 100% { filter: blur(0px); opacity: 0.5; }
+  50% { filter: blur(2px); opacity: 1; }
+}
+
+@keyframes glitch-jerk {
+  50% { transform: translateX(1px); }
+  51% { transform: translateX(0); }
+}

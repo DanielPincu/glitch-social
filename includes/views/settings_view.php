@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <h1 class="text-3xl pt-4 font-semibold text-center text-white">Glιτch Cσnτrσl Dєck</h1>
+    <h1 class="text-3xl pt-4 font-semibold text-center text-white glitch-text"><span>Glιτch Cσnτrσl Dєck</span></h1>
     
 
     <?php if (!empty($isAdmin) && $isAdmin): ?>

@@ -17,7 +17,7 @@
 
         <div class="w-full mx-auto mt-10 px-4">
 
-    <h2 class="text-3xl font-semibold mb-10 text-center text-white">Sσcιαl Bεнανισυя</h2>
+    <h2 class="text-3xl font-semibold mb-10 text-center text-white glitch-text"><span>Sσcιαl Bεнανισυя</span></h2>
 
         <div id="matrix-container" class="my-[1px] bg-black h-20 rounded-t-lg">
                 <canvas id="matrix-canvas"></canvas>

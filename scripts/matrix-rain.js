@@ -18,7 +18,7 @@ for (let x = 0; x < columns; x++) {
 }
 
 function draw() {
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.09)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = '#0f0';
@@ -28,7 +28,7 @@ function draw() {
     const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
     ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
 
-    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.9995) {
+    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.999) {
       rainDrops[i] = 0;
     }
     rainDrops[i]++;
