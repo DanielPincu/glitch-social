@@ -272,7 +272,7 @@
                 // Session-based rate limiting: 5 minutes between posts
                 if (!isset($_SESSION)) { session_start(); }
                 $now = time();
-                $cooldown = 5; 
+                $cooldown = 300; 
                 if (isset($_SESSION['last_post_time']) && ($now - $_SESSION['last_post_time']) < $cooldown) {
                     $remaining = $cooldown - ($now - $_SESSION['last_post_time']);
                     $minutes = floor($remaining / 60);
