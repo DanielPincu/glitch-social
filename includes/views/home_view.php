@@ -1,9 +1,11 @@
+<!-- System error message display -->
 <?php if (!empty($_SESSION['error'])): ?>
   <div class="bg-red-600 text-white text-center font-bold rounded-lg p-3 mb-5 shadow-lg shadow-red-500/60">
     <?php echo htmlspecialchars($_SESSION['error']);
     unset($_SESSION['error']); ?>
   </div>
 <?php endif; ?>
+<!-- Main application layout wrapper -->
 <main class="container mx-auto px-4 pb-16 pt-8 relative z-10">
 
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -11,7 +13,7 @@
 
 
 
-    <!-- Left Sidebar -->
+    <!-- Left Sidebar: Following list + System Status -->
     <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-4 flex flex-col rounded-lg overflow-hidden shadow-inner border-2 border-[#7AA0E0]">
       <div class="flex flex-col h-full justify-between">
         <!--  Following  -->
@@ -123,7 +125,7 @@
       </div>
     </div>
 
-    <!-- Main Feed -->
+    <!-- Main Feed: Search, Create Post, Tabs, Posts -->
     <div class="md:col-span-2 space-y-4">
       <?php if (!empty($_SESSION['is_blocked']) && $_SESSION['is_blocked'] == 1): ?>
         <div class="xp-window bg-red-800 text-white p-4 rounded-lg shadow-lg border border-red-400 text-center">
@@ -158,7 +160,7 @@
             </button>
           </form>
         </div>
-        <!-- Create Post -->
+        <!-- Create Post form with Quill editor -->
         <div class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] rounded-lg shadow-lg p-6 border border-[#b0b0b0] relative">
           <div class="flex items-center mb-4 space-x-2">
             <i data-feather="edit-2" class="text-green-400 drop-shadow-[0_0_3px_rgba(0,255,0,0.7)]"></i>
@@ -193,15 +195,16 @@
             </div>
           </form>
         </div>
-        <!-- Tab Switcher -->
+        <!-- Tab buttons: switch between Hot and Following feeds -->
         <div class="grid grid-cols-2 gap-4 mb-4">
           <button id="hotTabBtn" class="w-full px-6 py-2 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#1E90FF] to-[#5CACEE] text-blue-900 font-bold hover:drop-shadow-[0_0_10px_rgba(30,144,255,0.5)] transition select-none" type="button">🔥 Hot</button>
           <button id="followingTabBtn" class="w-full px-6 py-2 rounded border border-[#b0b0b0] bg-gradient-to-t from-[#1E90FF] to-[#5CACEE] text-blue-900 font-bold hover:drop-shadow-[0_0_10px_rgba(30,144,255,0.5)] transition select-none" type="button">👥 Following</button>
         </div>
-        <!-- Posts Feed -->
+        <!-- Hot Feed: displays trending posts -->
         <div id="hotFeed">
           <?php if (!empty($posts)): ?>
             <?php foreach ($posts as $post): ?>
+              <!-- Single post item (Hot) -->
               <div id="post-<?php echo $post['id']; ?>" class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4 mb-3">
                 <div class="flex justify-between items-center mb-3">
                   <div class="flex items-center space-x-3">
@@ -264,7 +267,7 @@
                     </button>
                   </div>
                 </div>
-                <!-- Comments Section -->
+                <!-- Comment section for this post -->
                 <div class="mt-4 border-t border-gray-400 pt-2">
                   <div class="comment-form hidden" id="hot-comment-form-<?php echo $post['id']; ?>">
                     <form method="POST" action="index.php?page=home" class="flex items-center space-x-2 mb-2">
@@ -281,7 +284,9 @@
                   <?php
                   $comments = $postController->getComments($post['id']);
                   if (!empty($comments)):
-                    foreach ($comments as $comment): ?>
+                  ?>
+                  <!-- Loop through comments for this post -->
+                  <?php foreach ($comments as $comment): ?>
                       <div class="flex items-start space-x-2 mb-1" data-comment-id="<?php echo $comment['id']; ?>">
                         <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500 flex items-center justify-center bg-black">
                           <?php if (!empty($comment['avatar_url'])): ?>
@@ -327,7 +332,7 @@
                               </div>
                             <?php endif; ?>
                           </div>
-                          <div id="hot-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300" data-comment-text><?php echo $comment['content']; ?></div>
+                          <div id="hot-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300 [&_img]:w-64 [&_img]:h-auto [&_img]:max-w-none" data-comment-text><?php echo $comment['content']; ?></div>
                         </div>
                       </div>
                   <?php endforeach;
@@ -341,9 +346,11 @@
             </div>
           <?php endif; ?>
         </div>
+        <!-- Following Feed: posts from followed users -->
         <div id="followingFeed" class="hidden">
           <?php if (!empty($followingPosts)): ?>
             <?php foreach ($followingPosts as $post): ?>
+              <!-- Single post item (Following) -->
               <div id="post-<?php echo $post['id']; ?>" class="xp-window bg-gradient-to-br from-[#3A6EA5] to-[#5CACEE] p-4">
                 <div class="flex justify-between items-center mb-3">
                   <div class="flex items-center space-x-3">
@@ -405,7 +412,7 @@
                     </button>
                   </div>
                 </div>
-                <!-- Comments Section -->
+                <!-- Comment section for this post -->
                 <div class="mt-4 border-t border-gray-400 pt-2">
                   <div class="comment-form hidden" id="following-comment-form-<?php echo $post['id']; ?>">
                     <form method="POST" action="index.php?page=home" class="flex items-center space-x-2 mb-2">
@@ -422,7 +429,9 @@
                   <?php
                   $comments = $postController->getComments($post['id']);
                   if (!empty($comments)):
-                    foreach ($comments as $comment): ?>
+                  ?>
+                  <!-- Loop through comments for this post -->
+                  <?php foreach ($comments as $comment): ?>
                       <div class="flex items-start space-x-2 mb-1" data-comment-id="<?php echo $comment['id']; ?>">
                         <div class="w-6 h-6 rounded-full overflow-hidden border border-gray-500 flex items-center justify-center bg-black">
                           <?php if (!empty($comment['avatar_url'])): ?>
@@ -468,7 +477,7 @@
                               </div>
                             <?php endif; ?>
                           </div>
-                          <div id="following-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300" data-comment-text><?php echo $comment['content']; ?></div>
+                          <div id="following-comment-text-<?php echo $comment['id']; ?>" class="text-gray-300 [&_img]:w-64 [&_img]:h-auto [&_img]:max-w-none" data-comment-text><?php echo $comment['content']; ?></div>
                         </div>
                       </div>
                   <?php endforeach;
@@ -537,7 +546,7 @@
     </div>
 
   </div>
-<!-- GIF Search Panel -->
+<!-- GIF Search Modal (Tenor API) -->
 <div id="gif-panel" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
   <div class="bg-slate-900 border border-[#7AA0E0] rounded-lg shadow-xl w-full max-w-xl p-4">
     <div class="flex justify-between items-center mb-3">
@@ -566,6 +575,7 @@
 </main>
 
 
+<!-- Script imports -->
 <script src="scripts/quill.js"></script>
 <script src="scripts/tab-switcher.js"></script>
 <script src="scripts/image-previewer.js"></script>
@@ -578,6 +588,7 @@
     if (form) form.classList.toggle("hidden");
   }
 </script>
+<!-- Auto-scroll to a specific post when opened via URL -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
