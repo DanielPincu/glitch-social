@@ -122,7 +122,7 @@ class PasswordController {
             $mail->Host       = 'websmtp.simply.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'echo@danielpincu.dev';
-            $mail->Password   = 'password_here';  //Password here
+            $mail->Password   = $_SERVER['SMTP_PASSWORD'];
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
 

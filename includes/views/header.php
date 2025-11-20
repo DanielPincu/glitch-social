@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MatrixConnect - Social Platform</title>
+  <title>Glιτch Sσcιαl</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/feather-icons"></script>
   <script>var TENOR_API_KEY = "<?php echo getenv('TENOR_API_KEY'); ?>";</script>

@@ -1,10 +1,20 @@
 <?php
+
+//Søren Feedback: Added secure storage for DB credentials using environment variables.
 class Database {
-    private $host = 'localhost';
-    private $db_name = 'Glitch_Social';
-    private $username = 'root';
-    private $password = '';
-    private $charset = 'utf8';
+    private $host;
+    private $db_name;
+    private $username;
+    private $password;
+    private $charset;
+
+    public function __construct() {
+        $this->host     = $_SERVER['DB_HOST']    ?? 'localhost';
+        $this->db_name  = $_SERVER['DB_NAME']    ?? 'Glitch_Social';
+        $this->username = $_SERVER['DB_USER']    ?? 'root';
+        $this->password = $_SERVER['DB_PASS']    ?? '';
+        $this->charset  = $_SERVER['DB_CHARSET'] ?? 'utf8';
+    }
 
     public function connect(): PDO {
         try {
