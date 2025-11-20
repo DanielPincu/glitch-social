@@ -285,6 +285,7 @@
                 $user_id = $session->getUserId();
                 $allowed = '<strong><em><u><span><img>';
                 $content = isset($_POST['content']) ? strip_tags($_POST['content'], $allowed) : '';
+                $content = $this->convertYouTubeLinks($content);
                 $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
                 $imageFile = $_FILES['imageFile'] ?? null;
                 $post_id = $this->createPost($user_id, $content, $imageFile, $visibility);
@@ -345,8 +346,9 @@
                     exit();
                 }
                 $post_id = $_POST['post_id'] ?? null;
-                $allowed = '<strong><em><u><span><img>';
+                $allowed = '<strong><em><u><span><img><iframe>';
                 $new_content = isset($_POST['new_content']) ? strip_tags($_POST['new_content'], $allowed) : '';
+                $new_content = $this->convertYouTubeLinks($new_content);
                 $remove_image = !empty($_POST['remove_image']);
                 // Ignore remove checkbox if a new image is being uploaded
                 $new_image_file = $_FILES['new_image'] ?? null;
@@ -412,5 +414,30 @@
             if ($relativePath && file_exists($fullPath)) {
                 unlink($fullPath);
             }
+        }
+
+        // Converts plain YouTube URLs and Shorts into embed iframes
+        private function convertYouTubeLinks($text) {
+            // Match /shorts/<id>
+            $shortsPattern = '/https?:\/\/(?:www\.)?youtube\.com\/shorts\/([A-Za-z0-9_-]+)/i';
+
+            // Convert Shorts to tall embed
+            $text = preg_replace(
+                $shortsPattern,
+                '<iframe class="yt-embed" width="315" height="560" src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>',
+                $text
+            );
+
+            // Match normal YouTube URLs, ignoring timestamp (&t=...) and other query params
+            $pattern = '/https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)(?:[^\s<]*)/i';
+
+            // Convert standard video links using a callback to strip timestamp and query data
+            return preg_replace_callback(
+                $pattern,
+                function ($m) {
+                    return '<iframe class="yt-embed" width="560" height="315" src="https://www.youtube.com/embed/' . $m[1] . '" frameborder="0" allowfullscreen></iframe>';
+                },
+                $text
+            );
         }
 }

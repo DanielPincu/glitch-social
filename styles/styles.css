@@ -188,3 +188,30 @@
     padding: 0 4px !important;
     margin-top: 2px !important;
 }
+
+/* Make YouTube button match GIF button style */
+.ql-toolbar .ql-youtube::before {
+    content: "YouTube";
+    background: #7c3005ff;
+    padding: 2px 4px;
+    border-radius: 3px;
+    border: 1px solid #7AA0E0;
+    font-size: 14px;
+    color: #7AA0E0;
+}
+
+/* Align YouTube button with other toolbar icons */
+.ql-toolbar .ql-youtube {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 24px !important;
+    padding: 0 4px !important;
+    margin-top: 2px !important;
+    margin-left: 28px !important;
+}
+
+/* Hide any leftover SVG inside the YouTube button */
+.ql-toolbar .ql-youtube svg {
+    display: none !important;
+}

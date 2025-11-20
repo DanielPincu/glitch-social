@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
         toolbar: {
           container: [
             ["bold", "italic", "underline"],
-            [{ 'color': ['#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'] }],
+            [{ 'color': ['#000000', '#FF6B6B', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'] }],
             ["gif"]
           ],
           handlers: {

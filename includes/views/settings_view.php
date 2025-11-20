@@ -41,7 +41,11 @@
           <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
             <?php foreach ($posts as $post): ?>
               <div class="bg-black bg-opacity-70 border border-teal-500 rounded-lg p-4">
-                <p class="text-green-400 mb-2"><?php echo $post['content']; ?></p>
+                <div class="text-green-400 mb-2 
+                            [&_iframe]:w-64 [&_iframe]:h-64 [&_iframe]:mx-auto [&_iframe]:block
+                            [&_img]:w-64 [&_img]:h-auto [&_img]:mx-auto [&_img]:block">
+                  <?php echo $post['content']; ?>
+                </div>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-2">
                     <img id="previewImg-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
@@ -73,7 +77,9 @@
                 <form id="edit-form-<?php echo $post['id']; ?>" method="post" action="index.php?page=settings" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                   <div id="quill-edit-<?php echo $post['id']; ?>" 
-                       class="quill-edit w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2"
+                       class="quill-edit w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2 
+                              [&_iframe]:w-64 [&_iframe]:h-64 [&_iframe]:mx-auto [&_iframe]:block
+                              [&_img]:w-64 [&_img]:h-auto [&_img]:mx-auto [&_img]:block"
                        data-initial="<?php echo htmlspecialchars($post['content'], ENT_QUOTES); ?>"></div>
                   <input type="hidden" name="new_content" id="quill-edit-input-<?php echo $post['id']; ?>">
 
@@ -217,7 +223,11 @@
                   <a href="index.php?page=profile&id=<?php echo $post['user_id']; ?>" class="text-cyan-300 font-bold mr-3">@<?php echo htmlspecialchars($post['username']); ?></a>
                   <small class="text-gray-300">Posted on: <?php echo $post['created_at']; ?></small>
                 </div>
-                <p class="text-cyan-100 mb-2"><?php echo $post['content']; ?></p>
+                <div class="text-cyan-100 mb-2 
+                            [&_iframe]:w-64 [&_iframe]:h-64 [&_iframe]:mx-auto [&_iframe]:block
+                            [&_img]:w-64 [&_img]:h-auto [&_img]:mx-auto [&_img]:block">
+                  <?php echo $post['content']; ?>
+                </div>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-2">
                     <img id="previewImg-admin-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
@@ -253,7 +263,11 @@
           <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
             <?php foreach ($posts as $post): ?>
               <div class="bg-slate-700 bg-opacity-70 border border-teal-500 rounded-lg p-4">
-                <p class="text-green-400 mb-2"><?php echo $post['content']; ?></p>
+                <div class="text-green-400 mb-2 
+                            [&_iframe]:w-64 [&_iframe]:h-64 [&_iframe]:mx-auto [&_iframe]:block
+                            [&_img]:w-32 [&_img]:h-auto [&_img]:mx-auto [&_img]:block">
+                  <?php echo $post['content']; ?>
+                </div>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-2">
                     <img id="previewImg-post-<?php echo $post['id']; ?>" src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" class="max-w-full h-auto rounded cursor-pointer" />
@@ -285,7 +299,9 @@
                 <form id="edit-form-<?php echo $post['id']; ?>" method="post" action="index.php?page=settings" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                   <div id="quill-edit-<?php echo $post['id']; ?>" 
-                       class="quill-edit w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2"
+                       class="quill-edit w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2 
+                              [&_iframe]:w-64 [&_iframe]:h-64 [&_iframe]:mx-auto [&_iframe]:block
+                              [&_img]:w-32 [&_img]:h-auto [&_img]:mx-auto [&_img]:block"
                        data-initial="<?php echo htmlspecialchars($post['content'], ENT_QUOTES); ?>"></div>
                   <input type="hidden" name="new_content" id="quill-edit-input-<?php echo $post['id']; ?>">
 

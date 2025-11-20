@@ -94,13 +94,45 @@ if (document.querySelector('#quill-editor')) {
                 container: [
                     ['bold', 'italic', 'underline'],
                     [{ 'color': ['#ffffff', '#ffea00', '#00ff9d', '#ffd1dc', '#ff6b6b', '#1a1a1a'] }],
-                    ['gif']
+                    ['gif', 'youtube']
                 ],
                 handlers: {
                     gif: function () {
                         if (window.openGifPanelForQuill) {
                             window.openGifPanelForQuill(quillCreate);
                         }
+                    },
+                    youtube: function () {
+                        const btn = this.container.querySelector('.ql-youtube');
+                        if (!btn) return;
+
+                        let tip = btn.querySelector('.yt-tip');
+                        if (tip) {
+                            tip.remove();
+                        }
+
+                        tip = document.createElement('div');
+                        tip.className = 'yt-tip';
+                        tip.textContent = "Paste any YouTube link in the editor.";
+                        tip.style.position = "absolute";
+                        tip.style.top = "110%";
+                        tip.style.left = "50%";
+                        tip.style.transform = "translateX(-50%)";
+                        tip.style.background = "#1a1a1a";
+                        tip.style.color = "#7AA0E0";
+                        tip.style.padding = "6px 10px";
+                        tip.style.border = "1px solid #7AA0E0";
+                        tip.style.borderRadius = "4px";
+                        tip.style.whiteSpace = "nowrap";
+                        tip.style.zIndex = "9999";
+                        tip.style.fontSize = "13px";
+
+                        btn.style.position = "relative";
+                        btn.appendChild(tip);
+
+                        setTimeout(() => {
+                            if (tip) tip.remove();
+                        }, 2500);
                     }
                 }
             }
@@ -131,13 +163,45 @@ document.querySelectorAll('.quill-edit').forEach(function(editorDiv) {
                 container: [
                     ['bold', 'italic', 'underline'],
                     [{ 'color': ['#ffffff', '#ffea00', '#00ff9d', '#ffd1dc', '#ff6b6b', '#1a1a1a'] }],
-                    ['gif']
+                    ['gif', 'youtube']
                 ],
                 handlers: {
                     gif: function () {
                         if (window.openGifPanelForQuill) {
                             window.openGifPanelForQuill(quillEdit);
                         }
+                    },
+                    youtube: function () {
+                        const btn = this.container.querySelector('.ql-youtube');
+                        if (!btn) return;
+
+                        let tip = btn.querySelector('.yt-tip');
+                        if (tip) {
+                            tip.remove();
+                        }
+
+                        tip = document.createElement('div');
+                        tip.className = 'yt-tip';
+                        tip.textContent = "Paste any YouTube link in the editor.";
+                        tip.style.position = "absolute";
+                        tip.style.top = "110%";
+                        tip.style.left = "50%";
+                        tip.style.transform = "translateX(-50%)";
+                        tip.style.background = "#1a1a1a";
+                        tip.style.color = "#7AA0E0";
+                        tip.style.padding = "6px 10px";
+                        tip.style.border = "1px solid #7AA0E0";
+                        tip.style.borderRadius = "4px";
+                        tip.style.whiteSpace = "nowrap";
+                        tip.style.zIndex = "9999";
+                        tip.style.fontSize = "13px";
+
+                        btn.style.position = "relative";
+                        btn.appendChild(tip);
+
+                        setTimeout(() => {
+                            if (tip) tip.remove();
+                        }, 2500);
                     }
                 }
             }
@@ -159,7 +223,7 @@ document.querySelectorAll("[data-comment-editor]").forEach(function(el) {
 
     var toolbar = [
         ["bold", "italic", "underline"], 
-        [{ 'color': ['#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'] }],
+        [{ 'color': ['#000000', '#FF6B6B', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'] }],
         ["gif"]
     ];
 

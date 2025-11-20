@@ -238,7 +238,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="mb-3 post-content prose prose-invert max-w-none text-left [&>img]:mx-auto [&>img]:my-3"><?php echo $post['content']; ?></div>
+                <div class="mb-3 post-content prose prose-invert max-w-none text-left [&>img]:mx-auto [&>img]:my-3 [&_iframe]:mx-auto [&_iframe]:block"><?php echo $post['content']; ?></div>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-3 border-2 border-white bg-black flex justify-center">
                     <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-auto max-h-[600px] object-contain">
@@ -384,7 +384,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="mb-3 post-content prose prose-invert max-w-none text-left [&>img]:mx-auto [&>img]:my-3"><?php echo $post['content']; ?></div>
+                <div class="mb-3 post-content prose prose-invert max-w-none text-left [&>img]:mx-auto [&>img]:my-3 [&_iframe]:mx-auto [&_iframe]:block"><?php echo $post['content']; ?></div>
                 <?php if (!empty($post['image_path'])): ?>
                   <div class="mb-3 border-2 border-white bg-black flex justify-center">
                     <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post image" class="w-auto max-h-[600px] object-contain">
