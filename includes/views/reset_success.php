@@ -1,5 +1,3 @@
-
-
 <div class="min-h-screen flex justify-center items-center bg-gradient-to-br from-green-900 to-emerald-700 text-white">
   <div class="bg-black bg-opacity-60 p-8 rounded-xl border border-green-500 shadow-lg w-full max-w-md text-center">
     <h2 class="text-2xl font-bold mb-4 text-green-400">Password Reset Successful</h2>
