@@ -288,6 +288,15 @@
                 $content = $this->convertYouTubeLinks($content);
                 $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
                 $imageFile = $_FILES['imageFile'] ?? null;
+                $trimmedContent = trim(strip_tags($content));
+
+                // Require text always, even if an image is uploaded
+                if ($trimmedContent === '') {
+                    $_SESSION['error'] = "A post needs actual text to say the least before it can be transmitted down the wire...";
+                    $session->generateCsrfToken();
+                    header("Location: index.php");
+                    exit();
+                }
                 $post_id = $this->createPost($user_id, $content, $imageFile, $visibility);
                 // Always update last_post_time after a successful or failed submission (after cooldown passes)
                 $_SESSION['last_post_time'] = $now;
