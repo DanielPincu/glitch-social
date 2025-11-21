@@ -10,6 +10,11 @@ $pdo = $database->connect();
 
 // 3. Resolve page and title
 $page = $_GET['page'] ?? 'home';
+// Skip notifications and UI on password reset pages
+if ($page === 'reset_password' || $page === 'forgot_password') {
+    $skipNotifications = true;
+    $skipUI = true;
+}
 $title = '';
 
 // 4. Instantiate controllers

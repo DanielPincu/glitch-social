@@ -16,7 +16,7 @@
 <body class="matrix-bg font-[Windows Regular] text-white z-10 relative">
   <!-- Matrix Rain Background -->
   <canvas id="matrix-rain"></canvas>
-  <?php if (!empty($_SESSION['user_id'])) { ?>
+  <?php if (!empty($_SESSION['user_id']) && (empty($skipUI) || !isset($skipUI))) { ?>
   <!-- Taskbar -->
   <nav class="fixed bottom-0 left-0 right-0 bg-gradient-to-b from-blue-600 via-blue-500 to-blue-600 h-10 flex items-center px-4 z-50">
     <button id="start-button" class="xp-button px-4 py-1 rounded-sm flex items-center gap-1 bg-gradient-to-b from-[#6aa8f7] to-[#3b6db3] border border-[#3a6ea5] shadow-[inset_1px_1px_0px_#ffffff,inset_-1px_-1px_0px_#2d4c75] active:translate-y-[2px] active:shadow-inner active:bg-blue-700">
@@ -47,6 +47,7 @@
         ONLINE
       </div>
       <div class="relative">
+<?php if (empty($skipNotifications)): ?>
         <button id="notif-button" class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm flex items-center relative active:translate-y-[2px] active:shadow-inner active:bg-blue-700">
           <i data-feather="bell" class="w-4 h-4"></i>
           <?php
@@ -98,6 +99,7 @@
   <?php endif; ?>
 </div>
         </div>
+<?php endif; ?>
       </div>
       <div class="text-xs">
         <span id="current-time"></span>
@@ -184,4 +186,4 @@
       </button>
     </div>
   </div>
-  <?php } ?>
+  <?php } // end UI ?>

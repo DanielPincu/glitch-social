@@ -22,6 +22,8 @@ class PasswordController {
 
     public function showForgotPassword() {
         $session = $this->session;
+        $skipUI = true;
+        $skipNotifications = true;
         require __DIR__ . '/../views/header.php';
         echo $this->forgotPassword();
         require __DIR__ . '/../views/footer.php';
@@ -29,6 +31,8 @@ class PasswordController {
 
     public function showResetPassword() {
         $session = $this->session;
+        $skipUI = true;
+        $skipNotifications = true;
         require __DIR__ . '/../views/header.php';
         echo $this->resetPassword();
         require __DIR__ . '/../views/footer.php';
