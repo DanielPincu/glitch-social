@@ -10,6 +10,7 @@ $pdo = $database->connect();
 
 // 3. Resolve page and title
 $page = $_GET['page'] ?? 'home';
+
 // Skip notifications and UI on password reset pages
 if ($page === 'reset_password' || $page === 'forgot_password') {
     $skipNotifications = true;
@@ -17,7 +18,9 @@ if ($page === 'reset_password' || $page === 'forgot_password') {
 }
 $title = '';
 
-// 4. Instantiate controllers
+// 3. Instantiate models and controllers
+
+// ==== MODELS ====
 $userModel = new User($pdo);
 $profileModel = new Profile($pdo);
 $postModel = new Post($pdo);
@@ -25,15 +28,16 @@ $passwordModel = new Password($pdo);
 $notificationModel = new Notification($pdo);
 $zionChat = new ZionChat($pdo);
 $termsModel = new Terms($pdo);
-$profileController = new ProfileController($pdo, $profileModel, $postModel, $userModel, null);
-$userController = new UserController($pdo, $userModel, $profileController);
-$profileController->setUserController($userController);
-$userController->handleFollowAction($session);
 
+// ==== CONTROLLERS ====
+$profileController = new ProfileController($pdo, $profileModel, $postModel, $userModel);
+$userController = new UserController($pdo, $userModel, $profileController);
 $postController = new PostController($pdo, $postModel, $userModel);
 $adminController = new AdminController($pdo, $userModel, $profileController);
 
 $ajaxController = new AjaxController($session, $userModel, $postModel, $notificationModel, $zionChat);
+
+// Intercepts all AJAX actions (likes, comments, chat) and it must run before page router. 
 $ajaxController->handleRequest();
 
 
