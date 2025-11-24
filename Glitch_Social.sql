@@ -147,8 +147,26 @@ CREATE TRIGGER after_follow_insert_notification
 AFTER INSERT ON followers
 FOR EACH ROW
 BEGIN
-  INSERT INTO notifications (user_id, actor_id, post_id, type)
-  VALUES (NEW.user_id, NEW.follower_id, NULL, 'follow');
+  -- Prevent duplicate follow notifications
+  IF NOT EXISTS (
+      SELECT 1 FROM notifications
+      WHERE user_id = NEW.user_id
+        AND actor_id = NEW.follower_id
+        AND type = 'follow'
+  ) THEN
+      INSERT INTO notifications (user_id, actor_id, post_id, type)
+      VALUES (NEW.user_id, NEW.follower_id, NULL, 'follow');
+  END IF;
+END //
+
+CREATE TRIGGER after_follow_delete_notification
+AFTER DELETE ON followers
+FOR EACH ROW
+BEGIN
+  DELETE FROM notifications
+  WHERE user_id = OLD.user_id
+    AND actor_id = OLD.follower_id
+    AND type = 'follow';
 END //
 
 CREATE TRIGGER after_blocked_users_insert_delete_likes
