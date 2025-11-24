@@ -58,7 +58,7 @@ class HomeController {
         }));
 
         // Filter out posts from blocked users
-        $blockedUsersList = $this->userController->getBlockedUsers($viewer_id) ?? [];
+        $blockedUsersList = $this->profileController->getBlockedUsers($viewer_id) ?? [];
         $blockedIds = array_map(function($b) {
             if (isset($b['blocked_id'])) {
                 return $b['blocked_id'];

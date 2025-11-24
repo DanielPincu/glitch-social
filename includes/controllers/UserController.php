@@ -82,52 +82,6 @@ class UserController {
     }
 
    
-    // User-to-User Blocking System
-   
-
-    // Block another user (user-to-user block)
-    public function blockUserByUser($blocker_id, $blocked_id) {
-        return $this->user->blockUser($blocker_id, $blocked_id);
-    }
-
-    // Unblock a user
-    public function unblockUserByUser($blocker_id, $blocked_id) {
-        return $this->user->unblockUser($blocker_id, $blocked_id);
-    }
-
-    // Check if a user is blocked by another user
-    public function isUserBlockedByUser($blocker_id, $blocked_id) {
-        return $this->user->isUserBlocked($blocker_id, $blocked_id);
-    }
-
-    // Get all users blocked by this user
-    public function getBlockedUsersByUser($blocker_id) {
-        if (empty($blocker_id)) {
-            return [];
-        }
-        return $this->user->getBlockedUsers($blocker_id);
-    }
-
-    // Check if the current user has blocked another user
-    public function hasUserBlocked($blocker_id, $blocked_id) {
-        if (empty($blocker_id) || empty($blocked_id)) {
-            return false;
-        }
-        return $this->user->isUserBlocked($blocker_id, $blocked_id);
-    }
-    // New method to get all users blocked by a given user ID
-    public function getBlockedUsers($user_id) {
-        $userModel = new User($this->pdo);
-        return $userModel->getBlockedUsers($user_id);
-    }
-    // Search users by username
-    public function searchUsers($query) {
-        if (empty($query)) {
-            return [];
-        }
-        return $this->user->searchByUsername($query);
-    }
-   
     // Custom Handlers
    
 
@@ -215,51 +169,11 @@ class UserController {
         require_once __DIR__ . '/../views/footer.php';
     }
 
-    // 3. Handle follow/unfollow POST actions
-    public function handleFollowAction($session) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['follow_action']) && isset($_POST['followed_id'])) {
-            $follower_id = $session->getUserId();
-            $followed_id = $_POST['followed_id'];
-            if ($follower_id && $followed_id) {
-                $profileController = $this->profileController;
-                $profileController->toggleFollow($follower_id, $followed_id);
-            }
-            header('Location: index.php?page=profile&id=' . urlencode($followed_id));
-            exit();
+    public function searchUsers($query) {
+        if (empty($query)) {
+            return [];
         }
-    }
-
-    // 4. Handle block and unblock POST actions
-    public function handleBlockActions($session) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $blocker_id = $session->getUserId();
-            // Block user
-            if (isset($_POST['block_user']) && isset($_POST['blocked_id'])) {
-                $blocked_id = $_POST['blocked_id'];
-                if ($blocker_id && $blocked_id) {
-                    $profileController = $this->profileController;
-                    $profileController->blockUserAndUnfollow($blocker_id, $blocked_id);
-                }
-                // Determine redirect: if in settings, go to settings, else profile
-                $redirect = isset($_POST['from_settings'])
-                    ? 'index.php?page=settings'
-                    : ('index.php?page=profile&id=' . urlencode($blocked_id));
-                header('Location: ' . $redirect);
-                exit();
-            }
-            // Unblock user
-            if (isset($_POST['unblock_user']) && isset($_POST['blocked_id'])) {
-                $blocked_id = $_POST['blocked_id'];
-                if ($blocker_id && $blocked_id) {
-                    $this->unblockUserByUser($blocker_id, $blocked_id);
-                }
-                $redirect = isset($_POST['from_settings'])
-                    ? 'index.php?page=settings'
-                    : ('index.php?page=profile&id=' . urlencode($blocked_id));
-                header('Location: ' . $redirect);
-                exit();
-            }
-        }
+        return $this->user->searchByUsername($query);
     }
 
     // 5. Handle user search

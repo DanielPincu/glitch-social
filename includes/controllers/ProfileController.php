@@ -18,8 +18,8 @@ class ProfileController {
         return $this->userModel->isUserBlocked($blockerId, $blockedId);
     }
 
-    
-    private function handleBlockActions($session) {
+    public function handleBlockActions($session)
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
         if (!$session || !$session->isLoggedIn()) return;
 
@@ -31,26 +31,27 @@ class ProfileController {
             if ($blockedId > 0 && $blockedId !== $blockerId) {
                 $this->blockUserAndUnfollow($blockerId, $blockedId);
             }
-            return;
+            $redirect = isset($_POST['from_settings']) ? 'index.php?page=settings' : ('index.php?page=profile&id=' . $blockedId);
+            header('Location: ' . $redirect);
+            exit;
         }
 
         if (isset($_POST['unblock_user'], $_POST['blocked_id'])) {
             $blockedId = (int)$_POST['blocked_id'];
             if ($blockedId > 0 && $blockedId !== $blockerId) {
-                // Assumes signature (blocker_id, blocked_id), same as blockUser
                 $this->userModel->unblockUser($blockerId, $blockedId);
             }
-            return;
+            $redirect = isset($_POST['from_settings']) ? 'index.php?page=settings' : ('index.php?page=profile&id=' . $blockedId);
+            header('Location: ' . $redirect);
+            exit;
         }
     }
 
-    // Handle follow/unfollow actions locally
-    private function handleFollowActions($session)
+    public function handleFollowActions($session)
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
         if (!$session || !$session->isLoggedIn()) return;
 
-        // New follow/unfollow button name
         if (!isset($_POST['follow_action'])) return;
 
         $followerId = (int)$session->getUserId();
@@ -306,7 +307,6 @@ class ProfileController {
         $this->handleProfileUpdate($user_id, $session);
         $this->handleAccountDeletion($user_id, $session);
 
-        
         $this->handleBlockActions($session);
         $this->handleFollowActions($session);
 
@@ -329,5 +329,11 @@ class ProfileController {
         require_once __DIR__ . '/../views/header.php';
         require_once __DIR__ . '/../views/profile_view.php';
         require_once __DIR__ . '/../views/footer.php';
+    }
+    public function getBlockedUsers($userId) {
+        if (empty($userId)) {
+            return [];
+        }
+        return $this->userModel->getBlockedUsers($userId);
     }
 }

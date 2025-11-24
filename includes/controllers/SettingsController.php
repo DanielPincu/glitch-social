@@ -4,14 +4,16 @@ class SettingsController {
     private $pdo;
     private $session;
     private $userController;
+    private $profileController;
     private $postController;
     private $adminController;
     private $termsModel;
 
-    public function __construct($pdo, $session, $userController, $postController, $adminController, $termsModel) {
+    public function __construct($pdo, $session, $userController, $profileController, $postController, $adminController, $termsModel) {
         $this->pdo = $pdo;
         $this->session = $session;
         $this->userController = $userController;
+        $this->profileController = $profileController;
         $this->postController = $postController;
         $this->adminController = $adminController;
         $this->termsModel = $termsModel;
@@ -43,7 +45,7 @@ class SettingsController {
                 exit;
             }
 
-            $this->userController->handleBlockActions($this->session);
+            $this->profileController->handleBlockActions($this->session);
             $this->postController->handlePostUpdate($this->session);
             $this->postController->handlePostDelete($this->session);
 
@@ -55,7 +57,7 @@ class SettingsController {
 
         // Load user data
         $posts = $this->postController->getPostsByUser($user_id);
-        $blockedUsers = $this->userController->getBlockedUsers($user_id);
+        $blockedUsers = $this->profileController->getBlockedUsers($user_id);
         $termsContent = $this->termsModel->getCurrent();
 
         $updaterUsername = null;
@@ -75,6 +77,7 @@ class SettingsController {
         $title = "Settings";
         $session = $this->session;
         $userController = $this->userController;
+        $profileController = $this->profileController;
         $currentUserId = $user_id;
         $pdo = $this->pdo;
         require __DIR__ . '/../views/header.php';

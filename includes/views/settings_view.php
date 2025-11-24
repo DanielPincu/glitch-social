@@ -353,7 +353,7 @@
     <section class="border border-red-400 rounded-lg p-6 bg-black bg-opacity-60 mt-8">
       <h2 class="text-2xl font-bold text-red-400 mb-4 border-b border-red-400 pb-2">Blocked Users</h2>
       <?php 
-        $blockedUsers = $userController->getBlockedUsersByUser($session->getUserId());
+        $blockedUsers = $profileController->getBlockedUsers($session->getUserId());
       ?>
       <?php if (!empty($blockedUsers)): ?>
         <div class="space-y-3">

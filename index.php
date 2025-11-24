@@ -84,6 +84,7 @@ case 'settings':
             $pdo,
             $session,
             $userController,
+            $profileController,
             $postController,
             $adminController,
             $termsController
