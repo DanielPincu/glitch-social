@@ -73,8 +73,17 @@ switch ($page) {
         header("Location: index.php?page=home&id=" . urlencode($_GET['id'] ?? ''));
         exit;
 
-    case 'settings':
-        $settingsController = new SettingsController($pdo, $session, $userController, $postController, $adminController);
+case 'settings':
+        $termsModel = new Terms($pdo);
+        $termsController = new TermsController($termsModel, $session);
+        $settingsController = new SettingsController(
+            $pdo,
+            $session,
+            $userController,
+            $postController,
+            $adminController,
+            $termsController
+        );
         $settingsController->show();
         break;
 

@@ -9,6 +9,10 @@ class TermsController {
         $this->session = $session;
     }
 
+    public function getCurrent() {
+        return $this->termsModel->getCurrent();
+    }
+
     public function showTerms() {
         $terms = $this->termsModel->getCurrent();
         if (!$terms || empty($terms['content'])) {
@@ -30,7 +34,7 @@ class TermsController {
             $latestTerms = $this->termsModel->getCurrent();
             return [
                 'success' => true,
-                'message' => "Terms updated successfully by " . $this->session->get('username') . " on " . date('Y-m-d H:i:s'),
+                'message' => "Terms updated successfully by " . ($_SESSION['username']) . " on " . date('Y-m-d H:i:s'),
                 'updated_at' => $latestTerms['updated_at'] ?? null,
             ];
         } else {

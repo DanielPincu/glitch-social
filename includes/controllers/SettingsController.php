@@ -6,13 +6,15 @@ class SettingsController {
     private $userController;
     private $postController;
     private $adminController;
+    private $termsModel;
 
-    public function __construct($pdo, $session, $userController, $postController, $adminController) {
+    public function __construct($pdo, $session, $userController, $postController, $adminController, $termsModel) {
         $this->pdo = $pdo;
         $this->session = $session;
         $this->userController = $userController;
         $this->postController = $postController;
         $this->adminController = $adminController;
+        $this->termsModel = $termsModel;
     }
 
     public function show() {
@@ -28,10 +30,8 @@ class SettingsController {
         // Handle POST requests (profile actions, blocking, posts)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($isAdmin && isset($_POST['update_terms'])) {
-                $termsController = new TermsController($this->pdo);
                 $content = trim($_POST['terms_content'] ?? '');
-                $updateResult = $termsController->updateTerms($user_id, $content);
-
+                $updateResult = $this->termsModel->updateTerms($user_id, $content);
                 if ($updateResult['success']) {
                     $_SESSION['success'] = $updateResult['message'];
                     $_SESSION['last_updated_at'] = $updateResult['updated_at'];
@@ -56,13 +56,11 @@ class SettingsController {
         // Load user data
         $posts = $this->postController->getPostsByUser($user_id);
         $blockedUsers = $this->userController->getBlockedUsers($user_id);
-        $termsModel = new Terms($this->pdo);
-        $termsContent = $termsModel->getCurrent();
+        $termsContent = $this->termsModel->getCurrent();
 
         $updaterUsername = null;
         if (!empty($termsContent['updated_by'])) {
-            $userModel = new User($this->pdo);
-            $updater = $userModel->getUserById($termsContent['updated_by']);
+            $updater = $this->userController->getUserById($termsContent['updated_by']);
             $updaterUsername = $updater['username'] ?? ('User ID: ' . $termsContent['updated_by']);
         }
 
