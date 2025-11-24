@@ -5,12 +5,14 @@ class ProfileController {
     private $postModel;
     private $userModel;
     private $pdo;
+    private $userController;
 
-    public function __construct($pdo) {
+    public function __construct($pdo, $profileModel, $postModel, $userModel, $userController) {
         $this->pdo = $pdo;
-        $this->profileModel = new Profile($this->pdo);
-        $this->postModel = new Post($this->pdo);
-        $this->userModel = new User($this->pdo);
+        $this->profileModel = $profileModel;
+        $this->postModel = $postModel;
+        $this->userModel = $userModel;
+        $this->userController = $userController;
     }
 
     // Get profile info and their posts
@@ -288,9 +290,7 @@ class ProfileController {
         $this->handleAccountDeletion($user_id, $session);
 
         // Step 4: Handle user blocking/unblocking
-        require_once __DIR__ . '/UserController.php';
-        $userController = new UserController($this->pdo);
-        $userController->handleBlockActions($session);
+        $this->userController->handleBlockActions($session);
 
         // Step 5: Fetch profile and posts
         $data = $this->showProfile($user_id);
@@ -306,11 +306,15 @@ class ProfileController {
         $posts = $data['posts'];
         $canEditProfile = ($session->getUserId() == $profileData['id']);
         $controller = $this;
+        $userController = $this->userController;
 
         // Step 7: Render header, profile view, and footer
         $pdo = $this->pdo;
         require_once __DIR__ . '/../views/header.php';
         require_once __DIR__ . '/../views/profile_view.php';
         require_once __DIR__ . '/../views/footer.php';
+    }
+    public function setUserController($userController) {
+        $this->userController = $userController;
     }
 }

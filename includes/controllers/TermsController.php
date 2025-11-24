@@ -1,12 +1,12 @@
 <?php
 
 class TermsController {
-    private $pdo;
     private $termsModel;
+    private $session;
 
-    public function __construct($pdo) {
-        $this->pdo = $pdo;
-        $this->termsModel = new Terms($this->pdo);
+    public function __construct($termsModel, $session) {
+        $this->termsModel = $termsModel;
+        $this->session = $session;
     }
 
     public function showTerms() {
@@ -30,7 +30,7 @@ class TermsController {
             $latestTerms = $this->termsModel->getCurrent();
             return [
                 'success' => true,
-                'message' => "Terms updated successfully by {$_SESSION['username']} on " . date('Y-m-d H:i:s'),
+                'message' => "Terms updated successfully by " . $this->session->get('username') . " on " . date('Y-m-d H:i:s'),
                 'updated_at' => $latestTerms['updated_at'] ?? null,
             ];
         } else {
@@ -40,7 +40,7 @@ class TermsController {
 
     public function show() {
         $title = "Terms and Regulations";
-        $session = new Session();
+        $session = $this->session;
 
         require __DIR__ . '/../views/header.php';
         $this->showTerms();

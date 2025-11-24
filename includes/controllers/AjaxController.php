@@ -2,18 +2,18 @@
 class AjaxController
 {
     private $session;
-    private $userController;
-    private $postController;
+    private $userModel;
+    private $postModel;
+    private $notificationModel;
     private $zionChat;
-    private $pdo;
 
-    public function __construct($session, $userController, $postController, $pdo)
+    public function __construct($session, $userModel, $postModel, $notificationModel, $zionChat)
     {
         $this->session = $session;
-        $this->userController = $userController;
-        $this->postController = $postController;
-        $this->zionChat = new ZionChat($pdo);
-        $this->pdo = $pdo;
+        $this->userModel = $userModel;
+        $this->postModel = $postModel;
+        $this->notificationModel = $notificationModel;
+        $this->zionChat = $zionChat;
     }
 
     public function handleRequest()
@@ -66,7 +66,7 @@ class AjaxController
         }
 
         $user_id = $this->session->getUserId();
-        if ($this->userController->isBlocked($user_id)) {
+        if ($this->userModel->isBlocked($user_id)) {
             echo json_encode(['success' => false, 'message' => 'User is blocked']);
             exit;
         }
@@ -76,11 +76,11 @@ class AjaxController
 
         if ($post_id && $action) {
             if ($action === 'like') {
-                $this->postController->likePost($post_id, $user_id);
+                $this->postModel->like($post_id, $user_id);
             } elseif ($action === 'unlike') {
-                $this->postController->unlikePost($post_id, $user_id);
+                $this->postModel->unlike($post_id, $user_id);
             }
-            $likeCount = $this->postController->getLikeCount($post_id);
+            $likeCount = $this->postModel->getLikeCount($post_id);
             echo json_encode(['success' => true, 'likes' => $likeCount]);
             exit;
         } else {
@@ -124,11 +124,25 @@ class AjaxController
 
         if ($post_id && $content) {
             $user_id = $this->session->getUserId();
-            $this->postController->addComment($post_id, $user_id, $content);
-            $_SESSION['last_comment_time'] = $now;
+            $newCommentId = $this->postModel->addComment($post_id, $user_id, $content);
+            
+            $newComment = $this->postModel->getCommentById($newCommentId);
 
-            $comments = $this->postController->getComments($post_id);
-            $newComment = end($comments); // latest comment
+            // Fallback if the model returned false
+            if (!$newComment || !is_array($newComment)) {
+                $all = $this->postModel->getComments($post_id);
+                $newComment = is_array($all) ? end($all) : null;
+            }
+
+            if (!$newComment || !is_array($newComment)) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Failed to load the new comment'
+                ]);
+                exit;
+            }
+
+            $_SESSION['last_comment_time'] = $now;
 
             ob_start();
             ?>
@@ -188,7 +202,7 @@ class AjaxController
         $user_id = $this->session->getUserId();
 
         if ($comment_id && $new_content) {
-            $this->postController->updateComment($comment_id, $user_id, $new_content);
+            $this->postModel->updateComment($comment_id, $user_id, $new_content);
             echo json_encode(['success' => true]);
             exit;
         } else {
@@ -210,7 +224,7 @@ class AjaxController
         $user_id = $this->session->getUserId();
 
         if ($comment_id) {
-            $comment = $this->postController->getCommentById($comment_id);
+            $comment = $this->postModel->getCommentById($comment_id);
             $canDelete = false;
 
             if ($this->session->isAdmin()) {
@@ -218,14 +232,14 @@ class AjaxController
             } elseif ($comment && $comment['user_id'] == $user_id) {
                 $canDelete = true;
             } elseif ($comment) {
-                $post = $this->postController->getPostById($comment['post_id']);
+                $post = $this->postModel->getPostById($comment['post_id']);
                 if ($post && $post['user_id'] == $user_id) {
                     $canDelete = true;
                 }
             }
 
             if ($canDelete) {
-                $this->postController->deleteComment($comment_id, $user_id);
+                $this->postModel->deleteComment($comment_id, $user_id);
                 echo json_encode(['success' => true]);
                 exit;
             } else {
@@ -248,8 +262,7 @@ class AjaxController
         }
 
         $userId = $this->session->getUserId();
-        $notificationController = new NotificationController($this->pdo);
-        $notificationController->deleteAllNotifications($userId);
+        $this->notificationModel->deleteAllNotifications($userId);
 
         echo json_encode(['success' => true]);
         exit;
@@ -270,7 +283,7 @@ class AjaxController
         }
 
         $user_id = $this->session->getUserId();
-        if ($this->userController->isBlocked($user_id)) {
+        if ($this->userModel->isBlocked($user_id)) {
             echo json_encode(['success' => false, 'message' => 'Access denied. You are blocked from using chat.']);
             exit;
         }
@@ -338,7 +351,7 @@ class AjaxController
             exit;
         }
         $user_id = $this->session->getUserId();
-        if ($this->userController->isBlocked($user_id)) {
+        if ($this->userModel->isBlocked($user_id)) {
             echo json_encode(['success' => false, 'message' => 'Access denied. You are blocked from using chat.']);
             exit;
         }

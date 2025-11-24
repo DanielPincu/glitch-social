@@ -2,10 +2,12 @@
     class PostController {
         private $post;
         private $pdo;
+        private $userModel;
 
-        public function __construct($pdo) {
+        public function __construct($pdo, $postModel, $userModel) {
             $this->pdo = $pdo;
-            $this->post = new Post($this->pdo);
+            $this->post = $postModel;
+            $this->userModel = $userModel;
         }
 
         // Create a new post with optional image file and visibility
@@ -202,7 +204,7 @@
             }
 
             // Check admin status safely
-            $userModel = new User($this->pdo);
+            $userModel = $this->userModel;
             $isAdmin = $userModel->isAdmin($user_id) || (!empty($_SESSION['is_admin']) && $_SESSION['is_admin']);
 
             // Authorization: comment owner, post owner, or admin

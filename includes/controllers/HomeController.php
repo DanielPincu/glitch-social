@@ -7,12 +7,12 @@ class HomeController {
     private $postController;
     private $profileController;
 
-    public function __construct($pdo) {
+    public function __construct($pdo, $session, $userController, $postController, $profileController) {
         $this->pdo = $pdo;
-        $this->session = new Session();
-        $this->userController = new UserController($this->pdo);
-        $this->postController = new PostController($this->pdo);
-        $this->profileController = new ProfileController($this->pdo);
+        $this->session = $session;
+        $this->userController = $userController;
+        $this->postController = $postController;
+        $this->profileController = $profileController;
     }
 
     public function showHome() {
@@ -76,7 +76,7 @@ class HomeController {
 
         // Filter out posts by admin-blocked users
         $posts = array_filter($posts, function ($post) {
-            $userController = new UserController($this->pdo);
+            $userController = $this->userController;
             $user = $userController->getUserById($post['user_id']);
             return !($user && isset($user['is_blocked']) && $user['is_blocked'] == 1);
         });
@@ -86,7 +86,7 @@ class HomeController {
         });
 
         $followingPosts = array_filter($followingPosts, function ($post) {
-            $userController = new UserController($this->pdo);
+            $userController = $this->userController;
             $user = $userController->getUserById($post['user_id']);
             return !($user && isset($user['is_blocked']) && $user['is_blocked'] == 1);
         });

@@ -18,12 +18,22 @@ if ($page === 'reset_password' || $page === 'forgot_password') {
 $title = '';
 
 // 4. Instantiate controllers
-$userController = new UserController($pdo);
+$userModel = new User($pdo);
+$profileModel = new Profile($pdo);
+$postModel = new Post($pdo);
+$passwordModel = new Password($pdo);
+$notificationModel = new Notification($pdo);
+$zionChat = new ZionChat($pdo);
+$termsModel = new Terms($pdo);
+$profileController = new ProfileController($pdo, $profileModel, $postModel, $userModel, null);
+$userController = new UserController($pdo, $userModel, $profileController);
+$profileController->setUserController($userController);
 $userController->handleFollowAction($session);
 
-$postController = new PostController($pdo);
+$postController = new PostController($pdo, $postModel, $userModel);
+$adminController = new AdminController($pdo, $userModel, $profileController);
 
-$ajaxController = new AjaxController($session, $userController, $postController, $pdo);
+$ajaxController = new AjaxController($session, $userModel, $postModel, $notificationModel, $zionChat);
 $ajaxController->handleRequest();
 
 
@@ -54,7 +64,7 @@ switch ($page) {
             header("Location: index.php?page=login");
             exit;
         }
-        $controller = new ProfileController($pdo);
+        $controller = $profileController;
         $controller->handleProfile($session);
         break;
 
@@ -64,7 +74,7 @@ switch ($page) {
         exit;
 
     case 'settings':
-        $settingsController = new SettingsController($pdo);
+        $settingsController = new SettingsController($pdo, $session, $userController, $postController, $adminController);
         $settingsController->show();
         break;
 
@@ -78,31 +88,32 @@ switch ($page) {
         break;
 
     case 'home':
-        $homeController = new HomeController($pdo);
+        $homeController = new HomeController($pdo, $session, $userController, $postController, $profileController);
         $homeController->showHome();
         break;
 
     case 'forgot_password':
-        $passwordController = new PasswordController($pdo, $session);
+        $passwordController = new PasswordController($pdo, $session, $passwordModel);
         $passwordController->showForgotPassword();
         break;
 
     case 'reset_password':
-        $passwordController = new PasswordController($pdo, $session);
+        $passwordController = new PasswordController($pdo, $session, $passwordModel);
         $passwordController->showResetPassword();
         break;
 
     case 'terms':
-        $termsController = new TermsController($pdo);
+        $termsController = new TermsController($termsModel, $session);
         $termsController->show();
         break;
 
     case 'notifications':
-        $notificationController = new NotificationController($pdo);
+        $notificationController = new NotificationController($notificationModel);
         $notificationController->handleActions();
         break;
 
     case 'statistics':
+        $statisticsModel = new Statistics($pdo);
         $controller = new StatisticsController($pdo);
         $controller->index();
         break;

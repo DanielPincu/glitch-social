@@ -2,6 +2,10 @@
 
 class AdminController extends UserController {
 
+    public function __construct($pdo, $userModel, $profileController) {
+        parent::__construct($pdo, $userModel, $profileController);
+    }
+
     
 
     // Fetch all users (inherited already, but we can alias it for clarity)

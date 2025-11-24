@@ -2,10 +2,12 @@
 class UserController {
     protected $pdo;
     protected $user;
+    protected $profileController;
 
-    public function __construct($pdo) {
+    public function __construct($pdo, $userModel, $profileController) {
         $this->pdo = $pdo;
-        $this->user = new User($this->pdo);
+        $this->user = $userModel;
+        $this->profileController = $profileController;
     }
 
     // Login user
@@ -49,7 +51,7 @@ class UserController {
 
         // If block successful and current user is admin, unfollow both ways
         if ($result && $this->isAdmin()) {
-            $profileController = new ProfileController($this->pdo);
+            $profileController = $this->profileController;
             $admin_id = $_SESSION['user_id'] ?? null;
             if ($admin_id) {
                 $profileController->toggleFollow($admin_id, $user_id);
@@ -219,7 +221,7 @@ class UserController {
             $follower_id = $session->getUserId();
             $followed_id = $_POST['followed_id'];
             if ($follower_id && $followed_id) {
-                $profileController = new ProfileController($this->pdo);
+                $profileController = $this->profileController;
                 $profileController->toggleFollow($follower_id, $followed_id);
             }
             header('Location: index.php?page=profile&id=' . urlencode($followed_id));
@@ -235,7 +237,7 @@ class UserController {
             if (isset($_POST['block_user']) && isset($_POST['blocked_id'])) {
                 $blocked_id = $_POST['blocked_id'];
                 if ($blocker_id && $blocked_id) {
-                    $profileController = new ProfileController($this->pdo);
+                    $profileController = $this->profileController;
                     $profileController->blockUserAndUnfollow($blocker_id, $blocked_id);
                 }
                 // Determine redirect: if in settings, go to settings, else profile

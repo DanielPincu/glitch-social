@@ -50,9 +50,10 @@
 <?php if (empty($skipNotifications)): ?>
         <button id="notif-button" class="bg-gray-200 bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-sm flex items-center relative active:translate-y-[2px] active:shadow-inner active:bg-blue-700">
           <i data-feather="bell" class="w-4 h-4"></i>
+          <?php global $notificationModel; ?>
           <?php
             $userId = isset($session) && method_exists($session, 'getUserId') ? $session->getUserId() : ($_SESSION['user_id'] ?? null);
-            $notificationController = new NotificationController($pdo);
+            $notificationController = new NotificationController($notificationModel);
             $notifCount = $userId ? $notificationController->countUnreadNotifications($userId) : 0;
             if ($notifCount > 0): ?>
               <span class="absolute -top-2 -right-2 bg-red-600 text-white text-sm rounded-full px-2 py-[1px] font-bold"><?php echo $notifCount; ?></span>

@@ -61,11 +61,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 5000);
           }
 
-          // Reset and hide composer
-          if (contentInput) contentInput.value = "";
-          const editorEl = this.querySelector("[data-comment-editor]");
-          if (editorEl && editorEl._quill) {
-            editorEl._quill.root.innerHTML = "";
+          // Fully reset Quill editor content
+          const quillEditor = this.querySelector(".ql-editor");
+          if (quillEditor) {
+            quillEditor.innerHTML = "";
+          }
+
+          // Reset hidden input as backup
+          if (contentInput) {
+            contentInput.value = "";
           }
           const cf = this.closest(".comment-form");
           if (cf) cf.classList.add("hidden");

@@ -7,17 +7,14 @@ require_once __DIR__ . '/../../phpmailer/SMTP.php';
 require_once __DIR__ . '/../../phpmailer/Exception.php';
 
 class PasswordController {
-    private $model;
+    private $passwordModel;
     private $session;
     private $pdo;
 
-    public function __construct($pdo, $session = null) {
+    public function __construct($pdo, $session, $passwordModel) {
         $this->pdo = $pdo;
-        if ($session === null) {
-            $session = new Session();
-        }
         $this->session = $session;
-        $this->model = new Password($this->pdo);
+        $this->passwordModel = $passwordModel;
     }
 
     public function showForgotPassword() {
@@ -52,8 +49,8 @@ class PasswordController {
                 require __DIR__ . '/../views/forgot_password.php';
                 return ob_get_clean();
             }
-            $user = $this->model->findUserByEmail($email);
-            if ($user && $this->model->hasActiveResetToken($email)) {
+            $user = $this->passwordModel->findUserByEmail($email);
+            if ($user && $this->passwordModel->hasActiveResetToken($email)) {
                 $error = "A reset link has already been sent. You can send only one request per hour. Entering now Guru Meditation..";
                 require __DIR__ . '/../views/forgot_password.php';
                 return ob_get_clean();
@@ -61,7 +58,7 @@ class PasswordController {
             if ($user) {
                 $token = bin2hex(random_bytes(32));
                 $expires = date("Y-m-d H:i:s", strtotime("+1 hour"));
-                $this->model->saveResetToken($user['id'], $token, $expires);
+                $this->passwordModel->saveResetToken($user['id'], $token, $expires);
 
                 $resetLink = "https://danielpincu.dev/index.php?page=reset_password&token=" . urlencode($token);
                 $this->sendResetEmail($user['email'], $user['username'], $resetLink);
@@ -85,7 +82,7 @@ class PasswordController {
             return ob_get_clean();
         }
 
-        $user = $this->model->findUserByToken($token);
+        $user = $this->passwordModel->findUserByToken($token);
         if (!$user) {
             $error = "Invalid or expired token.";
             require __DIR__ . '/../views/reset_error.php';
@@ -110,7 +107,7 @@ class PasswordController {
             }
 
             $newPassword = password_hash($password, PASSWORD_DEFAULT);
-            $this->model->updatePassword($user['id'], $newPassword);
+            $this->passwordModel->updatePassword($user['id'], $newPassword);
             require __DIR__ . '/../views/reset_success.php';
             return ob_get_clean();
         }

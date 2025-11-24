@@ -7,12 +7,12 @@ class SettingsController {
     private $postController;
     private $adminController;
 
-    public function __construct($pdo) {
+    public function __construct($pdo, $session, $userController, $postController, $adminController) {
         $this->pdo = $pdo;
-        $this->session = new Session();
-        $this->userController = new UserController($this->pdo);
-        $this->postController = new PostController($this->pdo);
-        $this->adminController = new AdminController($this->pdo);
+        $this->session = $session;
+        $this->userController = $userController;
+        $this->postController = $postController;
+        $this->adminController = $adminController;
     }
 
     public function show() {
