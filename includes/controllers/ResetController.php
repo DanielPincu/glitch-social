@@ -60,7 +60,8 @@ class ResetController {
                 $expires = date("Y-m-d H:i:s", strtotime("+1 hour"));
                 $this->resetModel->saveResetToken($user['id'], $token, $expires);
 
-                $resetLink = "https://danielpincu.dev/index.php?page=reset_password&token=" . urlencode($token);
+                $baseUrl = rtrim($_SERVER['APP_URL'] ?? '', '/');
+                $resetLink = $baseUrl . "/index.php?page=reset_password&token=" . urlencode($token);
                 $this->sendResetEmail($user['email'], $user['username'], $resetLink);
             }
 
@@ -122,12 +123,12 @@ class ResetController {
             $mail->isSMTP();
             $mail->Host       = 'websmtp.simply.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'echo@danielpincu.dev';
+            $mail->Username   = $_SERVER['APP_EMAIL'];
             $mail->Password   = $_SERVER['SMTP_PASSWORD'];
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
 
-            $mail->setFrom('echo@danielpincu.dev', 'Glitch Social');
+            $mail->setFrom($_SERVER['APP_EMAIL'], 'Glitch Social');
             $mail->addAddress($to);
             $mail->isHTML(true);
             $mail->Subject = 'Reset your Glitch Social password';

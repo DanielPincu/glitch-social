@@ -5,14 +5,17 @@ SetEnv DB_HOST "credentials-here"
 SetEnv DB_NAME "credentials-here"
 SetEnv DB_USER "credentials-here"
 SetEnv DB_PASS "credentials-here"
-SetEnv DB_CHARSET "utf8"
+SetEnv DB_CHARSET "utf8" -- or whatever charset you want...
+SetEnv APP_URL "https://danielpincu.dev" -- Your domain name here. It has to be HTTPS or else it won't send.
+SetEnv APP_EMAIL "echo@danielpincu.dev"  -- Your email created ON your domain name. Or else it won't send.
+SetEnv SMTP_PASSWORD "credentials-here"  -- Your email password
         
-                     or whatever charset you want...
+                     And make sure you include .htaccess it in .gitignore 😂😂😂
             
             
 For local development, make sure the localhost credentials in includes/models/Database.php are valid. Make sure to comment the SetEnv credentials in .htaccess file when you work locally, or else you will work on your LIVE database. 
 
-You'be been warned!
+                     You'be been warned!
 
                      Stay safe, don't be evil.
 
