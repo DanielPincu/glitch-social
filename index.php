@@ -24,7 +24,7 @@ $title = '';
 $userModel = new User($pdo);
 $profileModel = new Profile($pdo);
 $postModel = new Post($pdo);
-$passwordModel = new Password($pdo);
+$resetModel = new Reset($pdo);
 $notificationModel = new Notification($pdo);
 $zionChat = new ZionChat($pdo);
 $termsModel = new Terms($pdo);
@@ -34,7 +34,6 @@ $profileController = new ProfileController($pdo, $profileModel, $postModel, $use
 $userController = new UserController($pdo, $userModel, $profileController);
 $postController = new PostController($pdo, $postModel, $userModel);
 $adminController = new AdminController($pdo, $userModel, $profileController);
-
 $ajaxController = new AjaxController($session, $userModel, $postModel, $notificationModel, $zionChat);
 
 // Intercepts all AJAX actions (likes, comments, chat) and it must run before page router. 
@@ -107,13 +106,13 @@ case 'settings':
         break;
 
     case 'forgot_password':
-        $passwordController = new PasswordController($pdo, $session, $passwordModel);
-        $passwordController->showForgotPassword();
+        $resetController = new ResetController($pdo, $session, $resetModel);
+        $resetController->showForgotPassword();
         break;
 
     case 'reset_password':
-        $passwordController = new PasswordController($pdo, $session, $passwordModel);
-        $passwordController->showResetPassword();
+        $resetController = new ResetController($pdo, $session, $resetModel);
+        $resetController->showResetPassword();
         break;
 
     case 'terms':

@@ -1,5 +1,5 @@
 <?php
-class Password {
+class Reset {
     private $pdo;
 
     public function __construct($pdo) {
