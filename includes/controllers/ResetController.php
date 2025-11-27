@@ -60,7 +60,9 @@ class ResetController {
                 $expires = date("Y-m-d H:i:s", strtotime("+1 hour"));
                 $this->resetModel->saveResetToken($user['id'], $token, $expires);
 
-                $baseUrl = rtrim($_SERVER['APP_URL'] ?? '', '/');
+                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+                $host = $_SERVER['HTTP_HOST'] ?? '';
+                $baseUrl = $protocol . rtrim($host, '/');
                 $resetLink = $baseUrl . "/index.php?page=reset_password&token=" . urlencode($token);
                 $this->sendResetEmail($user['email'], $user['username'], $resetLink);
             }

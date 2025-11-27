@@ -1,4 +1,10 @@
 <?php
+// Fix: Redirect index.php/ (with trailing slash) to index.php
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+if (preg_match('#index\.php/+$#', $requestUri)) {
+    header("Location: /index.php");
+    exit;
+}
 require_once __DIR__ . '/autoload.php';
 
 // 1. Start session early
