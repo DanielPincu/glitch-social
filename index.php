@@ -89,6 +89,8 @@ switch ($page) {
 case 'settings':
         $termsModel = new Terms($pdo);
         $termsController = new TermsController($termsModel, $session);
+        $aboutModel = new About($pdo);
+        $aboutController = new AboutController($aboutModel, $session);
         $settingsController = new SettingsController(
             $pdo,
             $session,
@@ -96,7 +98,8 @@ case 'settings':
             $profileController,
             $postController,
             $adminController,
-            $termsController
+            $termsController,
+            $aboutController
         );
         $settingsController->show();
         break;
@@ -128,6 +131,12 @@ case 'settings':
     case 'terms':
         $termsController = new TermsController($termsModel, $session);
         $termsController->show();
+        break;
+
+    case 'about':
+        $aboutModel = new About($pdo);
+        $aboutController = new AboutController($aboutModel, $session);
+        $aboutController->show();
         break;
 
     case 'notifications':

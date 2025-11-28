@@ -8,8 +8,9 @@ class SettingsController {
     private $postController;
     private $adminController;
     private $termsModel;
+    private $aboutModel;
 
-    public function __construct($pdo, $session, $userController, $profileController, $postController, $adminController, $termsModel) {
+    public function __construct($pdo, $session, $userController, $profileController, $postController, $adminController, $termsModel, $aboutModel) {
         $this->pdo = $pdo;
         $this->session = $session;
         $this->userController = $userController;
@@ -17,6 +18,7 @@ class SettingsController {
         $this->postController = $postController;
         $this->adminController = $adminController;
         $this->termsModel = $termsModel;
+        $this->aboutModel = $aboutModel;
     }
 
     public function show() {
@@ -45,6 +47,13 @@ class SettingsController {
                 exit;
             }
 
+            if ($isAdmin && isset($_POST['update_about'])) {
+                $content = trim($_POST['about_content'] ?? '');
+                $this->aboutModel->updateAbout($content, $user_id);
+                header("Location: index.php?page=settings");
+                exit;
+            }
+
             $this->profileController->handleBlockActions($this->session);
             $this->postController->handlePostUpdate($this->session);
             $this->postController->handlePostDelete($this->session);
@@ -59,6 +68,7 @@ class SettingsController {
         $posts = $this->postController->getPostsByUser($user_id);
         $blockedUsers = $this->profileController->getBlockedUsers($user_id);
         $termsContent = $this->termsModel->getCurrent();
+        $aboutContent = $this->aboutModel->getCurrent();
 
         $updaterUsername = null;
         if (!empty($termsContent['updated_by'])) {

@@ -128,6 +128,25 @@ CREATE TABLE terms (
 INSERT INTO terms (content, updated_by) VALUES
 ('Welcome to Glitch Social. By using this site, you agree to follow our community guidelines, respect others, and avoid harmful content. Your continued use of the platform constitutes acceptance of these terms.', NULL);
 
+-- about website
+CREATE TABLE about (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    content VARCHAR(1000) NOT NULL,
+    updated_by INT DEFAULT NULL,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
+INSERT INTO about (content, updated_by)
+VALUES (
+'Welcome to our platform. This page provides background information about our mission, goals, and the principles our community is built on.
+
+We strive to create a safe, inclusive, and supportive environment where users can share, learn, and connect with one another.
+
+Thank you for being part of our journey.',
+NULL
+);
+
 -- triggers
 DELIMITER //
 CREATE TRIGGER after_post_insert_notification

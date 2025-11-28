@@ -408,6 +408,46 @@
       </div>
     </section>
     <?php endif; ?>
+
+    <!-- Edit About Section (admin only) -->
+    <?php if (!empty($isAdmin) && $isAdmin): ?>
+    <section class="border border-blue-400 rounded-lg p-6 bg-black bg-opacity-60 mt-8">
+      <h2 class="text-2xl font-bold text-blue-400 mb-4 border-b border-blue-400 pb-2 flex justify-between items-center">
+        Edit About Page
+        <button type="button"
+                onclick="document.getElementById('about-editor').classList.toggle('hidden')"
+                class="text-sm bg-blue-700 px-3 py-1 rounded hover:bg-blue-800 text-white border border-blue-900">
+          Show / Hide
+        </button>
+      </h2>
+
+      <?php if (!empty($aboutContent['updated_by'])): ?>
+        <p class="text-sm text-gray-400 mb-2">
+          Last updated by:
+          <?php
+            echo !empty($_SESSION['username'])
+              ? htmlspecialchars($_SESSION['username'])
+              : 'User ID: ' . htmlspecialchars($aboutContent['updated_by']);
+          ?>
+          <?php if (!empty($aboutContent['updated_at'])): ?>
+            on <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($aboutContent['updated_at']))); ?>
+          <?php endif; ?>
+        </p>
+      <?php endif; ?>
+
+      <div id="about-editor" class="hidden">
+        <form method="POST" action="index.php?page=settings">
+          <textarea name="about_content" rows="10"
+                    class="w-full p-3 bg-gray-800 border border-blue-400 text-white rounded-md mb-4"><?php echo htmlspecialchars($aboutContent['content'] ?? '', ENT_QUOTES); ?></textarea>
+          <input type="hidden" name="update_about" value="1">
+          <button type="submit"
+                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded border border-blue-800">
+            Update About
+          </button>
+        </form>
+      </div>
+    </section>
+    <?php endif; ?>
   </div>
 </div>
 <!-- GIF SEARCH PANEL -->
