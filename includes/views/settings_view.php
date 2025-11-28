@@ -167,7 +167,15 @@
                 </div>
 
                 <!-- Hidden edit form -->
-                <form id="edit-form-<?php echo $post['id']; ?>" method="post" action="index.php?page=settings" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
+                <form id="edit-form-<?php echo $post['id']; ?>" method="post" action="index.php?page=settings" enctype="multipart/form-data"
+                  class="modal-edit hidden space-y-2 w-[90vw] max-w-3xl max-h-[90vh] overflow-y-auto bg-[#ECE9D8] p-0 rounded border border-[#003C74] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 shadow-[4px_4px_12px_rgba(0,0,0,0.4)]">
+                  <div class="w-full bg-gradient-to-r from-[#0A246A] to-[#3A6EA5] text-white px-3 py-1 flex justify-between items-center border-b border-[#003C74] rounded-t">
+                    <span class="font-bold text-sm">Edit Post</span>
+                    <button type="button" onclick="closeEditModal('<?php echo $post['id']; ?>')" class="w-6 h-6 bg-[#C00] text-white font-bold rounded text-center leading-6 shadow hover:bg-red-700">
+                      X
+                    </button>
+                  </div>
+                  <div class="p-4 space-y-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                   <div id="quill-edit-<?php echo $post['id']; ?>" 
                        class="quill-edit w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2 
@@ -188,7 +196,15 @@
 
                   <div>
                     <label class="text-sm text-gray-400 block mb-1">Replace image:</label>
-                    <input type="file" name="new_image" accept="image/*" class="text-gray-200 text-sm">
+                    <input type="file" name="new_image" accept="image/*" class="text-gray-200 text-sm"
+                           onchange="previewImage(event, '<?php echo $post['id']; ?>')">
+
+                    <div id="imagePreview-<?php echo $post['id']; ?>" class="hidden mt-3">
+                      <img id="previewImg-<?php echo $post['id']; ?>" class="w-32 h-auto rounded" />
+                      <p class="text-gray-600 text-sm mt-1">
+                        <span id="fileName-<?php echo $post['id']; ?>"></span>
+                      </p>
+                    </div>
                   </div>
 
                   <div>
@@ -205,6 +221,7 @@
                     class="px-3 py-1 rounded border bg-green-600 border-green-800 text-white font-semibold hover:bg-green-700">
                     Save Changes
                   </button>
+                  </div>
                 </form>
               </div>
             <?php endforeach; ?>
@@ -398,7 +415,15 @@
                 </div>
 
                 <!-- Hidden edit form -->
-                <form id="edit-form-<?php echo $post['id']; ?>" method="post" action="index.php?page=settings" enctype="multipart/form-data" class="hidden mt-3 space-y-2">
+                <form id="edit-form-<?php echo $post['id']; ?>" method="post" action="index.php?page=settings" enctype="multipart/form-data"
+                  class="modal-edit hidden space-y-2 w-[90vw] max-w-3xl max-h-[90vh] overflow-y-auto bg-[#ECE9D8] p-0 rounded border border-[#003C74] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 shadow-[4px_4px_12px_rgba(0,0,0,0.4)]">
+                  <div class="w-full bg-gradient-to-r from-[#0A246A] to-[#3A6EA5] text-white px-3 py-1 flex justify-between items-center border-b border-[#003C74] rounded-t">
+                    <span class="font-bold text-sm">Edit Post</span>
+                    <button type="button" onclick="closeEditModal('<?php echo $post['id']; ?>')" class="w-6 h-6 bg-[#C00] text-white font-bold rounded text-center leading-6 shadow hover:bg-red-700">
+                      X
+                    </button>
+                  </div>
+                  <div class="p-4 space-y-2">
                   <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                   <div id="quill-edit-<?php echo $post['id']; ?>" 
                        class="quill-edit w-full rounded border border-teal-400 bg-black bg-opacity-50 text-green-400 p-2 
@@ -419,7 +444,15 @@
 
                   <div>
                     <label class="text-sm text-gray-400 block mb-1">Replace image:</label>
-                    <input type="file" name="new_image" accept="image/*" class="text-gray-200 text-sm">
+                    <input type="file" name="new_image" accept="image/*" class="text-gray-200 text-sm"
+                           onchange="previewImage(event, '<?php echo $post['id']; ?>')">
+
+                    <div id="imagePreview-<?php echo $post['id']; ?>" class="hidden mt-3">
+                      <img id="previewImg-<?php echo $post['id']; ?>" class="w-32 h-auto rounded" />
+                      <p class="text-gray-600 text-sm mt-1">
+                        <span id="fileName-<?php echo $post['id']; ?>"></span>
+                      </p>
+                    </div>
                   </div>
 
                   <div>
@@ -436,6 +469,7 @@
                     class="px-3 py-1 rounded border bg-green-600 border-green-800 text-white font-semibold hover:bg-green-700">
                     Save Changes
                   </button>
+                  </div>
                 </form>
               </div>
             <?php endforeach; ?>
@@ -474,3 +508,5 @@
   </div>
 </div>
 <script src="scripts/quill.js"></script>
+<script src="scripts/edit-modal.js"></script>
+<script src="scripts/image-previewer.js"></script>
