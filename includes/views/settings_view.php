@@ -25,15 +25,108 @@
     </div>
 
     <h1 class="text-3xl pt-4 font-semibold text-center text-white glitch-text"><span>Glιτch Cσnτrσl Dєck</span></h1>
-    
+
+    <!-- User Management Section -->
+    <?php if (!empty($isAdmin) && $isAdmin): ?>
+    <section class="border border-yellow-500 rounded-lg p-6 bg-black bg-opacity-60">
+      <h2 class="text-2xl font-bold text-yellow-300 mb-4 border-b border-yellow-400 pb-2">User Management - Admin Level</h2>
+      <?php if (!empty($allUsers)): ?>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-left text-white border border-yellow-400">
+            <thead class="bg-yellow-900 text-yellow-200">
+              <tr>
+                <th class="px-2 py-2 border-b border-yellow-400">Username</th>
+                <th class="px-2 py-2 border-b border-yellow-400">Role</th>
+                <th class="px-2 py-2 border-b border-yellow-400">Status</th>
+                <th class="px-2 py-2 border-b border-yellow-400">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($allUsers as $user): ?>
+                <tr class="odd:bg-yellow-950 even:bg-yellow-800/40">
+                  <td class="px-2 py-2 border-b border-yellow-700">
+                    <a href="index.php?page=profile&id=<?php echo $user['id']; ?>" class="text-yellow-300 hover:underline">
+                      <?php echo htmlspecialchars($user['username']); ?>
+                    </a>
+                  </td>
+                  <td class="px-2 py-2 border-b border-yellow-700">
+                    <?php echo $user['is_admin'] ? '<span class="font-bold text-yellow-400">Admin</span>' : 'User'; ?>
+                  </td>
+                  <td class="px-2 py-2 border-b border-yellow-700">
+                    <?php echo $user['is_blocked'] ? '<span class="text-red-400 font-semibold">Blocked</span>' : '<span class="text-green-400 font-semibold">Active</span>'; ?>
+                  </td>
+                  <td class="px-2 py-2 border-b border-yellow-700">
+                    <div class="flex flex-wrap gap-1">
+                      <?php if ($user['is_blocked']): ?>
+                        <!-- Blocked users: only show Unblock button -->
+                    <form method="post" action="index.php?page=settings" class="inline">
+                      <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                      <input type="hidden" name="from_settings" value="1">
+                      <button type="submit" name="unblock_user"
+                        class="px-2 w-20 py-1 rounded border bg-green-600 border-green-800 hover:bg-green-700 text-white font-semibold">
+                        Unblock
+                      </button>
+                    </form>
+                      <?php else: ?>
+                        <!-- Active users -->
+                        <?php if ($user['is_admin']): ?>
+                          <?php if ($user['id'] != $currentUserId): ?>
+                            <form method="post" action="index.php?page=settings" class="inline">
+                              <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                              <button type="submit" name="demote_user"
+                                class="px-2 w-20 py-1 rounded border bg-blue-700 border-blue-900 hover:bg-blue-800 text-white font-semibold">
+                                Demote
+                              </button>
+                            </form>
+                            <form method="post" action="index.php?page=settings" class="inline">
+                              <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                              <input type="hidden" name="from_settings" value="1">
+                              <button type="submit" name="block_user"
+                                class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold">
+                                Block
+                              </button>
+                            </form>
+                          <?php else: ?>
+                            <span class="text-xs text-gray-400 ml-2">You</span>
+                          <?php endif; ?>
+                        <?php else: ?>
+                          <form method="post" action="index.php?page=settings" class="inline">
+                            <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                            <button type="submit" name="promote_user"
+                              class="px-2 w-20 py-1 rounded border bg-yellow-700 border-yellow-900 hover:bg-yellow-800 text-white font-semibold">
+                              Promote
+                            </button>
+                          </form>
+                          <form method="post" action="index.php?page=settings" class="inline">
+                            <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                            <input type="hidden" name="from_settings" value="1">
+                            <button type="submit" name="block_user"
+                              class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold">
+                              Block
+                            </button>
+                          </form>
+                        <?php endif; ?>
+                      <?php endif; ?>
+                    </div>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      <?php else: ?>
+        <p class="text-yellow-200 italic">No users found.</p>
+      <?php endif; ?>
+    </section>
+    <?php endif; ?>
 
     <?php if (!empty($isAdmin) && $isAdmin): ?>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
 
       <!-- My Posts Section -->
       <section class="border border-teal-400 rounded-lg p-6 bg-black bg-opacity-60">
         <h1 class="text-2xl font-bold text-gray-300 mb-4 border-b border-teal-400 pb-2">My Posts</h1>
-        <p class="text-gray-200 mb-6">Manage your own posts below.</p>
+       
 
         <?php if (empty($posts)): ?>
           <p class="text-white italic">You haven’t posted anything yet.</p>
@@ -120,97 +213,6 @@
       </section>
 
 
-      <!-- User Management Section -->
-      <section class="border border-yellow-500 rounded-lg p-6 bg-black bg-opacity-60">
-        <h2 class="text-2xl font-bold text-yellow-300 mb-4 border-b border-yellow-400 pb-2">User Management</h2>
-        <?php if (!empty($allUsers)): ?>
-          <div class="overflow-x-auto">
-            <table class="min-w-full text-sm text-left text-white border border-yellow-400">
-              <thead class="bg-yellow-900 text-yellow-200">
-                <tr>
-                  <th class="px-2 py-2 border-b border-yellow-400">Username</th>
-                  <th class="px-2 py-2 border-b border-yellow-400">Role</th>
-                  <th class="px-2 py-2 border-b border-yellow-400">Status</th>
-                  <th class="px-2 py-2 border-b border-yellow-400">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($allUsers as $user): ?>
-                  <tr class="odd:bg-yellow-950 even:bg-yellow-800/40">
-                    <td class="px-2 py-2 border-b border-yellow-700">
-                      <a href="index.php?page=profile&id=<?php echo $user['id']; ?>" class="text-yellow-300 hover:underline">
-                        <?php echo htmlspecialchars($user['username']); ?>
-                      </a>
-                    </td>
-                    <td class="px-2 py-2 border-b border-yellow-700">
-                      <?php echo $user['is_admin'] ? '<span class="font-bold text-yellow-400">Admin</span>' : 'User'; ?>
-                    </td>
-                    <td class="px-2 py-2 border-b border-yellow-700">
-                      <?php echo $user['is_blocked'] ? '<span class="text-red-400 font-semibold">Blocked</span>' : '<span class="text-green-400 font-semibold">Active</span>'; ?>
-                    </td>
-                    <td class="px-2 py-2 border-b border-yellow-700">
-                      <div class="flex flex-wrap gap-1">
-                        <?php if ($user['is_blocked']): ?>
-                          <!-- Blocked users: only show Unblock button -->
-                      <form method="post" action="index.php?page=settings" class="inline">
-                        <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                        <input type="hidden" name="from_settings" value="1">
-                        <button type="submit" name="unblock_user"
-                          class="px-2 w-20 py-1 rounded border bg-green-600 border-green-800 hover:bg-green-700 text-white font-semibold">
-                          Unblock
-                        </button>
-                      </form>
-                        <?php else: ?>
-                          <!-- Active users -->
-                          <?php if ($user['is_admin']): ?>
-                            <?php if ($user['id'] != $currentUserId): ?>
-                              <form method="post" action="index.php?page=settings" class="inline">
-                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                <button type="submit" name="demote_user"
-                                  class="px-2 w-20 py-1 rounded border bg-blue-700 border-blue-900 hover:bg-blue-800 text-white font-semibold">
-                                  Demote
-                                </button>
-                              </form>
-                              <form method="post" action="index.php?page=settings" class="inline">
-                                <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                <input type="hidden" name="from_settings" value="1">
-                                <button type="submit" name="block_user"
-                                  class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold">
-                                  Block
-                                </button>
-                              </form>
-                            <?php else: ?>
-                              <span class="text-xs text-gray-400 ml-2">You</span>
-                            <?php endif; ?>
-                          <?php else: ?>
-                            <form method="post" action="index.php?page=settings" class="inline">
-                              <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                              <button type="submit" name="promote_user"
-                                class="px-2 w-20 py-1 rounded border bg-yellow-700 border-yellow-900 hover:bg-yellow-800 text-white font-semibold">
-                                Promote
-                              </button>
-                            </form>
-                            <form method="post" action="index.php?page=settings" class="inline">
-                              <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                              <input type="hidden" name="from_settings" value="1">
-                              <button type="submit" name="block_user"
-                                class="px-2 w-20 py-1 rounded border bg-red-600 border-red-800 hover:bg-red-700 text-white font-semibold">
-                                Block
-                              </button>
-                            </form>
-                          <?php endif; ?>
-                        <?php endif; ?>
-                      </div>
-                    </td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-        <?php else: ?>
-          <p class="text-yellow-200 italic">No users found.</p>
-        <?php endif; ?>
-      </section>
 
       <!-- All Posts Section -->
       <section class="border border-cyan-400 rounded-lg p-6 bg-black bg-opacity-60">
@@ -248,6 +250,106 @@
           <p class="text-cyan-200 italic">No posts found.</p>
         <?php endif; ?>
       </section>
+    </div>
+    <!-- 3-column grid for Blocked Users, Edit Terms, Edit About -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-8">
+      <!-- Blocked Users Section (move this section inside here) -->
+      <section class="border border-red-400 rounded-lg p-6 bg-black bg-opacity-60">
+        <h2 class="text-2xl font-bold text-red-400 mb-4 border-b border-red-400 pb-2">Blocked Users</h2>
+        <?php 
+          $blockedUsers = $profileController->getBlockedUsers($session->getUserId());
+        ?>
+        <?php if (!empty($blockedUsers)): ?>
+          <div class="space-y-3">
+            <?php foreach ($blockedUsers as $blocked): ?>
+              <div class="flex justify-between items-center bg-black bg-opacity-50 border border-red-500 rounded p-3">
+                <div class="flex items-center gap-3">
+                  <a href="index.php?page=profile&id=<?php echo $blocked['id']; ?>" class="text-white hover:underline">
+                    @<?php echo htmlspecialchars($blocked['username']); ?>
+                  </a>
+                </div>
+                <form method="POST" action="index.php?page=settings">
+                  <input type="hidden" name="blocked_id" value="<?php echo $blocked['id']; ?>">
+                  <input type="hidden" name="from_settings" value="1">
+                  <button type="submit" name="unblock_user"
+                    class="px-3 py-1 bg-green-600 text-white font-semibold rounded hover:bg-green-700 border border-green-800">
+                    Unblock
+                  </button>
+                </form>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php else: ?>
+          <p class="text-gray-300 italic">You haven't blocked anyone yet.</p>
+        <?php endif; ?>
+      </section>
+      <!-- Edit Terms Section (move this section inside here) -->
+      <?php if (!empty($isAdmin) && $isAdmin): ?>
+      <section class="border border-green-400 rounded-lg p-6 bg-black bg-opacity-60">
+        <h2 class="text-2xl font-bold text-green-400 mb-4 border-b border-green-400 pb-2 flex justify-between items-center">
+          Edit Terms & Conditions
+          <button type="button" onclick="document.getElementById('terms-editor').classList.toggle('hidden')" class="text-sm bg-green-700 px-3 py-1 rounded hover:bg-green-800 text-white border border-green-900">
+            Show / Hide
+          </button>
+        </h2>
+        <?php if (!empty($termsContent['updated_by'])): ?>
+          <p class="text-sm text-gray-400 mb-2">
+            Last updated by: <?php echo htmlspecialchars($updaterUsername ?? ('User ID: ' . $termsContent['updated_by'])); ?>
+            <?php if (!empty($termsContent['updated_at'])): ?>
+              on <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($termsContent['updated_at']))); ?>
+            <?php endif; ?>
+          </p>
+        <?php endif; ?>
+        <div id="terms-editor" class="hidden">
+          <form method="POST" action="index.php?page=settings">
+            <textarea name="terms_content" rows="10" class="w-full p-3 bg-gray-800 border border-green-400 text-white rounded-md mb-4"><?php echo htmlspecialchars($termsContent['content'] ?? '', ENT_QUOTES); ?></textarea>
+            <input type="hidden" name="update_terms" value="1">
+            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded border border-green-800">
+              Update Terms
+            </button>
+          </form>
+        </div>
+      </section>
+      <?php endif; ?>
+      <!-- Edit About Section (move this section inside here) -->
+      <?php if (!empty($isAdmin) && $isAdmin): ?>
+      <section class="border border-blue-400 rounded-lg p-6 bg-black bg-opacity-60">
+        <h2 class="text-2xl font-bold text-blue-400 mb-4 border-b border-blue-400 pb-2 flex justify-between items-center">
+          Edit About Page
+          <button type="button"
+                  onclick="document.getElementById('about-editor').classList.toggle('hidden')"
+                  class="text-sm bg-blue-700 px-3 py-1 rounded hover:bg-blue-800 text-white border border-blue-900">
+            Show / Hide
+          </button>
+        </h2>
+
+        <?php if (!empty($aboutContent['updated_by'])): ?>
+          <p class="text-sm text-gray-400 mb-2">
+            Last updated by:
+            <?php
+              echo !empty($_SESSION['username'])
+                ? htmlspecialchars($_SESSION['username'])
+                : 'User ID: ' . htmlspecialchars($aboutContent['updated_by']);
+            ?>
+            <?php if (!empty($aboutContent['updated_at'])): ?>
+              on <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($aboutContent['updated_at']))); ?>
+            <?php endif; ?>
+          </p>
+        <?php endif; ?>
+
+        <div id="about-editor" class="hidden">
+          <form method="POST" action="index.php?page=settings">
+            <textarea name="about_content" rows="10"
+                      class="w-full p-3 bg-gray-800 border border-blue-400 text-white rounded-md mb-4"><?php echo htmlspecialchars($aboutContent['content'] ?? '', ENT_QUOTES); ?></textarea>
+            <input type="hidden" name="update_about" value="1">
+            <button type="submit"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded border border-blue-800">
+              Update About
+            </button>
+          </form>
+        </div>
+      </section>
+      <?php endif; ?>
     </div>
     <?php else: ?>
     <div class="grid grid-cols-1 w-full max-w-3xl mx-auto">
@@ -349,105 +451,6 @@
     </div>
     <?php endif; ?>
 
-    <!-- Blocked Users Section (shown to all users) -->
-    <section class="border border-red-400 rounded-lg p-6 bg-black bg-opacity-60 mt-8">
-      <h2 class="text-2xl font-bold text-red-400 mb-4 border-b border-red-400 pb-2">Blocked Users</h2>
-      <?php 
-        $blockedUsers = $profileController->getBlockedUsers($session->getUserId());
-      ?>
-      <?php if (!empty($blockedUsers)): ?>
-        <div class="space-y-3">
-          <?php foreach ($blockedUsers as $blocked): ?>
-            <div class="flex justify-between items-center bg-black bg-opacity-50 border border-red-500 rounded p-3">
-              <div class="flex items-center gap-3">
-                <a href="index.php?page=profile&id=<?php echo $blocked['id']; ?>" class="text-white hover:underline">
-                  @<?php echo htmlspecialchars($blocked['username']); ?>
-                </a>
-              </div>
-              <form method="POST" action="index.php?page=settings">
-                <input type="hidden" name="blocked_id" value="<?php echo $blocked['id']; ?>">
-                <input type="hidden" name="from_settings" value="1">
-                <button type="submit" name="unblock_user"
-                  class="px-3 py-1 bg-green-600 text-white font-semibold rounded hover:bg-green-700 border border-green-800">
-                  Unblock
-                </button>
-              </form>
-            </div>
-          <?php endforeach; ?>
-        </div>
-      <?php else: ?>
-        <p class="text-gray-300 italic">You haven't blocked anyone yet.</p>
-      <?php endif; ?>
-    </section>
-
-    <!-- Edit Terms & Conditions Section (admin only) -->
-    <?php if (!empty($isAdmin) && $isAdmin): ?>
-    <section class="border border-green-400 rounded-lg p-6 bg-black bg-opacity-60 mt-8">
-      <h2 class="text-2xl font-bold text-green-400 mb-4 border-b border-green-400 pb-2 flex justify-between items-center">
-        Edit Terms & Conditions
-        <button type="button" onclick="document.getElementById('terms-editor').classList.toggle('hidden')" class="text-sm bg-green-700 px-3 py-1 rounded hover:bg-green-800 text-white border border-green-900">
-          Show / Hide
-        </button>
-      </h2>
-      <?php if (!empty($termsContent['updated_by'])): ?>
-        <p class="text-sm text-gray-400 mb-2">
-          Last updated by: <?php echo htmlspecialchars($updaterUsername ?? ('User ID: ' . $termsContent['updated_by'])); ?>
-          <?php if (!empty($termsContent['updated_at'])): ?>
-            on <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($termsContent['updated_at']))); ?>
-          <?php endif; ?>
-        </p>
-      <?php endif; ?>
-      <div id="terms-editor" class="hidden">
-        <form method="POST" action="index.php?page=settings">
-          <textarea name="terms_content" rows="10" class="w-full p-3 bg-gray-800 border border-green-400 text-white rounded-md mb-4"><?php echo htmlspecialchars($termsContent['content'] ?? '', ENT_QUOTES); ?></textarea>
-          <input type="hidden" name="update_terms" value="1">
-          <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded border border-green-800">
-            Update Terms
-          </button>
-        </form>
-      </div>
-    </section>
-    <?php endif; ?>
-
-    <!-- Edit About Section (admin only) -->
-    <?php if (!empty($isAdmin) && $isAdmin): ?>
-    <section class="border border-blue-400 rounded-lg p-6 bg-black bg-opacity-60 mt-8">
-      <h2 class="text-2xl font-bold text-blue-400 mb-4 border-b border-blue-400 pb-2 flex justify-between items-center">
-        Edit About Page
-        <button type="button"
-                onclick="document.getElementById('about-editor').classList.toggle('hidden')"
-                class="text-sm bg-blue-700 px-3 py-1 rounded hover:bg-blue-800 text-white border border-blue-900">
-          Show / Hide
-        </button>
-      </h2>
-
-      <?php if (!empty($aboutContent['updated_by'])): ?>
-        <p class="text-sm text-gray-400 mb-2">
-          Last updated by:
-          <?php
-            echo !empty($_SESSION['username'])
-              ? htmlspecialchars($_SESSION['username'])
-              : 'User ID: ' . htmlspecialchars($aboutContent['updated_by']);
-          ?>
-          <?php if (!empty($aboutContent['updated_at'])): ?>
-            on <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($aboutContent['updated_at']))); ?>
-          <?php endif; ?>
-        </p>
-      <?php endif; ?>
-
-      <div id="about-editor" class="hidden">
-        <form method="POST" action="index.php?page=settings">
-          <textarea name="about_content" rows="10"
-                    class="w-full p-3 bg-gray-800 border border-blue-400 text-white rounded-md mb-4"><?php echo htmlspecialchars($aboutContent['content'] ?? '', ENT_QUOTES); ?></textarea>
-          <input type="hidden" name="update_about" value="1">
-          <button type="submit"
-                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded border border-blue-800">
-            Update About
-          </button>
-        </form>
-      </div>
-    </section>
-    <?php endif; ?>
   </div>
 </div>
 <!-- GIF SEARCH PANEL -->
