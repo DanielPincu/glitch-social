@@ -45,6 +45,7 @@ class TermsController {
     public function show() {
         $title = "Terms and Regulations";
         $session = $this->session;
+        $skipUI = true;
 
         require __DIR__ . '/../views/header.php';
         $this->showTerms();

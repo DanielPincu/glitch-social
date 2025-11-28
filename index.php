@@ -60,6 +60,10 @@ switch ($page) {
         break;
 
     case 'register':
+        if ($session->isLoggedIn()) {
+            header("Location: index.php");
+            exit;
+        }
         $userController->handleRegister();
         break;
 

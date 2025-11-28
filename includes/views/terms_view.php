@@ -9,7 +9,7 @@
       <?php endif; ?>
     </div>
     <div class="text-center">
-      <a href="index.php?page=register" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition duration-200">
+      <a href="javascript: if (history.length > 1) { history.back(); } else { window.location = 'index.php'; }" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition duration-200">
         I have read the terms and conditions
       </a>
     </div>

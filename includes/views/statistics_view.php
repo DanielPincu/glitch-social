@@ -19,6 +19,15 @@
 
     <h2 class="text-3xl font-semibold mb-10 text-center text-white glitch-text"><span>Sσcιαl Bεнανισυя</span></h2>
 
+    <div class="flex justify-center gap-4 mb-8">
+      <a href="index.php?page=terms" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded shadow">
+        Read more about Rules and Regulations
+      </a>
+      <a href="index.php?page=about" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded shadow">
+        Read more about the Website
+      </a>
+    </div>
+
         <div id="matrix-container" class="my-[1px] bg-black h-20 rounded-t-lg">
                 <canvas id="matrix-canvas"></canvas>
         </div>
