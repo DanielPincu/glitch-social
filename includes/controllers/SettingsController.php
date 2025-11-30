@@ -29,7 +29,7 @@ class SettingsController {
         }
 
         $user_id = $this->session->getUserId();
-        $isAdmin = $this->session->isAdmin();
+        $isAdmin = $this->userController->isAdmin();
 
         // Handle POST requests (profile actions, blocking, posts)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

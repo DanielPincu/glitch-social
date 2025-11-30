@@ -157,7 +157,7 @@ class AjaxController
                 <div class="text-sm flex flex-col w-full">
                     <div class="flex justify-between items-center">
                         <span class="font-semibold text-green-200"><?php echo htmlspecialchars($newComment['username']); ?></span>
-                        <?php if ($newComment['username'] === $_SESSION['username']): ?>
+                        <?php if ($this->userModel->isAdmin($this->session->getUserId()) || (!empty($_SESSION['username']) && $newComment['username'] === $_SESSION['username'])): ?>
                             <div class="flex gap-2 text-xs">
                                 <button type="button"
                                     class="edit-comment-btn bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
@@ -227,7 +227,7 @@ class AjaxController
             $comment = $this->postModel->getCommentById($comment_id);
             $canDelete = false;
 
-            if ($this->session->isAdmin()) {
+            if ($this->userModel->isAdmin($user_id)) {
                 $canDelete = true;
             } elseif ($comment && $comment['user_id'] == $user_id) {
                 $canDelete = true;

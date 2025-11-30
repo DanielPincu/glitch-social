@@ -27,7 +27,12 @@ class UserController {
 
     // Check if user is admin
     public function isAdmin() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
+        $user_id = $_SESSION['user_id'] ?? null;
+        if (!$user_id) {
+            return false;
+        }
+        $user = $this->user->getUserById($user_id);
+        return $user && intval($user['is_admin']) === 1;
     }
 
     // Check if user is blocked

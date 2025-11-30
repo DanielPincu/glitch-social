@@ -107,6 +107,7 @@ class HomeController {
         $followingList = $followingList ?? [];
         $followingPosts = $followingPosts ?? [];
         $posts = $posts ?? [];
+        $isAdmin = $this->userController->isAdmin();
 
         // Render views
         $pdo = $this->pdo;

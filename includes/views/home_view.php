@@ -60,7 +60,7 @@
           <div class="space-y-2">
             <div class="bg-black bg-opacity-20 p-2">
               <p class="text-xs matrix-text">
-                Connected as <?php echo htmlspecialchars($_SESSION['username']); ?> ⟁ Role: <?php echo !empty($_SESSION['is_admin']) && $_SESSION['is_admin'] ? 'Admin' : 'User'; ?>
+                Connected as <?php echo htmlspecialchars($_SESSION['username']); ?> ⟁ Role: <?php echo !empty($isAdmin) ? 'Admin' : 'User'; ?>
               </p>
             </div>
             <div class="bg-black bg-opacity-20 p-2">
@@ -302,7 +302,7 @@
                             </a>
                             <?php
                             $canDelete = false;
-                            if (!empty($_SESSION['is_admin']) && $_SESSION['is_admin']) {
+                            if (!empty($isAdmin)) {
                               $canDelete = true; // admin
                             } elseif ($comment['user_id'] == $user_id) {
                               $canDelete = true; // comment owner
@@ -447,7 +447,7 @@
                             </a>
                             <?php
                             $canDelete = false;
-                            if (!empty($_SESSION['is_admin']) && $_SESSION['is_admin']) {
+                            if (!empty($isAdmin)) {
                               $canDelete = true; // admin
                             } elseif ($comment['user_id'] == $user_id) {
                               $canDelete = true; // comment owner
@@ -614,6 +614,6 @@
 </script>
 <script>
   const currentUserId = <?php echo (int)$_SESSION['user_id']; ?>;
-  const isAdmin = <?php echo (int)$_SESSION['is_admin']; ?>;
+  const isAdmin = <?php echo !empty($isAdmin) ? 1 : 0; ?>;
 </script>
 <script src="scripts/zionchat.js"></script>

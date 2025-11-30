@@ -19,10 +19,6 @@ class Session {
         return isset($_SESSION['user_id']);
     }
 
-    public function isAdmin() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
-    }
-
     public function getCsrfToken() {
         $this->ensureCsrfToken();
         return $_SESSION['csrf_token'];
@@ -50,7 +46,6 @@ class Session {
     public function login($user) {
         $_SESSION['user_id']   = $user['id'];
         $_SESSION['username']  = $user['username'];
-        $_SESSION['is_admin']  = $user['is_admin'];
         $_SESSION['email']     = $user['email'];
         $_SESSION['is_blocked'] = $user['is_blocked'];
         session_write_close();

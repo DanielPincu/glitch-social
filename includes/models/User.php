@@ -42,7 +42,6 @@ class User {
             // Set session
             $_SESSION['user_id']   = $user['id'];
             $_SESSION['username']  = $user['username'];
-            $_SESSION['is_admin']  = $user['is_admin'];
             $_SESSION['email']     = $user['email'];
             return true;
         }
@@ -165,7 +164,7 @@ class User {
         $stmt = $this->db->prepare("SELECT is_admin FROM users WHERE id = :id");
         $stmt->execute([':id' => $user_id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row && $row['is_admin'] === 1;
+        return $row && intval($row['is_admin']) === 1;
     }
 
     // Search users by username (for search bar)
