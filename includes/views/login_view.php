@@ -10,7 +10,19 @@
         <form method="post" class="space-y-4">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES); ?>">
             <input type="text" name="username" placeholder="Username" required class="w-full px-4 py-2 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
-            <input type="password" name="password" placeholder="Password" required class="w-full px-4 py-2 border border-gray-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black">
+            <div class="relative mb-4">
+                <input
+                    type="password"
+                    name="password"
+                    id="login_password"
+                    placeholder="Password"
+                    required
+                    class="text-black w-full px-3 py-2 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                <button type="button" id="toggleLoginPassword" class="absolute right-3 top-2 text-black">
+                    👁️
+                </button>
+            </div>
             <button type="submit" name="login" class="w-full bg-gradient-to-b from-blue-500 to-blue-700 text-white font-semibold px-5 py-2 rounded border border-blue-800 shadow-md hover:from-blue-600 hover:to-blue-800 active:translate-y-0.5 active:shadow-none transition duration-150">Login</button>
         </form>
         <p class="text-center text-white mt-4 text-sm">Don't have an account? <a href="index.php?page=register" class="text-white text-xl hover:underline">Register</a></p>
@@ -18,5 +30,11 @@
             Forgot your password?
             <a href="index.php?page=forgot_password" class="text-white text-xl hover:underline">Reset it here</a>
         </p>
+    <script>
+        document.getElementById('toggleLoginPassword').addEventListener('click', function () {
+            const field = document.getElementById('login_password');
+            field.type = field.type === 'password' ? 'text' : 'password';
+        });
+    </script>
     </div>
 </div>

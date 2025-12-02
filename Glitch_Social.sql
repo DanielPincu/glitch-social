@@ -259,3 +259,61 @@ LEFT JOIN likes l ON l.user_id = u.id
 GROUP BY u.id, pr.avatar_url
 ORDER BY activity_score DESC
 LIMIT 3;
+
+
+-- Seed initial admin users Søren and Kim with relations and activity
+
+-- Create users with automatic IDs
+INSERT INTO users (username, email, password, is_admin)
+VALUES
+  ('Søren', 'smsj@easv.dk', '$2y$10$Nja1F6D0kR3zHcjAniZ.qOzTwHAlhljd.60DsFgBlQSfuRYTnWjTS', 1),
+  ('Kim',   'kt@easv.dk', '$2y$10$qyk0iOv5t1Y.dly1TWqN7uTrlpFAFTBzObiP3HVo90jhVciwbjjLK', 1);
+
+-- Capture user IDs
+SET @soren_id = (SELECT id FROM users WHERE username = 'Søren' LIMIT 1);
+SET @kim_id   = (SELECT id FROM users WHERE username = 'Kim'   LIMIT 1);
+
+-- Make each user follow the other
+INSERT INTO followers (user_id, follower_id)
+VALUES
+  (@soren_id, @kim_id),
+  (@kim_id, @soren_id);
+
+-- Each user posts a message in chat (zion_messages)
+INSERT INTO zion_messages (user_id, content)
+VALUES
+  (@soren_id, 'Hi, I am Søren in the chat.'),
+  (@kim_id,   'Hi, I am Kim in the chat.');
+
+-- Each user creates a text-only post
+INSERT INTO posts (user_id, content)
+VALUES (@soren_id, 'Hello from Søren. This is my first post.');
+SET @soren_post_id = LAST_INSERT_ID();
+
+INSERT INTO posts (user_id, content)
+VALUES (@kim_id, 'Hello from Kim. This is my first post.');
+SET @kim_post_id = LAST_INSERT_ID();
+
+-- Each user likes both their own post and the other user post
+INSERT INTO likes (user_id, post_id)
+VALUES
+  (@soren_id, @soren_post_id),
+  (@soren_id, @kim_post_id),
+  (@kim_id,   @kim_post_id),
+  (@kim_id,   @soren_post_id);
+
+-- Each user comments on both posts
+INSERT INTO comments (post_id, user_id, content)
+VALUES
+  (@soren_post_id, @soren_id, 'Comment by Søren on his own post.'),
+  (@soren_post_id, @kim_id,   'Comment by Kim on Søren''s post.'),
+  (@kim_post_id,   @kim_id,   'Comment by Kim on his own post.'),
+  (@kim_post_id,   @soren_id, 'Comment by Søren on Kim''s post.');
+
+-- Cross checks to verify everything
+SELECT id, username, email, is_admin FROM users WHERE username IN ('Søren', 'Kim');
+SELECT * FROM followers WHERE user_id IN (@soren_id, @kim_id) OR follower_id IN (@soren_id, @kim_id);
+SELECT * FROM zion_messages WHERE user_id IN (@soren_id, @kim_id);
+SELECT * FROM posts WHERE user_id IN (@soren_id, @kim_id);
+SELECT * FROM likes WHERE user_id IN (@soren_id, @kim_id);
+SELECT * FROM comments WHERE user_id IN (@soren_id, @kim_id);
