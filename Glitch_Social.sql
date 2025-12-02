@@ -273,6 +273,14 @@ VALUES
 SET @soren_id = (SELECT id FROM users WHERE username = 'Søren' LIMIT 1);
 SET @kim_id   = (SELECT id FROM users WHERE username = 'Kim'   LIMIT 1);
 
+
+-- Create profile entries for Søren and Kim
+INSERT INTO profiles (user_id, bio, avatar_url, location, website)
+VALUES
+  (@soren_id, 'Greetings from Søren', NULL, 'Denmark', 'https://easv.dk'),
+  (@kim_id,   'Greetings from Kim',   NULL, 'Denmark', 'https://easv.dk');
+
+
 -- Make each user follow the other
 INSERT INTO followers (user_id, follower_id)
 VALUES
