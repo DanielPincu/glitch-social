@@ -70,6 +70,14 @@ class SettingsController {
         $termsContent = $this->termsModel->getCurrent();
         $aboutContent = $this->aboutModel->getCurrent();
 
+        $aboutUpdaterName = null;
+        if (!empty($aboutContent['updated_by'])) {
+            $aboutUser = $this->userController->getUserById($aboutContent['updated_by']);
+            if (!empty($aboutUser) && !empty($aboutUser['username'])) {
+                $aboutUpdaterName = $aboutUser['username'];
+            }
+        }
+
         $updaterUsername = null;
         if (!empty($termsContent['updated_by'])) {
             $updater = $this->userController->getUserById($termsContent['updated_by']);
@@ -91,7 +99,9 @@ class SettingsController {
         $currentUserId = $user_id;
         $pdo = $this->pdo;
         require __DIR__ . '/../views/header.php';
-        $updaterUsername = $updaterUsername; // for clarity of availability
+        // expose updater variables to the view
+        $updaterUsername = $updaterUsername;
+        $aboutUpdaterName = $aboutUpdaterName;
         require __DIR__ . '/../views/settings_view.php';
         require __DIR__ . '/../views/footer.php';
     }

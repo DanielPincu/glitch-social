@@ -344,9 +344,11 @@
           <p class="text-sm text-gray-400 mb-2">
             Last updated by:
             <?php
-              echo !empty($_SESSION['username'])
-                ? htmlspecialchars($_SESSION['username'])
-                : 'User ID: ' . htmlspecialchars($aboutContent['updated_by']);
+              if (!empty($aboutUpdaterName)) {
+                echo htmlspecialchars($aboutUpdaterName);
+              } else {
+                echo 'User ID: ' . htmlspecialchars($aboutContent['updated_by']);
+              }
             ?>
             <?php if (!empty($aboutContent['updated_at'])): ?>
               on <?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($aboutContent['updated_at']))); ?>

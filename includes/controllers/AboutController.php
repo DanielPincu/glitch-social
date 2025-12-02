@@ -18,8 +18,16 @@ class AboutController {
         $session = $this->session;
         $skipUI = true;
         $aboutContent = $this->aboutModel->getCurrent();
+        $aboutUpdaterName = null;
+        if (!empty($aboutContent['updated_by'])) {
+            $user = $this->session->getUserById($aboutContent['updated_by']);
+            if (!empty($user) && !empty($user['username'])) {
+                $aboutUpdaterName = $user['username'];
+            }
+        }
 
         require __DIR__ . '/../views/header.php';
+        $aboutUpdaterName = $aboutUpdaterName;
         require __DIR__ . '/../views/about_view.php';
         require __DIR__ . '/../views/footer.php';
     }
@@ -38,7 +46,7 @@ class AboutController {
             $latestAbout = $this->aboutModel->getCurrent();
             return [
                 'success' => true,
-                'message' => "About updated successfully by " . ($_SESSION['username']) . " on " . date('Y-m-d H:i:s'),
+                'message' => "About updated successfully by " . htmlspecialchars($this->session->username ?? '') . " on " . date('Y-m-d H:i:s'),
                 'updated_at' => $latestAbout['updated_at'] ?? null,
             ];
         }
