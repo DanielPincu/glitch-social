@@ -309,11 +309,3 @@ VALUES
   (@soren_post_id, @kim_id,   'Comment by Kim on Søren''s post.'),
   (@kim_post_id,   @kim_id,   'Comment by Kim on his own post.'),
   (@kim_post_id,   @soren_id, 'Comment by Søren on Kim''s post.');
-
--- Cross checks to verify everything
-SELECT id, username, email, is_admin FROM users WHERE username IN ('Søren', 'Kim');
-SELECT * FROM followers WHERE user_id IN (@soren_id, @kim_id) OR follower_id IN (@soren_id, @kim_id);
-SELECT * FROM zion_messages WHERE user_id IN (@soren_id, @kim_id);
-SELECT * FROM posts WHERE user_id IN (@soren_id, @kim_id);
-SELECT * FROM likes WHERE user_id IN (@soren_id, @kim_id);
-SELECT * FROM comments WHERE user_id IN (@soren_id, @kim_id);
