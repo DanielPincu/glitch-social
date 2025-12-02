@@ -98,8 +98,8 @@ class ResetController {
 
             if (strlen($password) < 6) {
                 $error = "Password must be at least 6 characters long.";
-            } elseif (!preg_match('/[A-Z]/', $password) || !preg_match('/[^a-zA-Z0-9]/', $password)) {
-                $error = "Password must contain at least one uppercase letter and one symbol.";
+            } elseif (!preg_match('/[A-Z]/', $password) || !preg_match('/[^a-zA-Z0-9]/', $password) || !preg_match('/[0-9]/', $password)) {
+                $error = "Password must contain at least one uppercase letter, one symbol, and one number.";
             } elseif (empty($password) || empty($confirmPassword) || $password !== $confirmPassword) {
                 $error = "Passwords do not match.";
             }

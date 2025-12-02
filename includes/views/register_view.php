@@ -24,20 +24,35 @@
         value="<?php echo htmlspecialchars($old_email ?? '', ENT_QUOTES); ?>"
         class="text-black w-full px-3 py-2 mb-4 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        required
-        class="text-black w-full px-3 py-2 mb-4 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-      <input
-        type="password"
-        name="confirm_password"
-        placeholder="Confirm Password"
-        required
-        class="text-black w-full px-3 py-2 mb-4 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
+      <div class="relative mb-2">
+  <input
+    type="password"
+    name="password"
+    id="password"
+    placeholder="Password"
+    required
+    class="text-black w-full px-3 py-2 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+  <button type="button" id="togglePassword" class="absolute right-3 top-2 text-black">
+    👁️
+  </button>
+</div>
+<p class="text-white text-xs mb-4">
+  Password must be at least 6 characters, include at least one uppercase letter, one symbol, and one number.
+</p>
+      <div class="relative mb-4">
+  <input
+    type="password"
+    name="confirm_password"
+    id="confirm_password"
+    placeholder="Confirm Password"
+    required
+    class="text-black w-full px-3 py-2 border rounded border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+  <button type="button" id="toggleConfirmPassword" class="absolute right-3 top-2 text-black">
+    👁️
+  </button>
+</div>
       <div class="flex items-center mb-4 text-white text-sm">
         <input type="checkbox" id="accept_terms" name="accept_terms" required class="mr-2">
         <label for="accept_terms">
@@ -57,5 +72,17 @@
       Already have an account?
       <a href="index.php?page=login" class="text-white text-xl hover:underline">Login</a>
     </div>
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const field = document.getElementById('password');
+            field.type = field.type === 'password' ? 'text' : 'password';
+        });
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
+            const field = document.getElementById('confirm_password');
+            field.type = field.type === 'password' ? 'text' : 'password';
+        });
+    </script>
+
   </div>
 </div>

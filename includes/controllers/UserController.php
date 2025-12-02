@@ -146,8 +146,8 @@ class UserController {
                     $register_error = 'Username must be at least 3 characters long.';
                 } elseif (strlen($password) < 6) {
                     $register_error = 'Password must be at least 6 characters long.';
-                } elseif (!preg_match('/[A-Z]/', $password) || !preg_match('/[^a-zA-Z0-9]/', $password)) {
-                    $register_error = 'Password must contain at least one uppercase letter and one symbol.';
+                } elseif (!preg_match('/[A-Z]/', $password) || !preg_match('/[^a-zA-Z0-9]/', $password) || !preg_match('/[0-9]/', $password)) {
+                    $register_error = 'Password must contain at least one uppercase letter, one symbol, and one number.';
                 } elseif ($password !== $confirm_password) {
                     $register_error = 'Passwords do not match.';
                 } elseif (!empty($username) && !empty($email) && !empty($password)) {
