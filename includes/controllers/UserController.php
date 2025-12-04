@@ -61,8 +61,7 @@ class UserController {
             $profileController = $this->profileController;
             $admin_id = $_SESSION['user_id'] ?? null;
             if ($admin_id) {
-                $profileController->toggleFollow($admin_id, $user_id);
-                $profileController->toggleFollow($user_id, $admin_id);
+                $profileController->unfollowBoth($admin_id, $user_id);
             }
         }
 

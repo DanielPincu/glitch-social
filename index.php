@@ -90,7 +90,7 @@ case 'settings':
         $termsModel = new Terms($pdo);
         $termsController = new TermsController($termsModel, $session);
         $aboutModel = new About($pdo);
-        $aboutController = new AboutController($aboutModel, $session);
+        $aboutController = new AboutController($aboutModel, $session, $userModel);
         $settingsController = new SettingsController(
             $pdo,
             $session,
@@ -135,7 +135,7 @@ case 'settings':
 
     case 'about':
         $aboutModel = new About($pdo);
-        $aboutController = new AboutController($aboutModel, $session);
+        $aboutController = new AboutController($aboutModel, $session, $userModel);
         $aboutController->show();
         break;
 

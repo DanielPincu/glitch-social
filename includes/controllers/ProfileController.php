@@ -336,4 +336,15 @@ class ProfileController {
         }
         return $this->userModel->getBlockedUsers($userId);
     }
+
+    // Unfollow both ways (For Admin Level)
+    public function unfollowBoth($blockerId, $blockedId) {
+        $blockerId = $blockerId;
+        $blockedId = $blockedId;
+        // Remove follows in both directions
+        $this->profileModel->unfollowUser($blockerId, $blockedId);
+        $this->profileModel->unfollowUser($blockedId, $blockerId);
+
+        return true;
+    }
 }

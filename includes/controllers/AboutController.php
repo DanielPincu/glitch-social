@@ -3,10 +3,12 @@
 class AboutController {
     private $aboutModel;
     private $session;
+    private $userModel;
 
-    public function __construct($aboutModel, $session) {
+    public function __construct($aboutModel, $session, $userModel) {
         $this->aboutModel = $aboutModel;
         $this->session = $session;
+        $this->userModel = $userModel;
     }
 
     public function getCurrent() {
@@ -20,7 +22,7 @@ class AboutController {
         $aboutContent = $this->aboutModel->getCurrent();
         $aboutUpdaterName = null;
         if (!empty($aboutContent['updated_by'])) {
-            $user = $this->session->getUserById($aboutContent['updated_by']);
+            $user = $this->userModel->getUserById($aboutContent['updated_by']);
             if (!empty($user) && !empty($user['username'])) {
                 $aboutUpdaterName = $user['username'];
             }
