@@ -37,9 +37,9 @@ $termsModel = new Terms($pdo);
 
 // ==== CONTROLLERS ====
 $profileController = new ProfileController($pdo, $profileModel, $postModel, $userModel);
-$userController = new UserController($pdo, $userModel, $profileController);
+$userController = new UserController($pdo, $userModel, $profileController, $session);
 $postController = new PostController($pdo, $postModel, $userModel);
-$adminController = new AdminController($pdo, $userModel, $profileController);
+$adminController = new AdminController($pdo, $userModel, $profileController, $session);
 $ajaxController = new AjaxController($session, $userModel, $postModel, $notificationModel, $zionChat);
 
 // Intercepts all AJAX actions (likes, comments, chat) and it must run before page router. 

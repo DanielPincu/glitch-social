@@ -2,8 +2,8 @@
 
 class AdminController extends UserController {
 
-    public function __construct($pdo, $userModel, $profileController) {
-        parent::__construct($pdo, $userModel, $profileController);
+    public function __construct($pdo, $userModel, $profileController, $session) {
+        parent::__construct($pdo, $userModel, $profileController, $session);
     }
 
     

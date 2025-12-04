@@ -3,11 +3,13 @@ class UserController {
     protected $pdo;
     protected $user;
     protected $profileController;
+    protected $session;
 
-    public function __construct($pdo, $userModel, $profileController) {
+    public function __construct($pdo, $userModel, $profileController, $session) {
         $this->pdo = $pdo;
         $this->user = $userModel;
         $this->profileController = $profileController;
+        $this->session = $session;
     }
 
     // Login user
@@ -92,7 +94,7 @@ class UserController {
 
     // 1. Handle POST login requests
     public function handleLogin() {
-        $session = new Session();
+        $session = $this->session;
         $login_error = '';
         $login_success = '';
         if (isset($_GET['success'])) {
@@ -126,7 +128,7 @@ class UserController {
 
     // 2. Handle POST registration requests
     public function handleRegister() {
-        $session = new Session();
+        $session = $this->session;
         $register_success = '';
         $register_error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -191,7 +193,7 @@ class UserController {
     }
     // 6. Display search page and handle search requests
     public function showSearchPage() {
-        $session = new Session();
+        $session = $this->session;
 
         if (!$session->isLoggedIn()) {
             header("Location: index.php?page=login");
