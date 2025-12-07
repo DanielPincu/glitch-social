@@ -279,7 +279,7 @@
                     $remaining = $cooldown - ($now - $_SESSION['last_post_time']);
                     $minutes = floor($remaining / 60);
                     $seconds = $remaining % 60;
-                    $_SESSION['error'] = "🕒 Slow down, Operator... You can only post once every 5 minutes. Time left: {$minutes}m {$seconds}s.";
+                    $_SESSION['error'] = "🕒 Slow down, Operator... You can only post once every 30 seconds. Time left: {$minutes}m {$seconds}s.";
                     $session->generateCsrfToken();
                     header("Location: index.php");
                     exit();

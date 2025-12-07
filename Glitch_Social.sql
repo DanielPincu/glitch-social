@@ -1,6 +1,6 @@
 -- reset database
 DROP DATABASE IF EXISTS Glitch_Social;
-CREATE DATABASE Glitch_Social CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+CREATE DATABASE Glitch_Social CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE Glitch_Social;
 
 SET default_storage_engine=INNODB;
@@ -119,7 +119,7 @@ CREATE TABLE zion_messages (
 -- terms acceptance
 CREATE TABLE terms (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  content VARCHAR(1000) NOT NULL,
+  content TEXT NOT NULL,
   updated_by INT DEFAULT NULL,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
@@ -131,7 +131,7 @@ INSERT INTO terms (content, updated_by) VALUES
 -- about website
 CREATE TABLE about (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    content VARCHAR(1000) NOT NULL,
+    content TEXT NOT NULL,
     updated_by INT DEFAULT NULL,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
