@@ -9,10 +9,6 @@
 <main class="container mx-auto px-4 pb-16 pt-8 relative z-10">
 
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-
-
-
-
     <!-- Left Sidebar: Following list + System Status -->
     <div class="md:col-span-1 md:sticky md:top-8 md:self-start md:h-[calc(100vh-6rem)] md:overflow-y-auto space-y-4 flex flex-col rounded-lg overflow-hidden shadow-inner border-2 border-[#7AA0E0]">
       <div class="flex flex-col h-full justify-between">
@@ -525,12 +521,23 @@
               <p class="text-gray-400 italic">Connecting to Zion Messenger...</p>
             </div>
 
-            <form id="chatForm" class="flex gap-2 items-center mt-auto bg-blue-100 p-2 border-t border-[#7AA0E0] rounded-b-md">
+            <!-- Emoji Picker -->
+            <div id="chat-emoji-panel" class="absolute bottom-14 right-2 z-50 hidden">
+              <div class="bg-slate-900 border border-[#7AA0E0] rounded-lg shadow-xl p-3 w-56">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 class="text-green-200 font-bold text-sm">Select Emoji</h3>
+                  <button id="chat-emoji-close" type="button" class="text-gray-300 hover:text-white px-2">✕</button>
+                </div>
+                <div id="chat-emoji-grid" class="grid grid-cols-6 gap-2 text-xl"></div>
+              </div>
+            </div>
+            <form id="chatForm" class="flex gap-1 items-center mt-auto bg-blue-100 p-2 border-t border-[#7AA0E0] rounded-b-md">
               <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($session->getCsrfToken(), ENT_QUOTES); ?>">
-              <input type="text" id="chatInput" name="message" placeholder="Input data payload..."
-                class="flex-1 bg-white text-gray-900 px-3 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder-gray-400">
+              <input id="chatInput" type="text" name="message" placeholder="Input data payload..."
+                class="flex-1 bg-white text-gray-900 px-3 py-2 rounded border border-[#7AA0E0] focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm placeholder-gray-400" />
+              <button type="button" onclick="openChatEmojiPicker()" class="">😀</button>
               <button type="submit"
-                class="bg-gradient-to-t from-[#5A8DEE] to-[#7AA0E0] text-white px-4 py-2 rounded font-semibold text-sm shadow hover:brightness-110 active:translate-y-0.5 transition">
+                class="bg-gradient-to-t from-[#5A8DEE] to-[#7AA0E0] text-white px-1 py-0.5 rounded font-semibold text-sm shadow hover:brightness-110 active:translate-y-0.5 transition">
                 Send
               </button>
             </form>
@@ -617,3 +624,4 @@
   const isAdmin = <?php echo !empty($isAdmin) ? 1 : 0; ?>;
 </script>
 <script src="scripts/zionchat.js"></script>
+<script src="scripts/emoji.js"></script>
