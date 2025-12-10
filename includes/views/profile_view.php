@@ -48,9 +48,7 @@
                 <?php if (!empty($profileData['website'])): ?>
                     <p class="text-green-400 mt-1">
                         <strong>🔗</strong>
-                        <a href="<?php echo htmlspecialchars($profileData['website']) ?>" target="_blank" class="hover:underline">
-                            <?php echo htmlspecialchars($profileData['website']) ?>
-                        </a>
+                        <?php echo htmlspecialchars($profileData['website']); ?>
                     </p>
                 <?php endif; ?>
             </section>
